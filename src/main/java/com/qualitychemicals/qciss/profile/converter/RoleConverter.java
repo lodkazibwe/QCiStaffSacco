@@ -1,5 +1,4 @@
 package com.qualitychemicals.qciss.profile.converter;
-
 import com.qualitychemicals.qciss.profile.DTO.RoleDTO;
 import com.qualitychemicals.qciss.profile.model.Role;
 import org.springframework.stereotype.Component;

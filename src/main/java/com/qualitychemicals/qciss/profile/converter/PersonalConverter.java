@@ -13,12 +13,12 @@ public class PersonalConverter {
         PersonalDTO personalDTO=new PersonalDTO();
         personalDTO.setId(personal.getId());
         personalDTO.setResidence(personal.getResidence());
-        personalDTO.setNIN(personal.getNIN());
+        personalDTO.setNin(personal.getNin());
         personalDTO.setLastName(personal.getLastName());
         personalDTO.setFirstName(personal.getFirstName());
         personalDTO.setGender(personal.getGender());
         personalDTO.setEmail(personal.getEmail());
-        personalDTO.setDOB(personal.getDOB());
+        personalDTO.setDob(personal.getDob());
         personalDTO.setContact(personal.getContact());
         return personalDTO;
     }
@@ -26,18 +26,22 @@ public class PersonalConverter {
     public Personal dtoToEntity(PersonalDTO personalDTO){
         Personal personal=new Personal();
         personal.setResidence(personalDTO.getResidence());
-        personal.setNIN(personalDTO.getNIN());
+        personal.setNin(personalDTO.getNin());
         personal.setLastName(personalDTO.getLastName());
         personal.setFirstName(personalDTO.getFirstName());
         personal.setGender(personalDTO.getGender());
         personal.setId(personalDTO.getId());
         personal.setEmail(personalDTO.getEmail());
-        personal.setDOB(personalDTO.getDOB());
+        personal.setDob(personalDTO.getDob());
         personal.setContact(personalDTO.getContact());
         return personal;
     }
 
     public List<PersonalDTO> entityToDto(List<Personal> personals){
         return personals.stream().map(this::entityToDto).collect(Collectors.toList());
+    }
+
+    public List<Personal> dtoToEntity(List<PersonalDTO> personalDTOs){
+        return personalDTOs.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
 }

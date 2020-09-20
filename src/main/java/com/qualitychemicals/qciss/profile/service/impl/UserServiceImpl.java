@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.DAO.UserDAO;
 import com.qualitychemicals.qciss.profile.model.User;
 import com.qualitychemicals.qciss.profile.service.UserService;
@@ -18,8 +19,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean usernameExists(String userName) {
+        return userDAO.existsByUserName(userName);
+    }
+
+    @Override
     public User getUser(int id) {
-        return userDAO.findById(id).orElse(null);
+        return userDAO.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("No such user: "+id));
     }
 
     @Override

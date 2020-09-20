@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.DAO.SummaryDAO;
 import com.qualitychemicals.qciss.profile.model.Summary;
 import com.qualitychemicals.qciss.profile.service.SummaryService;
@@ -19,7 +20,7 @@ public class SummaryServiceImpl implements SummaryService {
 
     @Override
     public Summary getSummary(int id) {
-        return summaryDAO.findById(id).orElse(null);
+        return summaryDAO.findById(id).orElseThrow(()->new ResourceNotFoundException("Not Found: "+id));
     }
 
     @Override

@@ -12,6 +12,7 @@ public interface UserService {
     List<User> getByRole(String Role);
     List<User> getByStatus(String status);
     User getByUserName(String userName);
+    boolean usernameExists(String userName);
     void deleteUser(int id);
 
 }

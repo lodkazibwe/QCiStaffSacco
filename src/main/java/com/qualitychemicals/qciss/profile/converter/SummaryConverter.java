@@ -19,6 +19,9 @@ public class SummaryConverter {
     }
 
     public Summary dtoToEntity(SummaryDTO summaryDTO){
+        if(summaryDTO==null){
+            return new Summary();
+        }
         Summary summary=new Summary();
         summary.setTotalShares(summaryDTO.getTotalShares());
         summary.setTotalSavings(summaryDTO.getTotalSavings());

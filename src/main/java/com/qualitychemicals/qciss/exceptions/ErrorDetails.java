@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +13,6 @@ import java.util.Date;
 public class ErrorDetails {
     private Date timeStamp;
     private String message;
-    private String details;
+    private String description;
+    private List<String> details;
 }

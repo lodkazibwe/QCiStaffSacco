@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.DAO.RoleDAO;
 import com.qualitychemicals.qciss.profile.model.Role;
 import com.qualitychemicals.qciss.profile.service.RoleService;
@@ -24,7 +25,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRole(int id) {
-        return roleDAO.findById(id).orElse(null);
+        return roleDAO.findById(id).orElseThrow(()->new ResourceNotFoundException("Role Not Found"+id));
     }
 
     @Override

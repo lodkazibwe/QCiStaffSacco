@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 @Component
 public class AccountConverter {
     public AccountDTO entityToDto(Account account){
+        if(account==null){
+            return null;
+        }
         AccountDTO accountDTO=new AccountDTO();
         accountDTO.setId(account.getId());
         accountDTO.setCategory(account.getCategory());
@@ -19,6 +22,9 @@ public class AccountConverter {
     }
 
     public Account dtoToEntity(AccountDTO accountDTO){
+        if(accountDTO==null){
+            return null;
+        }
         Account account=new Account();
         account.setId(accountDTO.getId());
         account.setCategory(accountDTO.getCategory());
@@ -27,9 +33,16 @@ public class AccountConverter {
         return account;
     }
     public List<AccountDTO> entityToDto(List<Account> accounts){
+        if(accounts==null){
+            return null;
+        }
         return accounts.stream().map(this::entityToDto).collect(Collectors.toList());
     }
+
     public List<Account> dtoToEntity(List<AccountDTO> accountDTOs){
+        if(accountDTOs==null){
+            return null;
+        }
         return accountDTOs.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
 

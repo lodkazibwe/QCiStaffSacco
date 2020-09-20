@@ -20,4 +20,7 @@ public class Role {
     @NotNull
     private String role;
 
+    public Role( String role) {
+        this.role=role;
+    }
 }
