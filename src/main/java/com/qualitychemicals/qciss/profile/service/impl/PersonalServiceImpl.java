@@ -2,11 +2,10 @@ package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.DAO.PersonalDAO;
+import com.qualitychemicals.qciss.profile.DTO.PersonalDTO;
 import com.qualitychemicals.qciss.profile.model.Personal;
-import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.rest.v1.ProfileRest;
 import com.qualitychemicals.qciss.profile.service.PersonalService;
-import com.qualitychemicals.qciss.profile.service.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class PersonalServiceImpl implements PersonalService {
 
     private final Logger logger= LoggerFactory.getLogger(ProfileRest.class);
     @Override
-    public Personal updateInfo(Personal personal) {
+    public Personal updateInfo(PersonalDTO personalDTO) {
         return null;
     }
 

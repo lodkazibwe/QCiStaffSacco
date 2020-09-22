@@ -12,7 +12,6 @@ import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Summary;
 import com.qualitychemicals.qciss.profile.model.Work;
 import com.qualitychemicals.qciss.profile.service.ProfileService;
-import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import java.util.*;
 public class ProfileRest {
     @Autowired ProfileService profileService;
     @Autowired ProfileConverter profileConverter;
-    @Autowired UserService userService;
     @Autowired AccountConverter accountConverter;
     @Autowired SummaryConverter summaryConverter;
     @Autowired WorkConverter workConverter;

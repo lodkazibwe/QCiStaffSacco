@@ -24,4 +24,5 @@ public class PersonalRest {
         String s=personalService.updateImage(file, infoId);
         return new ResponseEntity<>(s, HttpStatus.OK);
     }
+
 }
