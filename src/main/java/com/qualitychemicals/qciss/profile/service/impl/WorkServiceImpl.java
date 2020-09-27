@@ -1,11 +1,10 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
-import com.qualitychemicals.qciss.profile.DAO.WorkDAO;
-import com.qualitychemicals.qciss.profile.model.Profile;
+import com.qualitychemicals.qciss.profile.dao.WorkDao;
+import com.qualitychemicals.qciss.profile.dto.WorkDto;
 import com.qualitychemicals.qciss.profile.model.Work;
-import com.qualitychemicals.qciss.profile.rest.v1.ProfileRest;
-import com.qualitychemicals.qciss.profile.service.ProfileService;
+import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.profile.service.WorkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,40 +16,41 @@ import java.util.List;
 
 @Service
 public class WorkServiceImpl implements WorkService {
-    @Autowired WorkDAO workDAO;
-    @Autowired ProfileService profileService;
-    private final Logger logger= LoggerFactory.getLogger(ProfileRest.class);
+    @Autowired
+    WorkDao workDao;
+    @Autowired
+    UserService userService;
+    private final Logger logger= LoggerFactory.getLogger(WorkServiceImpl.class);
     @Override
     @Transactional
-    public Work updateWork(Work work, int id) {
-        logger.info("getting profile...");
-        Profile profile =profileService.getProfile(id);
+    public Work updateWork(WorkDto workDto, int id) {
+
         logger.info("getting current work details...");
-        Work currentWork=profile.getWork();
+        Work work= workDao.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("No such detail with ID: "+id));
         logger.info("updating...");
-        work.setId(currentWork.getId());
+        work.setJob(workDto.getJobTittle());
+        work.setMonthlySaving(workDto.getMonthlySaving());
+        work.setScale(workDto.getSalaryScale());
+        work.setCompany(workDto.getCompany());
         logger.info("saving...");
-        /*currentWork.setCompany(work.getCompany());
-        currentWork.setScale(work.getScale());
-        currentWork.setMonthlySaving(work.getMonthlySaving());
-        currentWork.setJob(work.getJob());*/
-        return workDAO.save(work);
+        return workDao.save(work);
     }
 
 
     @Override
     public Work getWork(int id) {
-        return workDAO.findById(id).orElseThrow(()->new ResourceNotFoundException("No details found "+id));
+        return workDao.findById(id).orElseThrow(()->new ResourceNotFoundException("No details found "+id));
     }
 
     @Override
     public List<Work> getAll() {
-        return workDAO.findAll();
+        return workDao.findAll();
     }
 
     @Override
     public List<Work> getByCompany(String company) {
-        return workDAO.findByCompany(company);
+        return workDao.findByCompany(company);
     }
 
     @Override

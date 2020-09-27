@@ -1,0 +1,19 @@
+package com.qualitychemicals.qciss.profile.service;
+
+import com.qualitychemicals.qciss.profile.dto.PersonDto;
+import com.qualitychemicals.qciss.profile.model.Person;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+
+public interface PersonService {
+     Person updatePerson(PersonDto personDto, int id);
+     Person getPerson(int id);
+     List<Person> getAll();
+     List<Person> getByGender(String gender);
+     void deletePerson(int id);
+     String updateImage(MultipartFile file, int id) throws IOException;
+    //*getByName,search
+
+}

@@ -1,7 +1,8 @@
 package com.qualitychemicals.qciss.profile.converter;
 
-import com.qualitychemicals.qciss.profile.DTO.UserDTO;
+import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,28 +10,38 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserConverter {
-
-    public UserDTO entityToDto(User user){
-        UserDTO userDTO =new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setPassword(user.getPassword());
-        userDTO.setUserName(user.getUserName());
-        return userDTO;
+    @Autowired
+    PersonConverter personConverter;
+    @Autowired WorkConverter workConverter;
+    @Autowired AccountConverter accountConverter;
+    @Autowired SummaryConverter summaryConverter;
+    public UserDto entityToDto(User user){
+        UserDto userDto =new UserDto();
+        userDto.setId(user.getId());
+        userDto.setUserName(user.getUserName());
+        userDto.setPassword(user.getPassword());
+        userDto.setPersonDto(personConverter.entityToDto(user.getPerson()));
+        return userDto;
     }
 
-    public User dtoToEntity (UserDTO userDTO){
+    public User dtoToEntity(UserDto userDto){
         User user =new User();
-        user.setUserName(userDTO.getUserName());
-        user.setPassword(userDTO.getPassword());
-        user.setId(userDTO.getId());
+        user.setId(userDto.getId());
+        user.setPassword(userDto.getPassword());
+        user.setUserName(userDto.getUserName());
+        user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
         return user;
+
     }
 
-    public List<UserDTO> entityToDto(List<User> users){
+    public List<UserDto> entityToDto(List<User> users){
         return users.stream().map(this::entityToDto).collect(Collectors.toList());
+
     }
 
-    public List<User> dtoToEntity(List<UserDTO> userDTOs){
-        return userDTOs.stream().map(this::dtoToEntity).collect(Collectors.toList());
+    public List<User> dtoToEntity(List<UserDto> userDtos){
+        return userDtos.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
+
+
 }

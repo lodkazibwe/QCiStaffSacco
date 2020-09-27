@@ -1,11 +1,12 @@
 package com.qualitychemicals.qciss.profile.service;
 
+import com.qualitychemicals.qciss.profile.dto.WorkDto;
 import com.qualitychemicals.qciss.profile.model.Work;
 
 import java.util.List;
 
 public interface WorkService {
-    Work updateWork(Work work, int id);
+    Work updateWork(WorkDto workDto, int id);
     Work getWork(int id);
     List<Work> getAll();
     List<Work> getByCompany(String company);

@@ -1,18 +1,21 @@
 package com.qualitychemicals.qciss.profile.service;
 
+import com.qualitychemicals.qciss.profile.dto.UserDto;
+import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.User;
+import com.qualitychemicals.qciss.profile.model.Summary;
+import com.qualitychemicals.qciss.profile.model.Work;
 
 import java.util.List;
 
 public interface UserService {
-    User updateUser(User user);
-    User getUser(int id);
-    User getByProfile(int id);
+    User addProfile(UserDto userDTO);
+    User updateProfile(User user);
+    User getProfile(int id);
+    List<Account> getAccounts(int id);
+    Summary getSummary(int id);
+    Work getWorkInfo(int id);
     List<User> getAll();
-    List<User> getByRole(String Role);
-    List<User> getByStatus(String status);
-    User getByUserName(String userName);
-    boolean usernameExists(String userName);
-    void deleteUser(int id);
+    void deleteProfile(int id);
 
 }

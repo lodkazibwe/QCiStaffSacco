@@ -1,6 +1,6 @@
 package com.qualitychemicals.qciss.profile.converter;
 
-import com.qualitychemicals.qciss.profile.DTO.AccountDTO;
+import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.model.Account;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class AccountConverter {
-    public AccountDTO entityToDto(Account account){
+    public AccountDto entityToDto(Account account){
         if(account==null){
             return null;
         }
-        AccountDTO accountDTO=new AccountDTO();
+        AccountDto accountDTO=new AccountDto();
         accountDTO.setId(account.getId());
         accountDTO.setCategory(account.getCategory());
         accountDTO.setAccountName(account.getAccountName());
@@ -21,29 +21,29 @@ public class AccountConverter {
         return accountDTO;
     }
 
-    public Account dtoToEntity(AccountDTO accountDTO){
-        if(accountDTO==null){
+    public Account dtoToEntity(AccountDto accountDto){
+        if(accountDto==null){
             return null;
         }
         Account account=new Account();
-        account.setId(accountDTO.getId());
-        account.setCategory(accountDTO.getCategory());
-        account.setAccountNumber(accountDTO.getAccountNumber());
-        account.setAccountName(accountDTO.getAccountName());
+        account.setId(accountDto.getId());
+        account.setCategory(accountDto.getCategory());
+        account.setAccountNumber(accountDto.getAccountNumber());
+        account.setAccountName(accountDto.getAccountName());
         return account;
     }
-    public List<AccountDTO> entityToDto(List<Account> accounts){
+    public List<AccountDto> entityToDto(List<Account> accounts){
         if(accounts==null){
             return null;
         }
         return accounts.stream().map(this::entityToDto).collect(Collectors.toList());
     }
 
-    public List<Account> dtoToEntity(List<AccountDTO> accountDTOs){
-        if(accountDTOs==null){
+    public List<Account> dtoToEntity(List<AccountDto> accountDtos){
+        if(accountDtos ==null){
             return null;
         }
-        return accountDTOs.stream().map(this::dtoToEntity).collect(Collectors.toList());
+        return accountDtos.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
 
 }

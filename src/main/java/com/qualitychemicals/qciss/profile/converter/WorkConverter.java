@@ -1,6 +1,6 @@
 package com.qualitychemicals.qciss.profile.converter;
 
-import com.qualitychemicals.qciss.profile.DTO.WorkDTO;
+import com.qualitychemicals.qciss.profile.dto.WorkDto;
 import com.qualitychemicals.qciss.profile.model.Work;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 @Component
 public class WorkConverter {
 
-    public WorkDTO entityToDto(Work work){
-        WorkDTO workDTO=new WorkDTO();
+    public WorkDto entityToDto(Work work){
+        WorkDto workDTO=new WorkDto();
         workDTO.setSalaryScale(work.getScale());
         workDTO.setMonthlySaving(work.getMonthlySaving());
         workDTO.setJobTittle(work.getJob());
@@ -19,23 +19,23 @@ public class WorkConverter {
         workDTO.setCompany(work.getCompany());
         return workDTO;
     }
-    public Work dtoToEntity(WorkDTO workDTO){
-        if(workDTO==null){
+    public Work dtoToEntity(WorkDto workDto){
+        if(workDto==null){
             return new Work();
         }
         Work work =new Work();
-        work.setScale(workDTO.getSalaryScale());
-        work.setMonthlySaving(workDTO.getMonthlySaving());
-        work.setId(workDTO.getId());
-        work.setJob(workDTO.getJobTittle());
-        work.setCompany(workDTO.getCompany());
+        work.setScale(workDto.getSalaryScale());
+        work.setMonthlySaving(workDto.getMonthlySaving());
+        work.setId(workDto.getId());
+        work.setJob(workDto.getJobTittle());
+        work.setCompany(workDto.getCompany());
         return work;
     }
-    public List<WorkDTO> entityToDto(List<Work> works){
+    public List<WorkDto> entityToDto(List<Work> works){
         return works.stream().map(this::entityToDto).collect(Collectors.toList());
     }
 /*
-    public static boolean isNull(WorkDTO workDTO) {
+    public static boolean isNull(WorkDto workDTO) {
         return workDTO == null;
     }*/
 }
