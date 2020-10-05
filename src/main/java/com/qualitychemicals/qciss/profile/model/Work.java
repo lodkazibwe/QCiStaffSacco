@@ -19,5 +19,5 @@ public class Work {
     private String company;
     private String job;
     private String scale;
-    private int monthlySaving;
+    private double monthlySaving;
 }

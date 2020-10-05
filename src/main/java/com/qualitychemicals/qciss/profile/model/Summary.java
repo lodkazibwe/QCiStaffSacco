@@ -16,7 +16,7 @@ public class Summary {
     @Id
     @GeneratedValue
     private int id;
-    private int totalSavings;
-    private int totalShares;
-    private int pendingFee;
+    private double totalSavings;
+    private double totalShares;
+    private double pendingFee;
 }

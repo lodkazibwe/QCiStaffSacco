@@ -2,7 +2,11 @@ package com.qualitychemicals.qciss.profile.converter;
 
 import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.User;
+import com.qualitychemicals.qciss.profile.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,6 +19,8 @@ public class UserConverter {
     @Autowired WorkConverter workConverter;
     @Autowired AccountConverter accountConverter;
     @Autowired SummaryConverter summaryConverter;
+    @Autowired BCryptPasswordEncoder passwordEncoder;
+    private final Logger logger = LoggerFactory.getLogger(UserConverter.class);
     public UserDto entityToDto(User user){
         UserDto userDto =new UserDto();
         userDto.setId(user.getId());
@@ -27,7 +33,8 @@ public class UserConverter {
     public User dtoToEntity(UserDto userDto){
         User user =new User();
         user.setId(userDto.getId());
-        user.setPassword(userDto.getPassword());
+        logger.info("encoding...");
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setUserName(userDto.getUserName());
         user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
         return user;

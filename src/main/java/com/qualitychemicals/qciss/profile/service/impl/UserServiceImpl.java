@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             logger.info("updating...");
             Role role = new Role("USER");
             Set<Role> roles = new HashSet<>(Collections.singletonList(role));
-
+            logger.info("converting...");
             User user = profileConverter.dtoToEntity(userDTO);
             user.setRole(roles);
             user.setStatus("PENDING");

@@ -94,12 +94,12 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler  {
 
 
     //handle global exceptions
-   @ExceptionHandler(Exception.class)
+   /*@ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException
     (Exception exception, WebRequest request){
        ErrorDetails errorDetails=new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(true), null);
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    }*/
 
     //handle specific exceptions
     @ExceptionHandler(ResourceNotFoundException.class)

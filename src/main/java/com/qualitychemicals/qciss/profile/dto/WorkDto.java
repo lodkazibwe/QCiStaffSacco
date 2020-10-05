@@ -12,5 +12,5 @@ public class WorkDto {
     private String company;
     private String jobTittle;
     private String salaryScale;
-    private int monthlySaving;
+    private double monthlySaving;
 }
