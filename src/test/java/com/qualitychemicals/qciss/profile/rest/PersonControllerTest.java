@@ -30,7 +30,7 @@ public class PersonControllerTest {
         personDto.setFirstName("Rita");
         personDto.setLastName("Jane");
         personDto.setNin("12345de1234");
-        personDto.setContact("0700356304");
+        personDto.setMobile("0700356304");
         personDto.setResidence("mukono");
         personDto.setGender("Male");
         personDto.setDob(new Date());

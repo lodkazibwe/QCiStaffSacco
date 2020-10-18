@@ -28,7 +28,8 @@ public class PersonServiceImpl implements PersonService {
         Person person=personDao.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("No such person with ID: "+id));
         logger.info("updating...");
-        person.setContact(personDto.getContact());
+        person.setMobile(personDto.getMobile());
+        person.setBank(personDto.getBank());
         person.setDob(personDto.getDob());
         person.setEmail(personDto.getEmail());
         person.setFirstName(personDto.getFirstName());

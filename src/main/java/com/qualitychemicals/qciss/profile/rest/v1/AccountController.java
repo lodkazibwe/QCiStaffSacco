@@ -1,45 +1,22 @@
 package com.qualitychemicals.qciss.profile.rest.v1;
 
-import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.converter.AccountConverter;
-import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.service.AccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/summary")
 public class AccountController {
-    @Autowired AccountService accountService;
-    @Autowired AccountConverter accountConverter;
+    @Autowired
+    AccountConverter accountConverter;
+    @Autowired
+    AccountService accountService;
 
-    @PostMapping("/add/{userId}")
-    public ResponseEntity<List<AccountDto>> addAccount(@RequestBody AccountDto accountDTO, @PathVariable int userId){
+    private final Logger logger= LoggerFactory.getLogger(AccountController.class);
 
-        return new ResponseEntity<>(accountConverter.entityToDto(
-                accountService.addAccount(accountDTO, userId)),HttpStatus.OK);
-
-    }
-    @GetMapping("/get/{accountId}")
-    public ResponseEntity<AccountDto> getAccount(@PathVariable int accountId){
-        Account account=accountService.getAccount(accountId);
-        return new ResponseEntity<>(accountConverter.entityToDto(account), HttpStatus.OK);
-
-    }
-    @GetMapping("/getByCat/{category}")
-    public ResponseEntity<List<AccountDto>> getByCategory(@PathVariable String category){
-        List<Account> accounts=accountService.getByCategory(category);
-        return new ResponseEntity<>(accountConverter.entityToDto(accounts), HttpStatus.OK);
-    }
-
-    @PutMapping("/update/{accountId}")
-    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDTO, @PathVariable int accountId){
-        Account account=accountService.updateAccount(accountDTO, accountId);
-        return new ResponseEntity<>(accountConverter.entityToDto(account), HttpStatus.OK);
-    }
 
 }

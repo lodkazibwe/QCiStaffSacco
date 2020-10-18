@@ -87,7 +87,7 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler  {
     protected ResponseEntity<Object> handleHttpMessageNotReadable
             (HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<String> details = new ArrayList<>(Collections.singletonList(ex.getMessage()));
-        ErrorDetails errorDetails =new ErrorDetails(new Date(),"Message Not Readable",
+        ErrorDetails errorDetails =new ErrorDetails(new Date(),"Http Message Not Readable",
                 ex.getCause().getMessage(),details);
         return new ResponseEntity<>(errorDetails, status);
     }
@@ -109,7 +109,11 @@ public class AppExceptionHandler  extends ResponseEntityExceptionHandler  {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-
+    @ExceptionHandler(InvalidValuesException.class)
+    public ResponseEntity<?> handleInvalidValuesException(InvalidValuesException exception, WebRequest request){
+        ErrorDetails errorDetails=new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false),null);
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
 
 
 

@@ -3,9 +3,8 @@ package com.qualitychemicals.qciss.profile.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
-import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
-import com.qualitychemicals.qciss.profile.converter.SummaryConverter;
+import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.converter.WorkConverter;
 import com.qualitychemicals.qciss.profile.model.User;
 import com.qualitychemicals.qciss.profile.rest.v1.UserController;
@@ -33,8 +32,8 @@ public class UserControllerTest {
     UserService userService;
     @MockBean
     UserConverter userConverter;
-    @MockBean AccountConverter accountConverter;
-    @MockBean SummaryConverter summaryConverter;
+    @MockBean
+    AccountConverter accountConverter;
     @MockBean WorkConverter workConverter;
 
     @Test
@@ -46,7 +45,7 @@ public class UserControllerTest {
         personDto.setFirstName("Rita");
         personDto.setLastName("Jane");
         personDto.setNin("12345abcde1234");
-        personDto.setContact("0700356304");
+        personDto.setMobile("0700356304");
         personDto.setResidence("mukono");
         personDto.setGender("Male");
         personDto.setDob(new Date());
@@ -84,7 +83,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserSummaryTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/profile/user/getSummary/{profileID}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.get("/profile/user/getAccount/{profileID}", 1)
                 .contentType("application/json"))
                 .andExpect(status().isOk());
     }

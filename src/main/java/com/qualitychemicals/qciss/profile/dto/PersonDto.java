@@ -19,14 +19,15 @@ public class PersonDto {
     @NotBlank(message = "last name cannot be blank")
     @Size(min=2, message = "Last name at least two Characters")
     private String lastName;
-    @NotNull
+    @NotNull(message = "nin cannot be null")
     @Size(min=14, max=14,message = "NIN must have 14 Characters")
     @Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
-    @NotNull
+    @NotNull(message = "mobile cannot be null")
     @Size(min=10, max=10, message = "invalid Contact length")
     @Pattern(regexp="(^[0-9]{10})", message = "invalid Contact")
-    private String contact;
+    private String mobile;
+    private String bank;
     @NotBlank(message="email cannot be blank")
     @Email(message="invalid Email")
     private String email;
@@ -37,5 +38,6 @@ public class PersonDto {
     private String gender;
     @NotBlank(message ="residence cannot be Blank")
     private String residence;
+
 
 }

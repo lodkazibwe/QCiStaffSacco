@@ -27,14 +27,17 @@ public class LoanConverter {
         loanDto.setDuration(loan.getDuration());
         loanDto.setFirstRepaymentDate(loan.getFirstRepaymentDate());
         loanDto.setInterest(loan.getInterest());
+        loanDto.setApplicationFee(loan.getApplicationFee());
         loanDto.setPenalty(loan.getPenalty());
         loanDto.setPrincipal(loan.getPrincipal());
         loanDto.setProductId(loan.getProduct().getId());
         loanDto.setReleaseDate(loan.getReleaseDate());
         loanDto.setRepaymentCycle(loan.getRepaymentCycle());
         loanDto.setStatus(loan.getStatus());
+        loanDto.setTotalDue(loan.getTotalDue());
+        loanDto.setTotalPaid(loan.getTotalPaid());
         loanDto.setId(loan.getId());
-        loanDto.setBorrowerId(loan.getBorrowerID());
+        loanDto.setBorrower(loan.getBorrower());
         loanDto.setComment(loan.getComment());
         return loanDto;
     }
@@ -46,12 +49,15 @@ public class LoanConverter {
         loan.setApprovedBy(loanDto.getApprovedBy());
         loan.setApplicationDate(loanDto.getApplicationDate());
         loan.setInterest(loanDto.getInterest());
+        loan.setApplicationFee(loanDto.getApplicationFee());
         loan.setPenalty(loanDto.getPenalty());
         loan.setPrincipal(loanDto.getPrincipal());
         loan.setProduct(productService.getProduct(loanDto.getProductId()));
         loan.setReleaseDate(loanDto.getReleaseDate());
+        loan.setTotalPaid(loanDto.getTotalPaid());
+        loan.setTotalDue(loanDto.getTotalDue());
         loan.setStatus(loanDto.getStatus());
-        loan.setBorrowerID(loanDto.getBorrowerId());
+        loan.setBorrower(loanDto.getBorrower());
         loan.setComment(loanDto.getComment());
 
         return loan;

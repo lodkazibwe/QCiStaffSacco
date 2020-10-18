@@ -1,17 +1,17 @@
 package com.qualitychemicals.qciss.profile.rest.v1;
 
-import com.qualitychemicals.qciss.profile.dto.AccountDto;
+import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
-import com.qualitychemicals.qciss.profile.dto.SummaryDto;
+import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.dto.WorkDto;
-import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
-import com.qualitychemicals.qciss.profile.converter.SummaryConverter;
+import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.converter.WorkConverter;
 import com.qualitychemicals.qciss.profile.model.Account;
-import com.qualitychemicals.qciss.profile.model.Summary;
+import com.qualitychemicals.qciss.profile.model.User;
 import com.qualitychemicals.qciss.profile.model.Work;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.security.AuthRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,39 +29,43 @@ public class UserController {
     @Autowired
     UserService userService;
     @Autowired
-    UserConverter profileConverter;
-    @Autowired AccountConverter accountConverter;
-    @Autowired SummaryConverter summaryConverter;
+    UserConverter userConverter;
+    @Autowired
+    AccountConverter accountConverter;
     @Autowired WorkConverter workConverter;
 
     private final Logger logger= LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<UserDto> createProfile(@Valid @RequestBody UserDto userDTO){
+    public ResponseEntity<UserDto> createProfile(@Valid @RequestBody PersonDto personDto){
         logger.info("starting...");
-        return new ResponseEntity<>(profileConverter.entityToDto(
-                userService.addProfile(userDTO)), HttpStatus.OK);
+        UserDto userDTO=new UserDto();
+        userDTO.setPersonDto(personDto);
+        userDTO.setUserName(personDto.getMobile());
+        Random random = new Random();
+        String pin = String.format("%04d", random.nextInt(10000));
+        userDTO.setPassword(pin);
+        User user= userService.addProfile(userDTO);
+        return new ResponseEntity<>(userConverter.entityToDto(user), HttpStatus.OK);
     }
+
+
     @GetMapping("/get/{id}")
     public ResponseEntity<UserDto> getProfile(@PathVariable int id){
-        return new ResponseEntity<>(profileConverter.entityToDto
+        return new ResponseEntity<>(userConverter.entityToDto
                 (userService.getProfile(id)), HttpStatus.OK);
     }
     @GetMapping("/getAll")
     public ResponseEntity<List<UserDto>> getAll(){
-        return new ResponseEntity<>(profileConverter.entityToDto(userService.getAll()),
+        return new ResponseEntity<>(userConverter.entityToDto(userService.getAll()),
                 HttpStatus.OK);
     }
-    @GetMapping("/getAccounts/{userId}")
-    public ResponseEntity<List<AccountDto>> getUserAccounts(@PathVariable int userId){
-        List<Account> accounts= userService.getAccounts(userId);
-        return new ResponseEntity<>(accountConverter.entityToDto(accounts), HttpStatus.OK);
-    }
+
     @GetMapping("/getSummary/{userId}")
-    public ResponseEntity<SummaryDto> getUserSummary(@PathVariable int userId){
-        Summary summary= userService.getSummary(userId);
-        return new ResponseEntity<>(summaryConverter.entityToDto(summary), HttpStatus.OK);
+    public ResponseEntity<AccountDto> getUserSummary(@PathVariable int userId){
+        Account account = userService.getSummary(userId);
+        return new ResponseEntity<>(accountConverter.entityToDto(account), HttpStatus.OK);
     }
 
     @GetMapping("/getWork/{userId}")

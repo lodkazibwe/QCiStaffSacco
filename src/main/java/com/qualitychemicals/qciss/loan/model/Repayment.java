@@ -24,4 +24,5 @@ public class Repayment {
     private double paid;
     private double balance;
     private String status;//pending,settled,pastDue
+
 }

@@ -23,6 +23,6 @@ public class RepaymentDto {
     private double paid;
     @ApiModelProperty(notes = "Generated part of RepaymentDao Amount not Paid")
     private double balance;
-    @ApiModelProperty(notes = "Generated RepaymentDao Status")
+    @ApiModelProperty(notes = "Generated RepaymentDao TransactionStatus")
     private String status;
 }

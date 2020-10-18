@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.loan.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qualitychemicals.qciss.transaction.model.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,25 +20,30 @@ public class Loan {
     private int id;
     private double principal;
     private int duration;
-    private String repaymentCycle;
+    @Enumerated(EnumType.STRING)
+    private  Cycle repaymentCycle;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date applicationDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date releaseDate;
-    private String disbursedBy;
+    @Enumerated(EnumType.STRING)
+    private TransactionType disbursedBy;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date firstRepaymentDate;
+    private double applicationFee;
     private double interest;
     private double penalty;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private LoanStatus status;
     @OneToOne(targetEntity = Product.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     @JoinColumn
     private Product product;
     @OneToMany(targetEntity = Repayment.class,cascade= CascadeType.ALL, fetch= FetchType.EAGER)
     @JoinColumn
     private List<Repayment> repayments;
-
-    private int borrowerID;
+    private double totalPaid;
+    private double totalDue;
+    private String borrower;
     private String comment;
     private String approvedBy;
 

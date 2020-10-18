@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.security.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.BeanIds;
@@ -35,9 +36,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/profile/user/register").permitAll()//authenticate
+                .antMatchers("/profile/user/register").hasRole("ADMIN")
+                .antMatchers(
+                        HttpMethod.GET,
+                        "/",
+                        "/v2/api-docs",           // swagger
+                        "/webjars/**",            // swagger-ui webjars
+                        "/swagger-resources/**",  // swagger-ui resources
+                        "/configuration/**",      // swagger configuration
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js"
+                ).permitAll()
+
                 .antMatchers("/profile/user/getAll").permitAll()
-                .antMatchers("/user/authenticate").permitAll()
+                .antMatchers("/authenticate/**").permitAll()//
                 .antMatchers("/account/**").hasRole("USER")
                 .antMatchers("/profile/person/**").hasRole("USER")
                 .anyRequest().authenticated().and().sessionManagement()
