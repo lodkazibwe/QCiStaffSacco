@@ -29,7 +29,6 @@ public class PersonServiceImpl implements PersonService {
                 .orElseThrow(()->new ResourceNotFoundException("No such person with ID: "+id));
         logger.info("updating...");
         person.setMobile(personDto.getMobile());
-        person.setBank(personDto.getBank());
         person.setDob(personDto.getDob());
         person.setEmail(personDto.getEmail());
         person.setFirstName(personDto.getFirstName());

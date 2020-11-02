@@ -16,7 +16,7 @@ public class WorkConverter {
         workDTO.setMonthlySaving(work.getMonthlySaving());
         workDTO.setJobTittle(work.getJob());
         workDTO.setId(work.getId());
-        workDTO.setCompany(work.getCompany());
+        workDTO.setCompanyName(work.getCompanyName());
         return workDTO;
     }
     public Work dtoToEntity(WorkDto workDto){
@@ -27,8 +27,8 @@ public class WorkConverter {
         work.setScale(workDto.getSalaryScale());
         work.setMonthlySaving(workDto.getMonthlySaving());
         work.setId(workDto.getId());
+        work.setCompanyName(workDto.getCompanyName());
         work.setJob(workDto.getJobTittle());
-        work.setCompany(workDto.getCompany());
         return work;
     }
     public List<WorkDto> entityToDto(List<Work> works){

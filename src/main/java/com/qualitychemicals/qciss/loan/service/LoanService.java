@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.loan.service;
 
+import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.dto.FeeDto;
 import com.qualitychemicals.qciss.loan.dto.LoanDto;
 import com.qualitychemicals.qciss.loan.model.Loan;
@@ -16,7 +17,7 @@ public interface LoanService {
     void updateStatus(int id, LoanStatus loanStatus);
     void repay(int loanId, double amount);
     List<Loan> getAll();
-    List<Loan> findByStatus(String status);
-    List<Loan> dueLoans(Date date);
+    List<Loan> findByStatus(LoanStatus status);
+    List<DueLoanDto> dueLoans(Date date);
     FeeDto fees(LoanDto loanDto);
 }

@@ -21,13 +21,13 @@ import java.util.Date;
 public class LoanDto {
     @ApiModelProperty(notes = "db generated Loan ID")
     private int id;
-    @NotBlank(message = "principal cannot be blank")
+    @NotNull(message = "principal cannot be blank")
     @ApiModelProperty(notes = "Principal Amount")
     private double principal;
-    @NotBlank(message = "duration cannot be blank")
+    @NotNull(message = "duration cannot be blank")
     @ApiModelProperty(notes = "LoanT duration (months)")
     private int duration;
-    @NotBlank(message = "repayment cycle cannot be blank")
+    @NotNull(message = "repayment cycle cannot be blank")
     @ApiModelProperty(notes = "Cycle of repayment (weakly,biWeakly,monthly),")
     private Cycle repaymentCycle;
     @ApiModelProperty(notes = "generated date of loan application")
@@ -38,7 +38,7 @@ public class LoanDto {
     private Date releaseDate;
     @ApiModelProperty(notes = "how the cash is received (cash, mobile,bank)")
     private TransactionType disbursedBy;
-    @NotBlank(message = "missing first repayment date ")
+    @NotNull(message = "missing first repayment date ")
     @ApiModelProperty(notes = "first Date of Repayment")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date firstRepaymentDate;

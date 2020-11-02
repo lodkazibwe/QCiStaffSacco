@@ -18,13 +18,13 @@ public class AccountServiceImpl implements AccountService {
     AccountDao accountDao;
     private final Logger logger= LoggerFactory.getLogger(AccountServiceImpl.class);
     @Override
-    public Account updateSummary(AccountDto accountDto, int id) {
+    public Account updateAccount(AccountDto accountDto, int id) {
         logger.info("getting current details...");
         Account account =getSummary(id);
         logger.info("updating...");
         account.setPendingFee(accountDto.getPendingFee());
-        account.setTotalSavings(accountDto.getTotalSavings());
-        account.setTotalShares(accountDto.getTotalShares());
+        account.setSavings(accountDto.getTotalSavings());
+        account.setShares(accountDto.getTotalShares());
         return accountDao.save(account);
     }
 

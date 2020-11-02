@@ -17,17 +17,19 @@ import java.util.List;
 @RequestMapping("profile/work")
 public class WorkController {
     @Autowired WorkConverter workConverter;
-    @Autowired WorkService workService;
+    @Autowired
+    WorkService workService;
     private final Logger logger= LoggerFactory.getLogger(WorkController.class);
 
-    @PutMapping("/update/{workId}")
-    public ResponseEntity<WorkDto> addWorkDetail(@RequestBody WorkDto workDto, @PathVariable int workId){
+    @PutMapping("/update")
+    public ResponseEntity<WorkDto> addWorkDetail(@RequestBody WorkDto workDto){
 
-        Work work=workService.updateWork(workDto, workId);
+        Work work=workService.updateWork(workDto);
         logger.info("success...");
         return new ResponseEntity<>(workConverter.entityToDto(work), HttpStatus.OK);
 
     }
+
     @GetMapping("/get/{workId}")
     public ResponseEntity<WorkDto> getWork(@PathVariable int workId){
         Work work =workService.getWork(workId);

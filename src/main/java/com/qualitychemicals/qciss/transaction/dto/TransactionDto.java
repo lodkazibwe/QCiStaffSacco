@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.transaction.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qualitychemicals.qciss.transaction.model.TransactionStatus;
 import com.qualitychemicals.qciss.transaction.model.TransactionType;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -17,11 +17,16 @@ import java.util.Date;
 @NoArgsConstructor
 public class TransactionDto {
     private int id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date date;
-    @NotBlank(message ="amount cannot be Blank")
+    @NotNull(message ="amount cannot be Blank")
     @Min(value=5000, message="Amount should not be less than 5000")
     @Max(value=5000000, message="Amount should not be greater than 5m")
     private double amount;
+    @NotNull
+    private String from;
+    @NotNull
+    private String to;
     @NotNull
     private String userName;
     private TransactionType transactionType;

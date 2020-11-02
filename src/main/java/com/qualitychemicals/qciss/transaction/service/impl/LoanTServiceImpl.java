@@ -8,10 +8,9 @@ import com.qualitychemicals.qciss.profile.model.User;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.transaction.converter.LoanTConverter;
 import com.qualitychemicals.qciss.transaction.dao.TransactionDao;
-import com.qualitychemicals.qciss.transaction.dto.BankPayment;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
-import com.qualitychemicals.qciss.transaction.dto.MobilePayment;
 import com.qualitychemicals.qciss.transaction.model.LoanT;
+import com.qualitychemicals.qciss.transaction.model.Transaction;
 import com.qualitychemicals.qciss.transaction.model.TransactionStatus;
 import com.qualitychemicals.qciss.transaction.model.TransactionType;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
@@ -22,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class LoanTServiceImpl implements LoanTService {
@@ -42,25 +40,16 @@ public class LoanTServiceImpl implements LoanTService {
         String userName=auth.getName();
         if(loan.getStatus()== LoanStatus.APPROVED){
         loanT.setLoanId(loanId);
-        loanT.setAmount(loan.getTotalDue());
+        loanT.setAmount(loan.getTotalDue()*-1);
         loanT.setDate(new Date());
         loanT.setStatus(TransactionStatus.PENDING);
         loanT.setTransactionType(transactionType);
         loanT.setUserName(userName);
-        User borrower=userService.getProfile(loan.getBorrower());
-            BankPayment bankPayment =new BankPayment();
-            bankPayment.setAmount(loanT.getAmount());
-            bankPayment.setReceiver(borrower.getPerson().getBank());
-            bankPayment.setSender("saccoBank");
-            MobilePayment mobilePayment=new MobilePayment();
-            mobilePayment.setAmount(loanT.getAmount());
-            mobilePayment.setReceiver(borrower.getPerson().getMobile());
-            mobilePayment.setSender("saccoMobile");
-
-
-        loanService.updateStatus(loanId, LoanStatus.OPEN);
-
-        return transact(loanT, mobilePayment,bankPayment);
+        loanT.setFrom("qciAcct");
+        loanT.setTo(loan.getBorrower());
+            transact(loanT);
+            loanT.setStatus(TransactionStatus.SUCCESS);
+            return transactionDao.save(loanT);
 
         }
         else{
@@ -70,61 +59,58 @@ public class LoanTServiceImpl implements LoanTService {
 
     }
 
-    private LoanT transact(LoanT loanT, MobilePayment mobilePayment, BankPayment bankPayment) {
-        TransactionType transactionType=loanT.getTransactionType();
+    private Transaction transact(Transaction transaction) {
+        TransactionType transactionType=transaction.getTransactionType();
         if(transactionType==TransactionType.BANK){
-
-            return transactBank(loanT, bankPayment);
-
+            return transactBank(transaction);
         }else if(transactionType==TransactionType.MOBILE){
-            return transactMobile(loanT, mobilePayment);
+            return transactMobile(transaction);
         } else {
-            return transactCash(loanT);
+            return transactCash(transaction);
+
         }
 
     }
 
-    private LoanT transactBank(LoanT loanT, BankPayment bankPayment) {
+    private Transaction transactBank(Transaction transaction) {
         //payment api/ bank
-        loanT.setStatus(TransactionStatus.SUCCESS);
-        return transactionDao.save(loanT);
+        return transaction;
     }
 
-    private LoanT transactMobile(LoanT loanT, MobilePayment mobilePayment) {
+    private Transaction transactMobile(Transaction transaction) {
         //payment api
-        loanT.setStatus(TransactionStatus.SUCCESS);
-        return transactionDao.save(loanT);
+        return transaction;
 
     }
 
-    private LoanT transactCash(LoanT loanT) {
-        loanT.setStatus(TransactionStatus.SUCCESS);
-        return transactionDao.save(loanT);
+    private Transaction transactCash(Transaction transaction) {
+        return transaction;
     }
 
     @Override
-    public LoanT repay(LoanTDto loanTDto, String userName, TransactionType transactionType) {
+    public LoanT repay(LoanTDto loanTDto, TransactionType transactionType) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Loan loan=loanService.getLoan(loanTDto.getLoanId());
+
         LoanT loanT=loanTConverter.dtoToEntity(loanTDto);
         loanT.setDate(new Date());
+        loanT.setUserName(userName);
         loanT.setTransactionType(transactionType);
+        loanT.setFrom(loan.getBorrower());
+        loanT.setTo("QciAcct");
 
-        Loan loan=loanService.getLoan(loanTDto.getLoanId());
-        User payee=userService.getProfile(userName);
-        if(loan.getBorrower().equals(payee.getUserName())){
-        BankPayment bankPayment =new BankPayment();
-        bankPayment.setAmount(loanT.getAmount());
-        bankPayment.setSender(payee.getPerson().getBank());
-        bankPayment.setReceiver("saccoBank");
-        MobilePayment mobilePayment=new MobilePayment();
-        mobilePayment.setAmount(loanT.getAmount());
-        mobilePayment.setSender(payee.getPerson().getBank());
-        mobilePayment.setReceiver("saccoMobile");
-        //transact
+        User user=userService.getProfile(loanTDto.getFrom());
+        if(loan.getBorrower().equals(user.getUserName())){
+            if(loan.getTotalDue()<loanT.getAmount()){
+                throw new InvalidValuesException("invalid Amount...");
+            }
 
-        transact(loanT, mobilePayment, bankPayment);
+            transact(loanT);
+            loanT.setStatus(TransactionStatus.SUCCESS);
         //update repayments and loan
         loanService.repay(loanTDto.getLoanId(), loanTDto.getAmount());
-        return loanT;
+            return transactionDao.save(loanT);
         }else{
             throw new InvalidValuesException("invalid User or Loan...");
         }

@@ -22,6 +22,22 @@ public class UserConverter {
     private final Logger logger = LoggerFactory.getLogger(UserConverter.class);
     public UserDto entityToDto(User user){
         UserDto userDto =new UserDto();
+        userDto.setPersonDto(personConverter.entityToDto(user.getPerson()));
+        userDto.setAccountDto(accountConverter.entityToDto(user.getAccount()));
+        userDto.setWorkDto(workConverter.entityToDto(user.getWork()));
+        return userDto;
+    }
+
+    public User dtoToEntity(UserDto userDto){
+        User user =new User();
+        user.setAccount(accountConverter.dtoToEntity(userDto.getAccountDto()));
+        user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
+        user.setWork(workConverter.dtoToEntity(userDto.getWorkDto()));
+        return user;
+
+    }
+    /*public UserDto entityToDto(User user){
+        UserDto userDto =new UserDto();
         userDto.setId(user.getId());
         userDto.setUserName(user.getUserName());
         userDto.setPassword(user.getPassword());
@@ -38,7 +54,7 @@ public class UserConverter {
         user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
         return user;
 
-    }
+    }*/
 
     public List<UserDto> entityToDto(List<User> users){
         return users.stream().map(this::entityToDto).collect(Collectors.toList());

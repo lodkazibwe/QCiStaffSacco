@@ -3,9 +3,11 @@ package com.qualitychemicals.qciss.profile.service.impl;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.dao.UserDao;
-import com.qualitychemicals.qciss.profile.dto.UserDto;
+import com.qualitychemicals.qciss.profile.dto.*;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
 import com.qualitychemicals.qciss.profile.model.*;
+import com.qualitychemicals.qciss.profile.service.CompanyService;
+import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,44 +25,78 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserDao userDAO;
     @Autowired
-    UserConverter profileConverter;
+    UserConverter userConverter;
     @Autowired BCryptPasswordEncoder passwordEncoder;
     private final Logger logger =LoggerFactory.getLogger(UserService.class);
+    @Autowired
+    CompanyService companyService;
+    @Autowired EmailService emailService;
+
 
 
     @Transactional
     @Override
-    public User addProfile(UserDto userDTO) {
+    public User addProfile(UserDto userDTO, String rol, Status status) {
         logger.info("checking profile...");
-        String userName= userDTO.getUserName();
+        String userName= userDTO.getPersonDto().getMobile();
         boolean bull=userDAO.existsByUserName(userName);
         if(bull){
             logger.error("user already exists...");
             throw new ResourceNotFoundException("user already exists... No.: "+userName);
         }else {
-            String pin=userDTO.getPassword();
-            String message=pin+" one time login pin QCiSS";
-            String receiver=userName;
-
-            logger.info("user validated...");
-            logger.info("updating...");
-            Role role = new Role("USER");
-            Set<Role> roles = new HashSet<>(Collections.singletonList(role));
+            logger.info("setting company...");
+           String company= verifyCompany(userDTO.getWorkDto().getCompanyName());
+           userDTO.getWorkDto().setCompanyName(company);
             logger.info("converting...");
-            User user = profileConverter.dtoToEntity(userDTO);
+            User user = userConverter.dtoToEntity(userDTO);
+            logger.info("user validated...");
+            String email=userDTO.getPersonDto().getEmail();
+
+            logger.info("updating...");
+            Set<Role> roles=getRoles(rol);
             user.setRole(roles);
-            user.setStatus("PENDING");
+            user.setUserName(userName);
+            user.setStatus(status);
+            Random random = new Random();
+            String pin = String.format("%04d", random.nextInt(10000));
+            user.setPassword(passwordEncoder.encode(pin));
+
+            String message="one time login pin QCiSS "+"Q-"+pin;
             user.getPerson().setImage("C:\\Users\\joeko\\Desktop\\file\\default.png");
             logger.info("user values updated...");
             logger.info("saving...");
             User savedUser = userDAO.save(user);
-            //send message
-            logger.info(pin+" one time login pin QCiSS");
+            emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
+            logger.info(message+" for  "+ userName);
             logger.info("user created...");
             return savedUser;
 
         }
 
+    }
+
+    @Override
+    public User signUp(PersonDto personDto) {
+        UserDto userDto=new UserDto();
+        userDto.setPersonDto(personDto);
+        WorkDto workDto=new WorkDto();
+        AccountDto accountDto=new AccountDto();
+        accountDto.setPendingFee(20000);
+        accountDto.setTotalSavings(0);
+        accountDto.setTotalShares(0);
+        userDto.setAccountDto(accountDto);
+        userDto.setWorkDto(workDto);
+        return addProfile(userDto,"USER", Status.PENDING);
+    }
+
+    private String verifyCompany(String companyName) {
+       boolean bull=companyService.checkCompany(companyName);
+        if(bull){
+                return companyName;
+        }else {
+            logger.info("default company...");
+            return "DEFAULT";
+        }
 
     }
 
@@ -96,6 +132,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Work getWorkInfo(String userName) {
+        User user = userDAO.findByUserName(userName);
+        return user.getWork();
+    }
+
+    @Override
     public Account getSummary(int id) {
         User user = userDAO.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("No User With ID: " +id));
@@ -120,8 +162,10 @@ public class UserServiceImpl implements UserService {
         logger.info("sending message...");
         logger.info(pin+" one time login pin QCiSS");
         String message=pin+" one time login pin QCiSS";
-        String receiver=contact;
-        //message api
+        logger.info(message+" for  "+ contact);
+        User user=getProfile(contact);
+        String email=user.getPerson().getEmail();
+        emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
         return updatePass(contact, pin);
 
     }
@@ -130,8 +174,8 @@ public class UserServiceImpl implements UserService {
     public String verifyAccount(String accountNumber, String userName) {
         User user=getProfile(userName);
         String mobile=user.getPerson().getMobile();
-        String bank=user.getPerson().getBank();
-        if(accountNumber.equals(mobile) || accountNumber.equals(bank)){
+
+        if(accountNumber.equals(mobile)){
             return accountNumber;
         }
         throw new InvalidValuesException("invalid user accountNumber: "+accountNumber);
@@ -150,7 +194,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean isUserOpen(String userName) {
+        User user=getProfile(userName);
+        if(user.getStatus()==Status.OPEN){return true;
+        } else{return false;}
+    }
+
+    @Override
+    public boolean isUserClosed(String userName) {
+        User user=getProfile(userName);
+        if(user.getStatus()==Status.CLOSED){return true;
+        } else{return false;}
+    }
+
+    @Override
     public void deleteProfile(int id) {
 
+    }
+    private Set<Role> getRoles(String rol){
+    Role role = new Role(rol);
+        return new HashSet<>(Collections.singletonList(role));
     }
 }

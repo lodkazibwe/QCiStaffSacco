@@ -28,7 +28,8 @@ public class User {
     @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     @JoinColumn()
     private Account account;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @OneToMany(targetEntity = Role.class,cascade= CascadeType.ALL, fetch= FetchType.EAGER)
     @JoinColumn()
     private Set<Role> role;
