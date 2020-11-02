@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface WorkDao extends JpaRepository<Work, Integer> {
 
-    List<Work> findByCompany(String company);
+    List<Work> findByCompanyName(String company);
 
 }

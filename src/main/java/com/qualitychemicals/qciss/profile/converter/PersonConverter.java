@@ -20,7 +20,6 @@ public class PersonConverter {
         personDto.setEmail(person.getEmail());
         personDto.setDob(person.getDob());
         personDto.setMobile(person.getMobile());
-        personDto.setBank(person.getBank());
         return personDto;
     }
 
@@ -34,7 +33,6 @@ public class PersonConverter {
         person.setEmail(personDto.getEmail());
         person.setDob(personDto.getDob());
         person.setMobile(personDto.getMobile());
-        person.setBank(personDto.getBank());
         return person;
     }
 

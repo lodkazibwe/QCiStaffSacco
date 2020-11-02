@@ -27,7 +27,6 @@ public class PersonDto {
     @Size(min=10, max=10, message = "invalid Contact length")
     @Pattern(regexp="(^[0-9]{10})", message = "invalid Contact")
     private String mobile;
-    private String bank;
     @NotBlank(message="email cannot be blank")
     @Email(message="invalid Email")
     private String email;

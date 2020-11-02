@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qualitychemicals.qciss.profile.converter.WorkConverter;
 import com.qualitychemicals.qciss.profile.dto.WorkDto;
 import com.qualitychemicals.qciss.profile.rest.v1.WorkController;
-import com.qualitychemicals.qciss.profile.service.WorkService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,7 +18,7 @@ public class WorkControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @MockBean WorkConverter workConverter;
-    @MockBean WorkService workService;
+
 
     @Test
     public void updateWorkTest() throws Exception {
@@ -27,7 +26,7 @@ public class WorkControllerTest {
         workDto.setSalaryScale("u4");
         workDto.setMonthlySaving(50000);
         workDto.setJobTittle("HR");
-        workDto.setCompany("QCi");
+        workDto.setCompanyName("QCi");
         workDto.setId(4);
         String jsonRequest =objectMapper.writeValueAsString(workDto);
         mockMvc.perform(MockMvcRequestBuilders.put("/profile/work/update/{workId}",1)

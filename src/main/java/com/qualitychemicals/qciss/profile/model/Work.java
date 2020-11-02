@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +14,7 @@ public class Work {
     @Id
     @GeneratedValue
     private int id;
-    private String company;
+    private String companyName;
     private String job;
     private String scale;
     private double monthlySaving;

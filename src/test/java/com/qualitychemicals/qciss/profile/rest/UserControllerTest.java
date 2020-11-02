@@ -39,8 +39,6 @@ public class UserControllerTest {
     @Test
     public void createProfileTest() throws Exception {
         UserDto userDTO =new UserDto();
-        userDTO.setUserName("user1");
-        userDTO.setPassword("1234abcd");
         PersonDto personDto=new PersonDto();
         personDto.setFirstName("Rita");
         personDto.setLastName("Jane");

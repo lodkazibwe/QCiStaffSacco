@@ -16,18 +16,14 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 
 public class UserDto {
-    private int id;
-    @NotEmpty(message = "user name must not be empty")
-    @Size(min=3, message = "user name at least three alphanumeric Characters")
-    @Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid User name")
-    private String userName;
-
-    @NotEmpty(message = "password must not be empty")
-    @Size(min=6, message = "passKey must have at least 6 Characters")
-    private String password;
-
     @NotNull(message = "invalid  user details...")
     @Valid
     private PersonDto personDto;
+    @NotNull(message = "invalid  account details...")
+    @Valid
+    private AccountDto accountDto;
+    @NotNull(message = "invalid  work details...")
+    @Valid
+    private WorkDto workDto;
 
 }

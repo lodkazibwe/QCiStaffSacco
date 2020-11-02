@@ -45,6 +45,7 @@ public class LoanConverter {
         Loan loan=new Loan();
         loan.setFirstRepaymentDate(loanDto.getFirstRepaymentDate());
         loan.setDuration(loanDto.getDuration());
+        loan.setRepaymentCycle(loanDto.getRepaymentCycle());
         loan.setDisbursedBy(loanDto.getDisbursedBy());
         loan.setApprovedBy(loanDto.getApprovedBy());
         loan.setApplicationDate(loanDto.getApplicationDate());

@@ -35,8 +35,9 @@ public class Loan {
     private double penalty;
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
-    @OneToOne(targetEntity = Product.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
-    @JoinColumn
+    /*@OneToOne(targetEntity = Product.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+    @JoinColumn*/
+    @ManyToOne
     private Product product;
     @OneToMany(targetEntity = Repayment.class,cascade= CascadeType.ALL, fetch= FetchType.EAGER)
     @JoinColumn

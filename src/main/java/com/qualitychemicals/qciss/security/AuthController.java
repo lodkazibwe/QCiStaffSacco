@@ -24,36 +24,48 @@ public class AuthController {
 
     @PostMapping("/token")
     public ResponseEntity<?> createAuthToken(@Valid @RequestBody AuthRequest authRequest){
-        try{
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
-        );}catch(InvalidValuesException e){
-            throw new InvalidValuesException("Incorrect user name or password");
+        boolean bool=userService.isUserClosed(authRequest.getUserName());
+        if(bool){
+            throw new InvalidValuesException("user blocked");
+        }else {
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+                );
+            } catch (InvalidValuesException e) {
+                throw new InvalidValuesException("Incorrect user name or password");
+            }
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(authRequest.getUserName());
+
+            final String jwt = jwtUtil.generateToken(userDetails);
+
+            return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
         }
-        UserDetails userDetails=myUserDetailsService.loadUserByUsername(authRequest.getUserName());
-
-        final String jwt=jwtUtil.generateToken(userDetails);
-
-       return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
 
     }
 
     @PostMapping("/oneTime")
     public ResponseEntity<?> oneTimeAuthToken(@Valid @RequestBody OneTimeLoginDto oneTimeLoginDto){
-        try{
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(oneTimeLoginDto.getMobile(), oneTimeLoginDto.getPin())
-            );}catch(InvalidValuesException e){
-            throw new InvalidValuesException("Incorrect user name or password");
+        boolean bool=userService.isUserClosed(oneTimeLoginDto.getMobile());
+        if(bool){
+            throw new InvalidValuesException("user blocked");
+        }else {
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(oneTimeLoginDto.getMobile(), oneTimeLoginDto.getPin())
+                );
+            } catch (InvalidValuesException e) {
+                throw new InvalidValuesException("Incorrect user name or password");
+            }
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(oneTimeLoginDto.getMobile());
+            final String jwt = jwtUtil.generateToken(userDetails);
+
+            Random random = new Random();
+            String pin = String.format("%04d", random.nextInt(100000));
+            userService.updatePass(oneTimeLoginDto.getMobile(), pin);
+
+            return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
         }
-        UserDetails userDetails=myUserDetailsService.loadUserByUsername(oneTimeLoginDto.getMobile());
-        final String jwt=jwtUtil.generateToken(userDetails);
-
-        Random random = new Random();
-        String pin = String.format("%04d", random.nextInt(100000));
-        userService.updatePass(oneTimeLoginDto.getMobile(),pin);
-
-        return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
     }
 
     @PutMapping("/requestPin/{contact}")//admin

@@ -16,6 +16,8 @@ public class TransactionConverter {
         transactionDto.setId(transaction.getId());
         transactionDto.setStatus(transaction.getStatus());
         transactionDto.setUserName(transaction.getUserName());
+        transactionDto.setFrom(transaction.getFrom());
+        transactionDto.setTo(transaction.getTo());
         transactionDto.setTransactionType(transaction.getTransactionType());
         return transactionDto;
 
@@ -25,6 +27,8 @@ public class TransactionConverter {
         transaction.setAmount(transactionDto.getAmount());
         transaction.setDate(transactionDto.getDate());
         transaction.setStatus(transactionDto.getStatus());
+        transaction.setFrom(transactionDto.getFrom());
+        transaction.setTo(transactionDto.getTo());
         transaction.setUserName(transactionDto.getUserName());
         transaction.setTransactionType(transactionDto.getTransactionType());
         return transaction;

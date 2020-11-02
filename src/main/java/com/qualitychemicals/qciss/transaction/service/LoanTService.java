@@ -6,7 +6,7 @@ import com.qualitychemicals.qciss.transaction.model.TransactionType;
 
 public interface LoanTService {
     LoanT release(int loanId, TransactionType transactionType);
-    LoanT repay(LoanTDto loanTDto, String userName, TransactionType transactionType);
+    LoanT repay(LoanTDto loanTDto, TransactionType transactionType);
     LoanT payPenalty(LoanTDto loanTDto);
 
 }

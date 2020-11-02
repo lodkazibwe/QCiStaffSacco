@@ -23,7 +23,6 @@ public class Person {
     private String lastName;
     private String nin;
     private String mobile;
-    private String bank;
     private String email;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date dob;

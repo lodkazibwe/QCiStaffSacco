@@ -13,8 +13,8 @@ public class AccountConverter {
         AccountDto accountDTO =new AccountDto();
         accountDTO.setId(account.getId());
         accountDTO.setPendingFee(account.getPendingFee());
-        accountDTO.setTotalSavings(account.getTotalSavings());
-        accountDTO.setTotalShares(account.getTotalShares());
+        accountDTO.setTotalSavings(account.getSavings());
+        accountDTO.setTotalShares(account.getShares());
         return accountDTO;
     }
 
@@ -23,8 +23,8 @@ public class AccountConverter {
             return new Account();
         }
         Account account =new Account();
-        account.setTotalShares(accountDto.getTotalShares());
-        account.setTotalSavings(accountDto.getTotalSavings());
+        account.setShares(accountDto.getTotalShares());
+        account.setSavings(accountDto.getTotalSavings());
         account.setPendingFee(accountDto.getPendingFee());
         account.setId(accountDto.getId());
         return account;

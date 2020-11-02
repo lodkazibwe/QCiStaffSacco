@@ -21,7 +21,7 @@ public class Product {
     private String name;
     private int penalty; //%age of principal
     private int interest;//%age of principal
-    private int applicationFee;
+    private int applicationFee;//%age of principal
     private double minAmount;
     private double maxAmount;
     private int minDuration;//months

@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
 import com.qualitychemicals.qciss.loan.dao.LoanDao;
+import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.dto.FeeDto;
 import com.qualitychemicals.qciss.loan.dto.LoanDto;
 import com.qualitychemicals.qciss.loan.model.Cycle;
@@ -11,40 +12,48 @@ import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.model.Repayment;
 import com.qualitychemicals.qciss.loan.service.LoanService;
+import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class LoanServiceImpl  implements LoanService {
     @Autowired LoanConverter loanConverter;
     @Autowired LoanDao loanDao;
+    @Autowired UserService userService;
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
     public Loan request(LoanDto loanDto) {
-        logger.info("processing loan...");
-        Loan loan=loanConverter.dtoToEntity(loanDto);
-        double principal=loan.getPrincipal();
-        int duration=loan.getDuration();
 
-        double minAmount=loan.getProduct().getMinAmount();
-        double maxAmount=loan.getProduct().getMaxAmount();
-        int minDuration=loan.getProduct().getMinDuration();
-        int maxDuration=loan.getProduct().getMaxDuration();
-        if(principal>=minAmount && principal<=maxAmount && duration>=minDuration && duration<=maxDuration){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        boolean bool = userService.isUserOpen(userName);
+        if (bool) {
+
+        logger.info("processing loan...");
+        Loan loan = loanConverter.dtoToEntity(loanDto);
+        double principal = loan.getPrincipal();
+        int duration = loan.getDuration();
+
+        double minAmount = loan.getProduct().getMinAmount();
+        double maxAmount = loan.getProduct().getMaxAmount();
+        int minDuration = loan.getProduct().getMinDuration();
+        int maxDuration = loan.getProduct().getMaxDuration();
+        if (principal >= minAmount && principal <= maxAmount && duration >= minDuration && duration <= maxDuration) {
             logger.info("getting user...");
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String userName=auth.getName();
-            FeeDto fees=fees(loanDto);
+
+            FeeDto fees = fees(loanDto);
             loan.setApplicationFee(fees.getApplicationFee());
             loan.setInterest(fees.getInterest());
             loan.setPenalty(0);
@@ -55,16 +64,19 @@ public class LoanServiceImpl  implements LoanService {
             loan.setApplicationDate(new Date());
             logger.info("submitting loan...");
             return loanDao.save(loan);
-        }else {
+        } else {
             logger.error("invalid values...");
-            if(!(principal>=minAmount) && !(principal<=maxAmount) ){
+            if (!(principal >= minAmount) || !(principal <= maxAmount)) {
                 logger.error("invalid Principal...");
-            throw new InvalidValuesException("Principal should be between "+minAmount+" and "+maxAmount);}
-            else {
+                throw new InvalidValuesException("Principal should be between " + minAmount + " and " + maxAmount);
+            } else {
                 logger.error("invalid Duration...");
                 throw new InvalidValuesException(
-                        "Duration should be between "+minDuration+"Months and "+maxDuration+"Months");
+                        "Duration should be between " + minDuration + "Months and " + maxDuration + "Months");
             }
+        }
+    }else{
+            throw new ResourceNotFoundException("User Does not qualify for a loan "+ userName);
         }
 
     }
@@ -94,6 +106,7 @@ public class LoanServiceImpl  implements LoanService {
         String userName=auth.getName();
 
         Loan loan=getLoan(id);
+        if(loan.getStatus()== LoanStatus.PENDING){
         loan.setReleaseDate(date);
         loan.setStatus(LoanStatus.APPROVED);
         loan.setTotalDue(loan.getPrincipal()+loan.getInterest());
@@ -111,7 +124,9 @@ public class LoanServiceImpl  implements LoanService {
         loan.setApprovedBy(userName);
         loan.setDisbursedBy(loanDto.getDisbursedBy());
         loan.setComment(loanDto.getComment());
-        return loanDao.save(loan);
+        return loanDao.save(loan);}else{
+            throw new InvalidValuesException("Only PENDING loans can be approved");
+        }
     }
 
     private List<Repayment> repaymentGen(Cycle cycle, Calendar firstDate, Calendar lastDate, double amount) {
@@ -127,9 +142,14 @@ public class LoanServiceImpl  implements LoanService {
             dates.add(lastDate.getTime());
         }
         ///******************/
-        double amt = amount / dates.size();
+        double amt = Math.round(amount / dates.size());
         for(Date date:dates){
-            repayments.add(new Repayment(2,date,amt,0,amt,""));
+            //listObj.indexOf(yourObject) == (listObj.size() -1);
+            if(dates.indexOf(date)==(dates.size()-1)){
+                amt=amount-amt*(dates.size()-1);
+            }
+                repayments.add(new Repayment(2, date, amt, 0, amt, ""));
+
         }
         return repayments;
     }
@@ -164,6 +184,7 @@ public class LoanServiceImpl  implements LoanService {
 
                 }
                 repayments.set(i,repayment);
+                i++;
 
             }
            loan.setRepayments(repayments);
@@ -182,14 +203,21 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
-    public List<Loan> findByStatus(String status) {
+    public List<Loan> findByStatus(LoanStatus status) {
 
         return loanDao.findByStatus(status);
     }
 
     @Override
-    public List<Loan> dueLoans(Date date) {
+    public List<DueLoanDto> dueLoans(Date date) {
+        List<DueLoanDto> dueLoans=loanDao.getDueLoans(date);
 
-        return null;
+        return dueLoans.stream().collect(Collectors.collectingAndThen(
+                Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
+            left.setDue(left.getDue()+right.getDue());
+            return left;
+        }), m -> new ArrayList<>(m.values())));
+
     }
+
 }
