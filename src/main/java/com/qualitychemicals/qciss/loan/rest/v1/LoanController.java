@@ -3,6 +3,8 @@ package com.qualitychemicals.qciss.loan.rest.v1;
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
 import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.dto.LoanDto;
+import com.qualitychemicals.qciss.loan.dto.LoanRequestDto;
+import com.qualitychemicals.qciss.loan.dto.LoanVerifyDto;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.rest.v1.UserController;
@@ -20,6 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/loan")
 public class LoanController {
@@ -29,21 +33,36 @@ public class LoanController {
 
     @ApiOperation(value="Request for a loan")
     @PostMapping("/request")
-    public ResponseEntity<LoanDto> request(@Valid @RequestBody LoanDto loanDto){
+    public ResponseEntity<LoanDto> request(@Valid @RequestBody LoanRequestDto loanRequestDto){
         logger.info("loan request started....");
-        Loan loan=loanService.request(loanDto);
+        Loan loan=loanService.request(loanRequestDto);
         logger.info("request successfully sent pending approval....");
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
     }
 
-    @ApiOperation(value="Approve a loan")
-    @PutMapping("/approve/{loanId}")
-    public ResponseEntity<LoanDto> approve(@Valid @RequestBody LoanDto loanDto, @PathVariable int loanId){
-        Loan loan =loanService.approve(loanDto,loanId);
+    @PostMapping("/topUpRequest/{loanId}")
+    public ResponseEntity<LoanDto> topUpRequest(@Valid @RequestBody LoanRequestDto loanRequestDto, @PathVariable int loanId){
+        logger.info("loan request started....");
+        Loan loan=loanService.topUpRequest(loanRequestDto, loanId);
+        logger.info("request successfully sent pending approval....");
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
     }
 
-    @GetMapping("/dueLoans/{date}")
+    @ApiOperation(value="verify a loan")
+    @PutMapping("/admin/verify")
+    public ResponseEntity<LoanDto> verify(@Valid @RequestBody LoanVerifyDto loanVerifyDto){
+        Loan loan =loanService.verify(loanVerifyDto);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+    }
+
+    @ApiOperation(value="Approve a loan")
+    @PutMapping("/admin/approve/{loanId}")
+    public ResponseEntity<LoanDto> approve(@PathVariable int loanId){
+        Loan loan =loanService.approve(loanId);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/dueLoans/{date}")
     public ResponseEntity<List<DueLoanDto>> DueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -51,6 +70,17 @@ public class LoanController {
         Date myDate= cal.getTime();
         List<DueLoanDto> dueLoans =loanService.dueLoans(myDate);
         return new ResponseEntity<>(dueLoans, HttpStatus.OK);
+
+    }
+    @DeleteMapping("/deleteLoan/{loanId}")
+    public ResponseEntity<String> deleteLoanRequest(@PathVariable int loanId){
+        return new ResponseEntity<>(loanService.deleteMyLoan(loanId), HttpStatus.OK);
+    }
+
+    @GetMapping("/myLoans")
+    public ResponseEntity<List<LoanDto>> myLoans(){
+        List<Loan> loan =loanService.myLoans();
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
 
     }
 

@@ -13,6 +13,7 @@ public interface PersonService {
      List<Person> getAll();
      List<Person> getByGender(String gender);
      void deletePerson(int id);
+     int userExists(String email, String mobile);
      String updateImage(MultipartFile file, int id) throws IOException;
     //*getByName,search
 

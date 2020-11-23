@@ -14,4 +14,5 @@ public class CompanyDto {
     int id;
     @NotBlank
     private String name;
+    private double minSaving;
 }

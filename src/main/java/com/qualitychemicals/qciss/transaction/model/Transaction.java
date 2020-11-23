@@ -21,8 +21,8 @@ public class Transaction {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date date;
     private double amount;
-    private String from;
-    private String to;
+    private String acctFrom;
+    private String acctTo;
     private String userName;
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;

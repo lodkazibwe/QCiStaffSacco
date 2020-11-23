@@ -13,4 +13,8 @@ public interface WorkService {
     List<Work> getAll();
     List<Work> getByCompany(String company);
     void deleteWork(int id);
+
+    Work updatePayrollShares(double amount);
+
+    Work updatePayrollSaving(double amount);
 }

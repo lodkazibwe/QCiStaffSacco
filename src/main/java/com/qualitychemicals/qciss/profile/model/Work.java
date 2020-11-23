@@ -15,7 +15,12 @@ public class Work {
     @GeneratedValue
     private int id;
     private String companyName;
+    private String employeeId;
+    @Enumerated(EnumType.STRING)
+    private TOE toe;
+    private String workStation;
+    private double basicSalary;
     private String job;
-    private String scale;
-    private double monthlySaving;
+    private double payrollSaving;
+    private double payrollShares;
 }

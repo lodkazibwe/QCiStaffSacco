@@ -34,11 +34,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/profile/user/defaultUser").permitAll()
+                .antMatchers("/profile/user/addRoot").permitAll()
                 .antMatchers("/profile/user/signUp").permitAll()
+                .antMatchers("/profile/user/addAdmin").hasRole("ROOT")
                 .antMatchers("/profile/user/register").hasRole("ADMIN")
+                .antMatchers("/profile/user/admin/**").hasRole("ADMIN")
+                .antMatchers("/loan/admin/**").hasRole("ADMIN")
+                .antMatchers("/loan/product/**").hasRole("ADMIN")//
+                .antMatchers("/transaction/loan/release").hasRole("ADMIN")
+                .antMatchers("/transaction/loan/repay").hasRole("ADMIN")
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
@@ -54,9 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
 
                 .antMatchers("/profile/user/getAll").hasRole("ADMIN")
-                .antMatchers("/authenticate/**").permitAll()//
-                .antMatchers("/account/**").hasRole("USER")
-                .antMatchers("/profile/person/**").hasRole("USER")
+                .antMatchers("/authenticate/get/**").permitAll()//
                 .anyRequest().authenticated().and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

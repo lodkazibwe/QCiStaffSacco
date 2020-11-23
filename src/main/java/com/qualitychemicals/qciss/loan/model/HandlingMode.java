@@ -1,5 +1,5 @@
 package com.qualitychemicals.qciss.loan.model;
 
-public class SalaryLoan extends Product {
-
+public enum HandlingMode {
+    NORMAL, EXPRESS
 }

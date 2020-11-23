@@ -4,14 +4,10 @@ import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
 import com.qualitychemicals.qciss.loan.dao.LoanDao;
-import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
-import com.qualitychemicals.qciss.loan.dto.FeeDto;
-import com.qualitychemicals.qciss.loan.dto.LoanDto;
-import com.qualitychemicals.qciss.loan.model.Cycle;
-import com.qualitychemicals.qciss.loan.model.Loan;
-import com.qualitychemicals.qciss.loan.model.LoanStatus;
-import com.qualitychemicals.qciss.loan.model.Repayment;
+import com.qualitychemicals.qciss.loan.dto.*;
+import com.qualitychemicals.qciss.loan.model.*;
 import com.qualitychemicals.qciss.loan.service.LoanService;
+import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,13 +32,80 @@ public class LoanServiceImpl  implements LoanService {
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
-    public Loan request(LoanDto loanDto) {
+    @Transactional
+    public Loan request(LoanRequestDto requestDto) {
+        LoanDto loanDto=requestToLoanDto(requestDto);
+        logger.info("Checking Eligibility...");
+        boolean bool= isEligible(loanDto);
+        if(bool){
+            logger.info("Eligible...");
+            logger.info("checking current loans...");
+            List<Loan> loans=loanDao.findByBorrowerAndStatus(loanDto.getBorrower(), LoanStatus.OPEN);
+            List<Integer> productIds=new ArrayList<>();
+            for (Loan loan:loans){
+                productIds.add(loan.getProduct().getId());
+            }
+            if(loans.size()<3){
+                if(productIds.contains(loanDto.getProductId())){
+                    logger.info("have a running loan of this type...");
+                    throw new InvalidValuesException("you have an outstanding loan for the product");
+                }
+                logger.info("processing loan...");
+                return processLoan(loanDto);
+            }
+            logger.error("max loans reached...");
+            throw new InvalidValuesException("you can only run a maximum of three loans");
+        }
+        logger.error("not Eligible...");
+        throw new InvalidValuesException("account does not qualify for a loan");
 
+    }
+
+    private LoanDto requestToLoanDto(LoanRequestDto requestDto){
+        logger.info("converting loan request to dto...");
+        LoanDto loanDto=new LoanDto();
+        loanDto.setPrincipal(requestDto.getPrincipal());
+        loanDto.setDuration(requestDto.getDuration());
+        loanDto.setDisbursedBy(requestDto.getDisbursedBy());
+        loanDto.setRepaymentCycle(requestDto.getRepaymentCycle());
+        loanDto.setRepaymentMode(requestDto.getRepaymentMode());
+        loanDto.setFirstRepaymentDate(requestDto.getFirstRepaymentDate());
+        loanDto.setHandlingMode(requestDto.getHandlingMode());
+        loanDto.setTopUpMode(requestDto.getTopUpMode());
+        loanDto.setProductId(requestDto.getProductId());
+        loanDto.setSecurityDto(requestDto.getSecurityDto());
+        return loanDto;
+    }
+    private boolean isEligible(LoanDto loanDto){
+        logger.info("getting user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
+        logger.info("checking user...");
         boolean bool = userService.isUserOpen(userName);
         if (bool) {
+            logger.info("pass User Open...");
+            loanDto.setBorrower(userName);
+            List<LoanStatus> loanStatuses=new ArrayList<>();
+            loanStatuses.add(LoanStatus.PENDING);
+            loanStatuses.add(LoanStatus.CHECKED);
+            loanStatuses.add(LoanStatus.APPROVED);
+            logger.info("Checking current request...");
+            List<Loan> loans=loanDao.findByStatusInAndBorrower(loanStatuses, userName);
+            if(loans.isEmpty()){
+                logger.info("no current requests...");
+                return true;
+            }else{
+                logger.error("pending request exists...");
+                throw new ResourceNotFoundException("Profile Does not qualify for a loan(pending request) " + userName);
+            }
 
+        }else {
+            logger.error("user not open...");
+            throw new ResourceNotFoundException("Profile Does not qualify for a loan  " + userName);
+        }
+    }
+
+    private Loan processLoan(LoanDto loanDto) {
         logger.info("processing loan...");
         Loan loan = loanConverter.dtoToEntity(loanDto);
         double principal = loan.getPrincipal();
@@ -50,20 +115,36 @@ public class LoanServiceImpl  implements LoanService {
         double maxAmount = loan.getProduct().getMaxAmount();
         int minDuration = loan.getProduct().getMinDuration();
         int maxDuration = loan.getProduct().getMaxDuration();
-        if (principal >= minAmount && principal <= maxAmount && duration >= minDuration && duration <= maxDuration) {
-            logger.info("getting user...");
 
+        if (principal >= minAmount && principal <= maxAmount && duration >= minDuration && duration <= maxDuration) {
+            logger.info("getting profile...");
+
+            boolean bool=checkCredits(loan);
+            if(bool){
             FeeDto fees = fees(loanDto);
-            loan.setApplicationFee(fees.getApplicationFee());
+                logger.info("setting loan fees...");
+            loan.setHandlingCharge(fees.getHandlingCharge());
             loan.setInterest(fees.getInterest());
             loan.setPenalty(0);
-            loan.setBorrower(userName);
+            loan.setTotalDue(loanDto.getPrincipal()+fees.getInterest());
+            loan.setInsuranceFee(fees.getInsuranceFee());
+            if(loan.getHandlingMode()==HandlingMode.EXPRESS){loan.setExpressHandling(fees.getExpressHandling());}
+            if(loan.getTopUpMode()==HandlingMode.EXPRESS){loan.setEarlyTopUpCharge(fees.getEarlyTopUpCharge());}
+
             loan.setStatus(LoanStatus.PENDING);
             loan.setRepayments(null);
+            loan.setPreparedBy(null);
             loan.setApprovedBy(null);
             loan.setApplicationDate(new Date());
             logger.info("submitting loan...");
             return loanDao.save(loan);
+            }else{
+                logger.error("Less credits...");
+                throw new InvalidValuesException(
+                        "you dont have enough credits ");
+            }
+
+
         } else {
             logger.error("invalid values...");
             if (!(principal >= minAmount) || !(principal <= maxAmount)) {
@@ -75,111 +156,249 @@ public class LoanServiceImpl  implements LoanService {
                         "Duration should be between " + minDuration + "Months and " + maxDuration + "Months");
             }
         }
-    }else{
-            throw new ResourceNotFoundException("User Does not qualify for a loan "+ userName);
-        }
 
     }
 
+    private boolean checkCredits(Loan loan) {
+        logger.info("getting account...");
+        Account account=userService.getAccount(loan.getBorrower());
+        double saving=account.getSavings();
+        double maximum=loan.getProduct().getMaximum();
+        double principal=loan.getPrincipal();
+        if(principal<=(maximum*saving)){
+            logger.info("valid principal amount...");
+            return true;
+        }else{
+            logger.error("Less credits...");
+            throw new InvalidValuesException(
+                    "you qualify for a maximum of: "+(maximum*saving)); }
+    }
+
     @Override
+    @Transactional
     public FeeDto fees(LoanDto loanDto) {
         FeeDto fees=new FeeDto();
-        logger.info("calculating...");
+        logger.info("converting...");
         Loan loan=loanConverter.dtoToEntity(loanDto);
-        int rate=loan.getProduct().getInterest();
-        int penaltyRate=loan.getProduct().getPenalty();
-        int appRate=loan.getProduct().getApplicationFee();
+        logger.info("calculating...");
+
+        Product product=loan.getProduct();
+        double rate=product.getInterest();
+        double penaltyRate=product.getPenalty();
+        double handlingChargeRate=product.getHandlingCharge();
+        double insuranceRate=product.getInsuranceRate();
+        double earlyTopUp=product.getEarlyTopUp();
+        double expressHandling=product.getExpressHandling();
+
         double principal=loan.getPrincipal();
         int duration=loan.getDuration();
         fees.setInterest(rate*0.01*principal*duration);
-        fees.setPenalty(penaltyRate*0.01*principal);
-        fees.setApplicationFee(appRate*0.01*principal);
+        fees.setPossiblePenalty(penaltyRate*0.01*principal);
+        fees.setHandlingCharge(handlingChargeRate*0.01*principal);
+        fees.setInsuranceFee(insuranceRate*0.01*principal);
+        fees.setEarlyTopUpCharge(earlyTopUp);
+        fees.setExpressHandling(expressHandling);
         logger.info("success...");
         return fees;
 
     }
 
     @Override
-    public Loan approve(LoanDto loanDto, int id) {
+    @Transactional
+    public Loan verify(LoanVerifyDto loanVerifyDto) {
         Date date = new Date();
+        logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
-
-        Loan loan=getLoan(id);
+        logger.info("getting loan...");
+        Loan loan=getLoan(loanVerifyDto.getId());
+        logger.info("checking loan...");
         if(loan.getStatus()== LoanStatus.PENDING){
+            logger.info("updating loan...");
         loan.setReleaseDate(date);
-        loan.setStatus(LoanStatus.APPROVED);
+        loan.setTransferCharge(loanVerifyDto.getTransferCharge());
+        loan.setStatus(LoanStatus.CHECKED);
         loan.setTotalDue(loan.getPrincipal()+loan.getInterest());
         loan.setTotalPaid(0);
-        int duration=loan.getDuration();
-        double amount =loan.getTotalDue();
-        Date firstDate=loan.getFirstRepaymentDate();
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(firstDate);
-        Date releaseDate=loan.getReleaseDate();
-        Calendar cal2=Calendar.getInstance();
-        cal2.setTime(releaseDate);
-        cal2.add(Calendar.MONTH, duration);
-        loan.setRepayments(repaymentGen(loan.getRepaymentCycle(),cal1,cal2,amount));
-        loan.setApprovedBy(userName);
-        loan.setDisbursedBy(loanDto.getDisbursedBy());
-        loan.setComment(loanDto.getComment());
-        return loanDao.save(loan);}else{
-            throw new InvalidValuesException("Only PENDING loans can be approved");
+        loan.setPreparedBy(userName);
+        loan.setRemarks(loanVerifyDto.getRemarks());
+            logger.info("verifying loan...");
+        return loanDao.save(loan);
+        }else{
+            logger.error("invalid loan...");
+            throw new InvalidValuesException("Only PENDING loans can be verified");
         }
     }
+    public Loan approve(int id) {
+        Date date = new Date();
+        logger.info("getting admin user...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting loan...");
+        Loan loan=getLoan(id);
+        logger.info("checking admin...");
+        if(loan.getPreparedBy().equals(userName)){
+            logger.error("invalid admin...");
+            throw new InvalidValuesException("same admin cannot verify and approve");
+        }else{
+            logger.info("valid admin...");
+            logger.info("checking loan...");
+        if(loan.getStatus()== LoanStatus.CHECKED){
+            logger.info("updating loan ...");
+            loan.setReleaseDate(date);
+            loan.setStatus(LoanStatus.APPROVED);
+            int duration=loan.getDuration();
+            double amount =loan.getTotalDue();
+            double principal=loan.getPrincipal();
+            Date firstDate=loan.getFirstRepaymentDate();
+            Calendar cal1 = Calendar.getInstance();
+            cal1.setTime(firstDate);
+            Date releaseDate=loan.getReleaseDate();
+            Calendar cal2=Calendar.getInstance();
+            cal2.setTime(releaseDate);
+            cal2.add(Calendar.MONTH, duration);
+            logger.info("setting loan repayments ...");
+            loan.setRepayments(repaymentGen(loan.getRepaymentCycle(),cal1,cal2,amount, principal));
+            loan.setApprovedBy(userName);
+            logger.info("approving loan ...");
+            return loanDao.save(loan);
+        }else{
+            logger.error("invalid loan ...");
+            throw new InvalidValuesException("Only CHECKED loans can be approved");
+        }}
+    }
 
-    private List<Repayment> repaymentGen(Cycle cycle, Calendar firstDate, Calendar lastDate, double amount) {
+    private List<Repayment> repaymentGen(
+            Cycle cycle, Calendar firstDate, Calendar lastDate, double totalDue, double principal) {
         List<Repayment> repayments=new ArrayList<>();
         List<Date> dates = new ArrayList<>();
+        double percentagePrincipal = Math.round((principal/totalDue) * 10000D) / 10000D;
+        double percentageInt=1-percentagePrincipal;
+        logger.info("checking cycle ...");
         if(cycle==Cycle.MONTHLY){
-
+            logger.info("setting monthly repayment dates...");
             for(; firstDate.before(lastDate); firstDate.add(Calendar.MONTH,1)){
                 dates.add(firstDate.getTime());
             }
 
-        }else{
-            dates.add(lastDate.getTime());
-        }
-        ///******************/
-        double amt = Math.round(amount / dates.size());
-        for(Date date:dates){
-            //listObj.indexOf(yourObject) == (listObj.size() -1);
-            if(dates.indexOf(date)==(dates.size()-1)){
-                amt=amount-amt*(dates.size()-1);
+        }else if(cycle==Cycle.WEEKLY){
+            logger.info("setting weekly repayment dates...");
+            for(; firstDate.before(lastDate); firstDate.add(Calendar.WEEK_OF_MONTH,1)){
+                dates.add(firstDate.getTime());
             }
-                repayments.add(new Repayment(2, date, amt, 0, amt, ""));
+
+        }else if(cycle==Cycle.BIWEEKLY){
+            logger.info("setting bi-weekly repayment dates...");
+            for(; firstDate.before(lastDate); firstDate.add(Calendar.WEEK_OF_MONTH,2)){
+                dates.add(firstDate.getTime());
+            }
+
+        }else if(cycle==Cycle.DAILY){
+            logger.info("setting daily repayment dates...");
+            for(; firstDate.before(lastDate); firstDate.add(Calendar.DAY_OF_MONTH,1)){
+                dates.add(firstDate.getTime());
+            }
+
+        }else{
+            logger.info("setting yearly cycle...");
+            for(; firstDate.before(lastDate); firstDate.add(Calendar.YEAR,1)){
+                dates.add(firstDate.getTime());
+            }
+        }
+        logger.info("setting amount per repayment...");
+        double amount = Math.round(totalDue / dates.size());
+        for(Date date:dates){
+            if(dates.indexOf(date)==(dates.size()-1)){
+                amount=totalDue-amount*(dates.size()-1);
+            }
+            double principalDue=amount*percentagePrincipal;
+            double interestDue=amount*percentageInt;
+
+                repayments.add(new Repayment(2, date, amount, 0, amount,
+                        principalDue,interestDue,0,0, RepaymentStatus.PENDING));
 
         }
         return repayments;
     }
 
     @Override
+    @Transactional
     public void updateStatus(int id, LoanStatus loanStatus) {
+        logger.info("getting loan");
         Loan loan=getLoan(id);
+        logger.info("setting loan status");
         loan.setStatus(loanStatus);
+        logger.info("updating...");
         loanDao.save(loan);
     }
 
+    @Transactional
     @Override
+    public Loan topUpRequest(LoanRequestDto loanRequestDto, int loanId) {
+        logger.info("converting...");
+        LoanDto loanDto=requestToLoanDto(loanRequestDto);
+        logger.info("getting user...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        logger.info("getting top up loan...");
+        Loan topUpLoan = getLoan(loanId);
+        logger.info("checking top up loan...");
+        if (topUpLoan.getStatus()==LoanStatus.OPEN){
+
+            double loanAmount = topUpLoan.getPrincipal() + topUpLoan.getInterest();
+            double totalDue = topUpLoan.getTotalDue();
+            logger.info("checking due amount...");
+            if (totalDue>0 & (loanAmount > 2 * totalDue) & (topUpLoan.getBorrower().equals(userName))) {
+                logger.info("checking Eligibility...");
+                boolean bool = isEligible(loanDto);
+
+                if (bool) {
+                    logger.info("processing loan...");
+                    Loan loan = processLoan(loanDto);
+                    loan.setTopUpLoanId(loanId);
+                    loan.setTopUpLoanBalance(totalDue);
+                    logger.info("saving...");
+                    return loanDao.save(loan);
+                }
+            }
+        }
+        logger.error("Loan does not qualify for top up ...");
+        throw new InvalidValuesException("Loan does not qualify for top up: "+loanId);
+    }
+
+    @Override
+    @Transactional
     public void repay(int loanId, double amount) {
+        logger.info("getting Loan ...");
         Loan loan=getLoan(loanId);
+        logger.info("updating Loan ...");
         loan.setTotalDue(loan.getTotalDue()-amount);
         loan.setTotalPaid(loan.getTotalPaid()+amount);
         List<Repayment> repayments=loan.getRepayments();
         double amt=amount;
         int i = 0;
+        logger.info("updating Repayments...");
            for(Repayment repayment:repayments){
                 if(amt>0 && repayment.getBalance()>0){
                     double value=amt-repayment.getBalance();
                     if(value>=0){
                         repayment.setPaid(repayment.getPaid()+repayment.getBalance());
+                        repayment.setInterestPaid(repayment.getInterest());
+                        repayment.setPrincipalPaid(repayment.getPrincipal());
                         amt=value;
                         repayment.setBalance(0);
+                        repayment.setStatus(RepaymentStatus.SETTLED);
                     }else{
                         repayment.setPaid(repayment.getPaid()+amt);
                         repayment.setBalance(repayment.getBalance()-amt);
+                        if((repayment.getPaid()-repayment.getPrincipal())>=0){
+                            repayment.setPrincipalPaid(repayment.getPrincipal());
+                        }else{
+                            repayment.setPrincipalPaid(repayment.getPaid());
+                        }
+                        repayment.setInterestPaid(repayment.getPaid()-repayment.getPrincipalPaid());
                         amt=0;
+
                     }
 
                 }
@@ -188,11 +407,13 @@ public class LoanServiceImpl  implements LoanService {
 
             }
            loan.setRepayments(repayments);
+        logger.info("saving Loan ...");
         loanDao.save(loan);
 
     }
 
     @Override
+    @Transactional
     public Loan getLoan(int id) {
         return loanDao.findById(id).orElseThrow(()->new ResourceNotFoundException("No such loan ID: "+id));
     }
@@ -209,9 +430,11 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    @Transactional
     public List<DueLoanDto> dueLoans(Date date) {
+        logger.info("getting repayments due ...");
         List<DueLoanDto> dueLoans=loanDao.getDueLoans(date);
-
+        logger.info("filtering and merging...");
         return dueLoans.stream().collect(Collectors.collectingAndThen(
                 Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
             left.setDue(left.getDue()+right.getDue());
@@ -220,4 +443,57 @@ public class LoanServiceImpl  implements LoanService {
 
     }
 
+    @Override
+    public List<DueLoanDto> dueLoans(Date date, String borrower) {
+        logger.info("getting repayments due ...");
+        List<DueLoanDto> dueLoans=loanDao.getDueLoans(date, borrower);
+        logger.info("filtering and merging...");
+        return dueLoans.stream().collect(Collectors.collectingAndThen(
+                Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
+                    left.setDue(left.getDue()+right.getDue());
+                    return left;
+                }), m -> new ArrayList<>(m.values())));
+    }
+
+    @Override
+    @Transactional
+    public String deleteMyLoan(int loanId) {
+        logger.info("getting user ...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting loan ...");
+        Loan loan=getLoan(loanId);
+        LoanStatus status=loan.getStatus();
+        logger.info("checking loan ...");
+        if((status==LoanStatus.PENDING || status==LoanStatus.CHECKED || status==LoanStatus.APPROVED) &
+                (loan.getBorrower().equals(userName))){
+            logger.info("deleting loan ...");
+            loanDao.delete(loan);
+            return "success";
+
+        }
+        logger.error("loan cannot be deleted ...");
+        throw new InvalidValuesException("loan cannot be deleted");
+    }
+
+    @Override
+    @Transactional
+    public List<Loan> myLoans() {
+        logger.info("getting user ...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting loans ...");
+        return loanDao.findByBorrower(userName);
+    }
+
+    @Override
+    @Transactional
+    public Loan changeStatus(Loan ln, LoanStatus loanStatus) {
+        logger.info("getting loan ...");
+        Loan loan=getLoan(ln.getId());
+        logger.info("setting status ...");
+        loan.setStatus(loanStatus);
+        return loanDao.save(loan);
+
+    }
 }

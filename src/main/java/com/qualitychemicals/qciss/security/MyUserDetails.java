@@ -1,6 +1,6 @@
 package com.qualitychemicals.qciss.security;
 
-import com.qualitychemicals.qciss.profile.model.User;
+import com.qualitychemicals.qciss.profile.model.Profile;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,28 +13,28 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class MyUserDetails  implements UserDetails {
-    private User user;
-    public MyUserDetails(User user){
-        this.user=user;
+    private Profile profile;
+    public MyUserDetails(Profile profile){
+        this.profile = profile;
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRole().stream().map(role->new SimpleGrantedAuthority("ROLE_"+role.getRole()))
+        return profile.getRole().stream().map(role->new SimpleGrantedAuthority("ROLE_"+role.getRole()))
                 .collect(Collectors.toList());
     }
         public int getId() {
-        return user.getId();
+        return profile.getId();
     }
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return profile.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return profile.getUserName();
     }
 
     @Override
@@ -56,4 +56,5 @@ public class MyUserDetails  implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

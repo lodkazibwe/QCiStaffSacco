@@ -1,7 +1,7 @@
 package com.qualitychemicals.qciss.profile.converter;
 
 import com.qualitychemicals.qciss.profile.dto.UserDto;
-import com.qualitychemicals.qciss.profile.model.User;
+import com.qualitychemicals.qciss.profile.model.Profile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,48 +20,48 @@ public class UserConverter {
     AccountConverter accountConverter;
     @Autowired BCryptPasswordEncoder passwordEncoder;
     private final Logger logger = LoggerFactory.getLogger(UserConverter.class);
-    public UserDto entityToDto(User user){
+    public UserDto entityToDto(Profile profile){
         UserDto userDto =new UserDto();
-        userDto.setPersonDto(personConverter.entityToDto(user.getPerson()));
-        userDto.setAccountDto(accountConverter.entityToDto(user.getAccount()));
-        userDto.setWorkDto(workConverter.entityToDto(user.getWork()));
+        userDto.setPersonDto(personConverter.entityToDto(profile.getPerson()));
+        userDto.setAccountDto(accountConverter.entityToDto(profile.getAccount()));
+        userDto.setWorkDto(workConverter.entityToDto(profile.getWork()));
         return userDto;
     }
 
-    public User dtoToEntity(UserDto userDto){
-        User user =new User();
-        user.setAccount(accountConverter.dtoToEntity(userDto.getAccountDto()));
-        user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
-        user.setWork(workConverter.dtoToEntity(userDto.getWorkDto()));
-        return user;
+    public Profile dtoToEntity(UserDto userDto){
+        Profile profile =new Profile();
+        profile.setAccount(accountConverter.dtoToEntity(userDto.getAccountDto()));
+        profile.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
+        profile.setWork(workConverter.dtoToEntity(userDto.getWorkDto()));
+        return profile;
 
     }
-    /*public UserDto entityToDto(User user){
+    /*public UserDto entityToDto(Profile profile){
         UserDto userDto =new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUserName(user.getUserName());
-        userDto.setPassword(user.getPassword());
-        userDto.setPersonDto(personConverter.entityToDto(user.getPerson()));
+        userDto.setId(profile.getId());
+        userDto.setUserName(profile.getUserName());
+        userDto.setPassword(profile.getPassword());
+        userDto.setPersonDto(personConverter.entityToDto(profile.getPerson()));
         return userDto;
     }
 
-    public User dtoToEntity(UserDto userDto){
-        User user =new User();
-        user.setId(userDto.getId());
+    public Profile dtoToEntity(UserDto userDto){
+        Profile profile =new Profile();
+        profile.setId(userDto.getId());
         logger.info("encoding...");
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setUserName(userDto.getUserName());
-        user.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
-        return user;
+        profile.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        profile.setUserName(userDto.getUserName());
+        profile.setPerson(personConverter.dtoToEntity(userDto.getPersonDto()));
+        return profile;
 
     }*/
 
-    public List<UserDto> entityToDto(List<User> users){
-        return users.stream().map(this::entityToDto).collect(Collectors.toList());
+    public List<UserDto> entityToDto(List<Profile> profiles){
+        return profiles.stream().map(this::entityToDto).collect(Collectors.toList());
 
     }
 
-    public List<User> dtoToEntity(List<UserDto> userDtos){
+    public List<Profile> dtoToEntity(List<UserDto> userDtos){
         return userDtos.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
 

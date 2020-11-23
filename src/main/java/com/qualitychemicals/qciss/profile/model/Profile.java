@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class User {
+public class Profile {
     @Id
     @GeneratedValue
     private int id;
@@ -28,6 +28,9 @@ public class User {
     @OneToOne(targetEntity = Account.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     @JoinColumn()
     private Account account;
+    @OneToOne(targetEntity = Bank.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+    @JoinColumn()
+    private Bank bank;
     @Enumerated(EnumType.STRING)
     private Status status;
     @OneToMany(targetEntity = Role.class,cascade= CascadeType.ALL, fetch= FetchType.EAGER)

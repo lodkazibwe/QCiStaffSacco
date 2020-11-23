@@ -19,11 +19,17 @@ public class Product {
     private  int id;
     @Column(unique=true)
     private String name;
-    private int penalty; //%age of principal
-    private int interest;//%age of principal
-    private int applicationFee;//%age of principal
+    @Column(unique=true)
+    private String productNumber;
+    private double penalty; //%age of principal
+    private double interest;//%age of principal
+    private double handlingCharge;//%age of principal
+    private double expressHandling;
+    private double insuranceRate;//%age of principal
+    private double earlyTopUp;
     private double minAmount;
     private double maxAmount;
+    private double maximum;//percentage of saving 200%
     private int minDuration;//months
     private int maxDuration;//months
     private String description;

@@ -5,9 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -23,6 +21,11 @@ public class Repayment {
     private double amount;
     private double paid;
     private double balance;
-    private String status;//pending,settled,pastDue
+    private double principal;
+    private double interest;
+    private double principalPaid;
+    private double interestPaid;
+    @Enumerated(EnumType.STRING)
+    private RepaymentStatus status;//pending,settled,pastDue
 
 }

@@ -9,5 +9,11 @@ public interface AccountService {
     Account updateAccount(AccountDto accountDto, int id);
     Account getSummary(int id);
     List<Account> getAll();
+    void updateSaving(double amount, String userName);
+    void updateMembership(double amount, String userName);
+    void updateShares(double shares, String userName);
+
     void deleteSummary(int id);
+
+    Account myAccount(String userName);
 }

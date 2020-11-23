@@ -16,6 +16,8 @@ public class Account {
     @Id
     @GeneratedValue
     private int id;
+    private String memberNo;
+    private String position;
     private double savings;
     private double Shares;
     private double pendingFee;

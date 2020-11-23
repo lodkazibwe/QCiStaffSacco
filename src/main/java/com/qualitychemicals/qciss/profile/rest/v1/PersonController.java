@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/profile/person")
 public class PersonController {
@@ -30,11 +31,6 @@ public class PersonController {
         return new ResponseEntity<>(s, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{personId}")
-    public ResponseEntity<PersonDto> updatePerson(@RequestBody PersonDto personDto, @PathVariable int personId){
-        Person person=personService.updatePerson(personDto, personId);
-        return new ResponseEntity<>(personConverter.entityToDto(person),HttpStatus.OK);
-    }
 
     @GetMapping("/get/{personId}")
     public ResponseEntity<PersonDto> getPerson(@PathVariable int personId){

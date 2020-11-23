@@ -8,6 +8,9 @@ import java.util.List;
 
 @Repository
 public interface PersonDao extends JpaRepository<Person, Integer> {
+
+    boolean existsByEmail(String email);
+    boolean existsByMobile(String mobile);
     List<Person> findByGender(String gender);
 
 }

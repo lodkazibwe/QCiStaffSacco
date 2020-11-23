@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MobilePayment {
-    private String sender;
-    private String receiver;
+    private String to;
+    private String from;
     private double amount;
 }
