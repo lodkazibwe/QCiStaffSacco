@@ -24,9 +24,9 @@ public class TransactionDto {
     @Max(value=5000000, message="Amount should not be greater than 5m")
     private double amount;
     @NotNull
-    private String from;
+    private String acctFrom;
     @NotNull
-    private String to;
+    private String acctTo;
     @NotNull
     private String userName;
     private TransactionType transactionType;

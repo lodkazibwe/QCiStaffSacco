@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FeeDto {
     private double interest;
-    private double penalty;
-    private double applicationFee;
+    private double possiblePenalty;
+    private double handlingCharge;
+    private double expressHandling;
+    private double insuranceFee;
+    private double earlyTopUpCharge;
 }

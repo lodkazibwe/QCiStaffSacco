@@ -10,10 +10,12 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoanReleaseDto {
+public class LoanPayDto {
     @NotNull
     private int loanId;
     @NotNull
     private TransactionType transactionType;
+    @NotNull
+    private double amount;
 
 }

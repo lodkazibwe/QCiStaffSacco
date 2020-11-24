@@ -12,6 +12,7 @@ public class CompanyConverter {
     public CompanyDto entityToDto(Company company){
         CompanyDto companyDto= new CompanyDto();
         companyDto.setId(company.getId());
+        companyDto.setMinSaving(company.getMinSaving());
         companyDto.setName(company.getName());
         return companyDto;
     }
@@ -19,6 +20,7 @@ public class CompanyConverter {
     public Company dtoToEntity(CompanyDto companyDto){
         Company company= new Company();
         company.setId(companyDto.getId());
+        company.setMinSaving(companyDto.getMinSaving());
         company.setName(companyDto.getName());
         return company;
     }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
@@ -33,7 +34,7 @@ public class CompanyController {
     @Transactional
     @GetMapping("/get/{id}")
     public ResponseEntity<CompanyDto> getCompany(@PathVariable int id){
-        logger.info("adding company...");
+        logger.info("getting company...");
         Company company=companyService.getCompany(id);
         return new ResponseEntity<>(companyConverter.entityToDto(company), HttpStatus.OK);
 
@@ -42,7 +43,7 @@ public class CompanyController {
     @Transactional
     @GetMapping("/update")
     public ResponseEntity<CompanyDto> updateCompany(@Valid @RequestBody CompanyDto companyDto){
-        logger.info("adding company...");
+        logger.info("updating company...");
         Company company=companyService.updateCompany(companyDto);
         return new ResponseEntity<>(companyConverter.entityToDto(company), HttpStatus.OK);
 

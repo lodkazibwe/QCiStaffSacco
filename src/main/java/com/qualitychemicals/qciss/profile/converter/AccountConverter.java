@@ -15,6 +15,8 @@ public class AccountConverter {
         accountDTO.setPendingFee(account.getPendingFee());
         accountDTO.setTotalSavings(account.getSavings());
         accountDTO.setTotalShares(account.getShares());
+        accountDTO.setMemberNo(account.getMemberNo());
+        accountDTO.setPosition(account.getPosition());
         return accountDTO;
     }
 
@@ -27,6 +29,8 @@ public class AccountConverter {
         account.setSavings(accountDto.getTotalSavings());
         account.setPendingFee(accountDto.getPendingFee());
         account.setId(accountDto.getId());
+        account.setPosition(accountDto.getPosition());
+        account.setMemberNo(accountDto.getMemberNo());
         return account;
     }
     public List<AccountDto> entityToDto(List<Account> summaries){

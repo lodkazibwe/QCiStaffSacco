@@ -9,5 +9,4 @@ public class QcissApplication {
     public static void main(String[] args) {
         SpringApplication.run(QcissApplication.class, args);
     }
-
 }

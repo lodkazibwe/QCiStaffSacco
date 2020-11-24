@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 
 public class UserDto {
-    @NotNull(message = "invalid  user details...")
+    @NotNull(message = "invalid  profile details...")
     @Valid
     private PersonDto personDto;
     @NotNull(message = "invalid  account details...")
@@ -25,5 +25,6 @@ public class UserDto {
     @NotNull(message = "invalid  work details...")
     @Valid
     private WorkDto workDto;
+    private BankDto bankDto;
 
 }

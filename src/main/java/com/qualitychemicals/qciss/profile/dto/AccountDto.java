@@ -11,10 +11,14 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class AccountDto {
     private int id;
-    @NotNull
+    @NotNull(message = "totalSavings can not be null")
     private double totalSavings;
-    @NotNull
+    @NotNull(message = "totalShares can not be null")
     private double totalShares;
-    @NotNull
+    @NotNull(message = "pendingFee can not be null")
     private double pendingFee;
+    @NotNull(message = "memberNo can not be null")
+    private String memberNo;
+    @NotNull(message = "position can not be null")
+    private String position;
 }

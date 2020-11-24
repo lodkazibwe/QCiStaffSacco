@@ -2,12 +2,16 @@ package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
+import com.qualitychemicals.qciss.loan.model.RepaymentMode;
+import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dto.*;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
 import com.qualitychemicals.qciss.profile.model.*;
 import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.EmailService;
+import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,52 +35,72 @@ public class UserServiceImpl implements UserService {
     @Autowired
     CompanyService companyService;
     @Autowired EmailService emailService;
+    @Autowired PersonService personService;
+    @Autowired
+    LoanService loanService;
 
 
 
     @Transactional
     @Override
-    public User addProfile(UserDto userDTO, String rol, Status status) {
+    public Profile addProfile(UserDto userDTO, String rol, Status status) {
         logger.info("checking profile...");
         String userName= userDTO.getPersonDto().getMobile();
-        boolean bull=userDAO.existsByUserName(userName);
-        if(bull){
-            logger.error("user already exists...");
-            throw new ResourceNotFoundException("user already exists... No.: "+userName);
-        }else {
+        int  val=personService.userExists(userDTO.getPersonDto().getEmail(), userDTO.getPersonDto().getMobile());
+        if(val==1){
+            logger.error("Email already used...");
+            throw new ResourceNotFoundException("Email already used... No.: "+userDTO.getPersonDto().getEmail());
+        }else if(val==2){
+            logger.error("Contact already used...");
+            throw new ResourceNotFoundException("Contact already used... No.: "+userDTO.getPersonDto().getMobile());
+        }
+        else {
             logger.info("setting company...");
            String company= verifyCompany(userDTO.getWorkDto().getCompanyName());
            userDTO.getWorkDto().setCompanyName(company);
             logger.info("converting...");
-            User user = userConverter.dtoToEntity(userDTO);
-            logger.info("user validated...");
+            Profile profile = userConverter.dtoToEntity(userDTO);
+            logger.info("profile validated...");
             String email=userDTO.getPersonDto().getEmail();
 
             logger.info("updating...");
             Set<Role> roles=getRoles(rol);
-            user.setRole(roles);
-            user.setUserName(userName);
-            user.setStatus(status);
+            profile.setRole(roles);
+            profile.setUserName(userName);
+            profile.setStatus(status);
             Random random = new Random();
-            String pin = String.format("%04d", random.nextInt(10000));
-            user.setPassword(passwordEncoder.encode(pin));
+            String rand = String.format("%04d", random.nextInt(10000));
+            String pin ="QC-"+rand;
+            profile.setPassword(passwordEncoder.encode(pin));
 
             String message="one time login pin QCiSS "+"Q-"+pin;
-            user.getPerson().setImage("C:\\Users\\joeko\\Desktop\\file\\default.png");
-            logger.info("user values updated...");
+            profile.getPerson().setImage("C:\\Users\\joeko\\Desktop\\file\\default.png");
+            //generate profile/accountNumber********************************************************
+            logger.info("generating member number...");
+            String memberNo=getMemberNo(profile.getId());
+            profile.getAccount().setMemberNo(memberNo);
+            logger.info("profile values updated...");
             logger.info("saving...");
-            User savedUser = userDAO.save(user);
+            Profile savedProfile = userDAO.save(profile);
             emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
             logger.info(message+" for  "+ userName);
-            logger.info("user created...");
-            return savedUser;
+            logger.info("profile created...");
+            return savedProfile;
 
         }
 
     }
 
+    private String getMemberNo(int id) {
+        Random random = new Random();
+        String rand = String.format("%04d", random.nextInt(100));
+        return  "QCS/SS/"+rand+"/"+id;
+    }
+
     @Override
-    public User signUp(PersonDto personDto) {
+    @Transactional
+    public Profile signUp(PersonDto personDto) {
+        logger.info("converting...");
         UserDto userDto=new UserDto();
         userDto.setPersonDto(personDto);
         WorkDto workDto=new WorkDto();
@@ -84,14 +108,18 @@ public class UserServiceImpl implements UserService {
         accountDto.setPendingFee(20000);
         accountDto.setTotalSavings(0);
         accountDto.setTotalShares(0);
+        accountDto.setPosition("member");
         userDto.setAccountDto(accountDto);
         userDto.setWorkDto(workDto);
+        logger.info("saving...");
         return addProfile(userDto,"USER", Status.PENDING);
     }
 
     private String verifyCompany(String companyName) {
+        logger.info("checking company...");
        boolean bull=companyService.checkCompany(companyName);
         if(bull){
+            logger.info("valid company...");
                 return companyName;
         }else {
             logger.info("default company...");
@@ -100,25 +128,28 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
+
     @Override
-    public User updateProfile(User user) {
-        return userDAO.save(user);
+    public Profile updateProfile(Profile profile) {
+        return userDAO.save(profile);
     }
 
     @Override
     public String createPass(String pass) {
-        logger.info("getting user...");
+        logger.info("getting profile...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         return updatePass(userName, pass);
     }
 
     @Override
+    @Transactional
     public String updatePass(String userName, String pass) {
         logger.info("updating password...");
-        User user=getProfile(userName);
-        user.setPassword(passwordEncoder.encode(pass));
-        userDAO.save(user);logger.info("updated...");
+        Profile profile =getProfile(userName);
+        profile.setPassword(passwordEncoder.encode(pass));
+        userDAO.save(profile);logger.info("updated...");
         return"success";
 
     }
@@ -126,33 +157,25 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Work getWorkInfo(int id) {
-        User user = userDAO.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("No User With ID: " +id));
-        return user.getWork();
+        Profile profile = userDAO.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("No Profile With ID: " +id));
+        return profile.getWork();
     }
 
     @Override
     public Work getWorkInfo(String userName) {
-        User user = userDAO.findByUserName(userName);
-        return user.getWork();
+        Profile profile = userDAO.findByUserName(userName);
+        return profile.getWork();
     }
 
     @Override
     public Account getSummary(int id) {
-        User user = userDAO.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("No User With ID: " +id));
-        return user.getAccount();
+        Profile profile = userDAO.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("No Profile With ID: " +id));
+        return profile.getAccount();
     }
 
-    @Override
-    public User getProfile(String userName) {
 
-        User user=userDAO.findByUserName(userName);
-        if (user==null){
-            throw new ResourceNotFoundException("No User With No.: " +userName);
-        }else{
-        return user;}
-    }
 
     @Override
     public String requestPin(String contact) {
@@ -163,48 +186,79 @@ public class UserServiceImpl implements UserService {
         logger.info(pin+" one time login pin QCiSS");
         String message=pin+" one time login pin QCiSS";
         logger.info(message+" for  "+ contact);
-        User user=getProfile(contact);
-        String email=user.getPerson().getEmail();
+        Profile profile =getProfile(contact);
+        String email= profile.getPerson().getEmail();
         emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
         return updatePass(contact, pin);
 
     }
 
     @Override
+    @Transactional
     public String verifyAccount(String accountNumber, String userName) {
-        User user=getProfile(userName);
-        String mobile=user.getPerson().getMobile();
+        /*Profile profile =getProfile(userName);
+        String mobile= profile.getPerson().getMobile();
 
         if(accountNumber.equals(mobile)){
             return accountNumber;
         }
-        throw new InvalidValuesException("invalid user accountNumber: "+accountNumber);
+        throw new InvalidValuesException("invalid profile accountNumber: "+accountNumber);*/
+        return null;
 
     }
 
     @Override
-    public User getProfile(int id) {
+    public Profile getProfile(int id) {
         return userDAO.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("No User With ID: "+id));
+                .orElseThrow(()-> new ResourceNotFoundException("No Profile With ID: "+id));
     }
 
     @Override
-    public List<User> getAll() {
+    public Profile getProfile(String userName) {
+
+        Profile profile =userDAO.findByUserName(userName);
+        if (profile ==null){
+            throw new ResourceNotFoundException("No Profile With Name: " +userName);
+        }
+        return profile;
+
+    }
+
+    @Override
+    public Profile verifyUser(int userId) {
+        Profile profile =getProfile(userId);
+        profile.setStatus(Status.OPEN);
+        return userDAO.save(profile);
+    }
+
+    @Override
+    public Profile closeUser(int userId) {
+        Profile profile =getProfile(userId);
+        profile.setStatus(Status.PENDING);
+        return userDAO.save(profile);
+    }
+
+    @Override
+    public Account getAccount(String userName) {
+        Profile profile =getProfile(userName);
+        return profile.getAccount();
+    }
+
+    @Override
+    public List<Profile> getAll() {
         return userDAO.findAll();
     }
 
     @Override
     public boolean isUserOpen(String userName) {
-        User user=getProfile(userName);
-        if(user.getStatus()==Status.OPEN){return true;
-        } else{return false;}
+        Profile profile =getProfile(userName);
+        return profile.getStatus() == Status.OPEN;
     }
 
     @Override
     public boolean isUserClosed(String userName) {
-        User user=getProfile(userName);
-        if(user.getStatus()==Status.CLOSED){return true;
-        } else{return false;}
+        Profile profile =getProfile(userName);
+        return profile.getStatus() == Status.CLOSED;
     }
 
     @Override
@@ -215,4 +269,44 @@ public class UserServiceImpl implements UserService {
     Role role = new Role(rol);
         return new HashSet<>(Collections.singletonList(role));
     }
+
+    @Override
+    public List<EmployeeDto> getEmployees(String company) {
+        return userDAO.getEmployees(company);
+    }
+
+    @Override
+    @Transactional
+    public List<DeductionScheduleDTO> deductionSchedule(String company) {
+        List<DeductionScheduleDTO> deductionSchedules= new ArrayList<>();
+        logger.info("getting date (next month 1st)...");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.MONTH, 1);
+        Date date=cal.getTime();
+        logger.info("getting company employees...");
+        List<EmployeeDto> employees=getEmployees(company);
+        logger.info("generating...");
+        for(EmployeeDto employee:employees){
+            DeductionScheduleDTO deductionSchedule=new DeductionScheduleDTO();
+            List<DueLoanDto> dueLoans=loanService.dueLoans(date,employee.getMobile());
+            List<DueLoanDto> dueLoanSalary=new ArrayList<>();
+            deductionSchedule.setEmployee(employee);
+            double total=employee.getPayrollSavings()+employee.getPayrollShares();
+            for(DueLoanDto dueLoan:dueLoans){
+                if(dueLoan.getRepaymentMode()== RepaymentMode.SALARY){
+
+                    total+=dueLoan.getDue();
+                    dueLoanSalary.add(dueLoan);
+                }
+            }
+            deductionSchedule.setDueLoans(dueLoanSalary);
+            deductionSchedule.setTotal(total);
+            deductionSchedules.add(deductionSchedule);
+
+        }
+
+        return deductionSchedules;
+    }
+
 }

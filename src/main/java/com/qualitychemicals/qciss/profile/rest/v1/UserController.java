@@ -6,7 +6,7 @@ import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.converter.WorkConverter;
 import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Status;
-import com.qualitychemicals.qciss.profile.model.User;
+import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.model.Work;
 import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.UserService;
@@ -15,12 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/profile/user")
 public class UserController {
@@ -39,50 +42,94 @@ public class UserController {
     @Transactional
     public ResponseEntity<UserDto> signUp(@Valid @RequestBody PersonDto personDto){
         logger.info("starting...");
-        User user= userService.signUp(personDto);
-        return new ResponseEntity<>(userConverter.entityToDto(user), HttpStatus.OK);
+        Profile profile = userService.signUp(personDto);
+        return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
     }
 
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<UserDto> createProfile(@Valid @RequestBody UserDto userDto){
         logger.info("starting...");
-        User user= userService.addProfile(userDto, "USER", Status.OPEN);
-        return new ResponseEntity<>(userConverter.entityToDto(user), HttpStatus.OK);
+        Profile profile = userService.addProfile(userDto, "USER", Status.OPEN);
+        return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
     }
 
-    @PostMapping("/defaultUser")
+    @PostMapping("/addRoot")
     public ResponseEntity<UserDto> defaultUser(@Valid @RequestBody UserDto userDto){
         //check if exists
+        String rootEmail="lordkazibwe@gmail.com";
+        userDto.getPersonDto().setEmail(rootEmail);
         logger.info("starting...");
-        User user= userService.addProfile(userDto, "ADMIN", Status.OPEN);
-        return new ResponseEntity<>(userConverter.entityToDto(user), HttpStatus.OK);
+        Profile profile = userService.addProfile(userDto, "ROOT", Status.OPEN);
+        return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
+
+    }
+    @PostMapping("/addAdmin")
+    public ResponseEntity<UserDto> addAdmin(@Valid @RequestBody UserDto userDto){
+        //check if exists
+        logger.info("starting...");
+        Profile profile = userService.addProfile(userDto, "ADMIN", Status.OPEN);
+        return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
 
     }
 
+    @GetMapping("/get")
+    public ResponseEntity<UserDto> myProfile(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        return new ResponseEntity<>(userConverter.entityToDto
+                (userService.getProfile(userName)), HttpStatus.OK);
+    }
 
-    @GetMapping("/get/{id}")
+
+    @GetMapping("/admin/get/{id}")
     public ResponseEntity<UserDto> getProfile(@PathVariable int id){
         return new ResponseEntity<>(userConverter.entityToDto
                 (userService.getProfile(id)), HttpStatus.OK);
     }
-    @GetMapping("/getAll")
+    @GetMapping("/admin/getByName/{userName}")
+    public ResponseEntity<UserDto> getProfile(@PathVariable String userName){
+        return new ResponseEntity<>(userConverter.entityToDto
+                (userService.getProfile(userName)), HttpStatus.OK);
+    }
+    @GetMapping("/admin/getAll")
     public ResponseEntity<List<UserDto>> getAll(){
         return new ResponseEntity<>(userConverter.entityToDto(userService.getAll()),
                 HttpStatus.OK);
     }
 
-    @GetMapping("/getSummary/{userId}")
-    public ResponseEntity<AccountDto> getUserSummary(@PathVariable int userId){
+    @GetMapping("/admin/getAccount/{userId}")
+    public ResponseEntity<AccountDto> getUserAccount(@PathVariable int userId){
         Account account = userService.getSummary(userId);
         return new ResponseEntity<>(accountConverter.entityToDto(account), HttpStatus.OK);
     }
 
-    @GetMapping("/getWork/{userId}")
+    @GetMapping("/admin/getWork/{userId}")
     public ResponseEntity<WorkDto> getWorkInfo(@PathVariable int userId){
         Work work= userService.getWorkInfo(userId);
         return new ResponseEntity<>(workConverter.entityToDto(work), HttpStatus.OK);
 
+    }
+    @GetMapping("/admin/getEmployees/{company}")
+    public ResponseEntity<List<EmployeeDto>> getEmployees(@PathVariable String company){
+        List<EmployeeDto> employees= userService.getEmployees(company);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/deductionSchedule/{company}")
+    public ResponseEntity<List<DeductionScheduleDTO>> deductionSchedule(@PathVariable String company){
+        List<DeductionScheduleDTO> deductionSchedules= userService.deductionSchedule(company);
+        return new ResponseEntity<>(deductionSchedules, HttpStatus.OK);
+
+    }
+
+    @PutMapping("/admin/verify/{userId}")
+    public ResponseEntity<UserDto> verifyUser(@PathVariable int userId){
+        return new ResponseEntity<>(userConverter.entityToDto(userService.verifyUser(userId)), HttpStatus.OK);
+    }
+    @PutMapping("/admin/close/{userId}")
+    public ResponseEntity<UserDto> closeUser(@PathVariable int userId){
+        return new ResponseEntity<>(userConverter.entityToDto(userService.closeUser(userId)), HttpStatus.OK);
     }
 
 }

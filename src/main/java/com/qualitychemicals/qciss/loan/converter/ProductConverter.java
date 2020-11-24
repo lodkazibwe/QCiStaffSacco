@@ -13,6 +13,7 @@ public class ProductConverter {
         ProductDto productDto=new ProductDto();
         productDto.setDescription(product.getDescription());
         productDto.setId(product.getId());
+        productDto.setProductNumber(product.getProductNumber());
         productDto.setInterest(product.getInterest());
         productDto.setMaxAmount(product.getMaxAmount());
         productDto.setMaxDuration(product.getMaxDuration());
@@ -20,6 +21,12 @@ public class ProductConverter {
         productDto.setMinDuration(product.getMinDuration());
         productDto.setName(product.getName());
         productDto.setPenalty(product.getPenalty());
+
+        productDto.setMaximum(product.getMaximum());
+        productDto.setEarlyTopUp(product.getEarlyTopUp());
+        productDto.setExpressHandling(product.getExpressHandling());
+        productDto.setHandlingCharge(product.getHandlingCharge());
+        productDto.setInsuranceRate(product.getInsuranceRate());
         return productDto;
 
     }
@@ -33,6 +40,13 @@ public class ProductConverter {
         product.setMinDuration(productDto.getMinDuration());
         product.setPenalty(productDto.getPenalty());
         product.setName(productDto.getName());
+
+        product.setProductNumber(productDto.getProductNumber());
+        product.setInsuranceRate(productDto.getInsuranceRate());
+        product.setMaximum(productDto.getMaximum());
+        product.setEarlyTopUp(productDto.getEarlyTopUp());
+        product.setHandlingCharge(productDto.getHandlingCharge());
+        product.setExpressHandling(productDto.getExpressHandling());
         return product;
     }
     public List<ProductDto> entityToDto(List<Product> products){

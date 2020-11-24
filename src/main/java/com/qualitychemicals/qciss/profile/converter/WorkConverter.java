@@ -12,11 +12,14 @@ public class WorkConverter {
 
     public WorkDto entityToDto(Work work){
         WorkDto workDTO=new WorkDto();
-        workDTO.setSalaryScale(work.getScale());
-        workDTO.setMonthlySaving(work.getMonthlySaving());
-        workDTO.setJobTittle(work.getJob());
+        workDTO.setBasicSalary(work.getBasicSalary());
+        workDTO.setPayrollSaving(work.getPayrollSaving());
+        workDTO.setPayrollShares(work.getPayrollShares());
+        workDTO.setJob(work.getJob());
         workDTO.setId(work.getId());
         workDTO.setCompanyName(work.getCompanyName());
+        workDTO.setEmployeeId(work.getEmployeeId());
+        workDTO.setWorkStation(work.getWorkStation());
         return workDTO;
     }
     public Work dtoToEntity(WorkDto workDto){
@@ -24,11 +27,14 @@ public class WorkConverter {
             return new Work();
         }
         Work work =new Work();
-        work.setScale(workDto.getSalaryScale());
-        work.setMonthlySaving(workDto.getMonthlySaving());
+        work.setBasicSalary(workDto.getBasicSalary());
+        work.setPayrollSaving(workDto.getPayrollSaving());
+        work.setPayrollShares(workDto.getPayrollShares());
         work.setId(workDto.getId());
         work.setCompanyName(workDto.getCompanyName());
-        work.setJob(workDto.getJobTittle());
+        work.setJob(workDto.getJob());
+        work.setEmployeeId(workDto.getEmployeeId());
+        work.setWorkStation(workDto.getWorkStation());
         return work;
     }
     public List<WorkDto> entityToDto(List<Work> works){

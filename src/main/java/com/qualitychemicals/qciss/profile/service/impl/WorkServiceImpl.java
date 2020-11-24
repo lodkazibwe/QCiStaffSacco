@@ -1,9 +1,12 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dao.WorkDao;
 import com.qualitychemicals.qciss.profile.dto.CompanyUpdateDto;
 import com.qualitychemicals.qciss.profile.dto.WorkDto;
+import com.qualitychemicals.qciss.profile.model.Status;
+import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.model.Work;
 import com.qualitychemicals.qciss.profile.service.UserService;
 
@@ -22,27 +25,53 @@ import java.util.List;
 public class WorkServiceImpl implements WorkService {
     @Autowired
     WorkDao workDao;
+    @Autowired UserDao userDao;
     @Autowired
     UserService userService;
     private final Logger logger= LoggerFactory.getLogger(WorkServiceImpl.class);
     @Override
     @Transactional
     public Work updateWork(WorkDto workDto) {
-        logger.info("getting user...");
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting current work details...");
+        Profile profile =userService.getProfile(userName);
+        Work work= profile.getWork();
+        work.setCompanyName(workDto.getCompanyName());
+        work.setEmployeeId(workDto.getEmployeeId());
+        work.setToe(workDto.getToe());
+        work.setWorkStation(workDto.getWorkStation());
+        work.setBasicSalary(workDto.getBasicSalary());
+        work.setJob(workDto.getJob());
+        profile.setWork(work);
+        profile.setStatus(Status.PENDING);
+        logger.info("saving...");
+        userDao.save(profile);
+        return work;
+    }
+
+    @Override
+    public Work updatePayrollShares(double amount) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String user=auth.getName();
         logger.info("getting current work details...");
         Work work=userService.getWorkInfo(user);
-        /*Work work= workDao.findById(workDto.getId())
-                .orElseThrow(()->new ResourceNotFoundException("No such detail with ID: "+workDto.getId()));
-        logger.info("updating...");*/
-        work.setJob(workDto.getJobTittle());
-        work.setMonthlySaving(workDto.getMonthlySaving());
-        work.setScale(workDto.getSalaryScale());
+        work.setPayrollShares(amount);
         logger.info("saving...");
         return workDao.save(work);
     }
 
+    @Override
+    public Work updatePayrollSaving(double amount) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String user=auth.getName();
+        logger.info("getting current work details...");
+        Work work=userService.getWorkInfo(user);
+        work.setPayrollSaving(amount);
+        logger.info("saving...");
+        return workDao.save(work);
+    }
 
     @Override
     public Work getWork(int id) {

@@ -19,12 +19,25 @@ public class ProductDto {
     @Size(min=3, message = "name at least 3 Characters")
     @ApiModelProperty(notes = "LoanT Product Name")
     private String name;
+    @NotBlank(message = "product Number cannot be blank")
+    @Size(min=4, max=4, message = "product Number must have 4 Characters")
+    private String productNumber;
     @NotNull(message ="penalty cannot be Blank")
     @ApiModelProperty(notes = "LoanT Product penalty (%age of principal)")
-    private int penalty;
+    private double penalty;
     @NotNull(message ="interest cannot be Blank")
     @ApiModelProperty(notes = "LoanT Product Interest rate (%age of principal)")
-    private int interest;//%age of principal
+    private double interest;//%age of principal
+    @NotNull(message ="handling Charge cannot be Blank")
+    private double handlingCharge;
+    @NotNull(message ="express Handling Charge cannot be Blank")
+    private double expressHandling;
+    @NotNull(message ="early Top Up Charge cannot be Blank")
+    private double earlyTopUp;
+    @NotNull(message ="maximum cannot be Blank")
+    private double maximum;
+    @NotNull(message ="insuranceFee cannot be Blank")
+    private double insuranceRate;;
     @NotNull(message ="Min Amount cannot be Blank")
     @ApiModelProperty(notes = "LoanT Product min request amount")
     private double minAmount;

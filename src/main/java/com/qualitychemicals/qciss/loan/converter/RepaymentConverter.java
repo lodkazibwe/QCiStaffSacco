@@ -26,7 +26,6 @@ public class RepaymentConverter {
         repayment.setBalance(repaymentDto.getBalance());
         repayment.setAmount(repaymentDto.getAmount());
         repayment.setPaid(repaymentDto.getPaid());
-        //repayment.setId(repaymentDto.getId());
         return repayment;
     }
     public List<RepaymentDto> entityToDto(List<Repayment> repayments){

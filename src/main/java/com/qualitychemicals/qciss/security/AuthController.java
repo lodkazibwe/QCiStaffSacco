@@ -1,7 +1,6 @@
 package com.qualitychemicals.qciss.security;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
-import com.qualitychemicals.qciss.profile.dto.OneTimeLoginDto;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/authenticate")
@@ -22,18 +20,18 @@ public class AuthController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired UserService userService;
 
-    @PostMapping("/token")
+    @PostMapping("get/token")
     public ResponseEntity<?> createAuthToken(@Valid @RequestBody AuthRequest authRequest){
         boolean bool=userService.isUserClosed(authRequest.getUserName());
         if(bool){
-            throw new InvalidValuesException("user blocked");
+            throw new InvalidValuesException("profile blocked");
         }else {
             try {
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
                 );
             } catch (InvalidValuesException e) {
-                throw new InvalidValuesException("Incorrect user name or password");
+                throw new InvalidValuesException("Incorrect profile name or password");
             }
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(authRequest.getUserName());
 
@@ -44,18 +42,18 @@ public class AuthController {
 
     }
 
-    @PostMapping("/oneTime")
+    /*@PostMapping("get/oneTime")
     public ResponseEntity<?> oneTimeAuthToken(@Valid @RequestBody OneTimeLoginDto oneTimeLoginDto){
         boolean bool=userService.isUserClosed(oneTimeLoginDto.getMobile());
         if(bool){
-            throw new InvalidValuesException("user blocked");
+            throw new InvalidValuesException("profile blocked");
         }else {
             try {
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(oneTimeLoginDto.getMobile(), oneTimeLoginDto.getPin())
                 );
             } catch (InvalidValuesException e) {
-                throw new InvalidValuesException("Incorrect user name or password");
+                throw new InvalidValuesException("Incorrect profile name or password");
             }
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(oneTimeLoginDto.getMobile());
             final String jwt = jwtUtil.generateToken(userDetails);
@@ -66,7 +64,7 @@ public class AuthController {
 
             return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
         }
-    }
+    }*/
 
     @PutMapping("/requestPin/{contact}")//admin
     public ResponseEntity<?> requestPin(@PathVariable String contact){

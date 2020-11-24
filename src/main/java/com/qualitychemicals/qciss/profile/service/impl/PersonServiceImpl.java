@@ -23,6 +23,7 @@ public class PersonServiceImpl implements PersonService {
 
     private final Logger logger= LoggerFactory.getLogger(PersonServiceImpl.class);
     @Override
+    @Transactional
     public Person updatePerson(PersonDto personDto, int id) {
         logger.info("getting current details...");
         Person person=personDao.findById(id)
@@ -42,6 +43,21 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person getPerson(int id) {
         return personDao.findById(id).orElseThrow(()->new ResourceNotFoundException("No such info ID: "+id));
+    }
+
+    @Override
+    public int userExists(String email, String mobile) {
+        logger.info("checking user....");
+        boolean bull1=personDao.existsByEmail(email);
+        boolean bull2=personDao.existsByMobile(mobile);
+        if(bull1){
+            logger.info("email Exists....");
+            return 1;}else if(bull2){
+            logger.info("mobile Exists....");
+            return 2;} else{
+            logger.info("no user...");
+            return 0;}
+
     }
 
     @Override

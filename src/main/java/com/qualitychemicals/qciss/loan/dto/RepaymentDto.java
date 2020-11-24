@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.loan.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qualitychemicals.qciss.loan.model.RepaymentStatus;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +25,5 @@ public class RepaymentDto {
     @ApiModelProperty(notes = "Generated part of RepaymentDao Amount not Paid")
     private double balance;
     @ApiModelProperty(notes = "Generated RepaymentDao TransactionStatus")
-    private String status;
+    private RepaymentStatus status;
 }

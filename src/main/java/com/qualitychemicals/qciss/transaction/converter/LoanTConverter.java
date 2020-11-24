@@ -15,15 +15,28 @@ public class LoanTConverter {
     @Autowired TransactionConverter transactionConverter;
 
     public LoanTDto entityToDto(LoanT loanT){
-        TransactionDto transaction=transactionConverter.entityToDto(loanT);
-        LoanTDto loanTDto =(LoanTDto)transaction;
+        LoanTDto loanTDto =new LoanTDto();
+        loanTDto.setAcctFrom(loanT.getAcctFrom());
+        loanTDto.setTransactionType(loanT.getTransactionType());
+        loanTDto.setAmount(loanT.getAmount());
+        loanTDto.setUserName(loanT.getUserName());
+        loanTDto.setAcctTo(loanT.getAcctTo());
+        loanTDto.setDate(loanT.getDate());
+        loanTDto.setId(loanT.getId());
+        loanTDto.setStatus(loanT.getStatus());
         loanTDto.setLoanId(loanT.getLoanId());
         return loanTDto;
 
     }
     public LoanT dtoToEntity(LoanTDto loanTDto){
-        Transaction transaction=transactionConverter.dtoToEntity(loanTDto);
-        LoanT loanT =(LoanT)transaction;
+        LoanT loanT =new LoanT();
+        loanT.setAcctTo(loanTDto.getAcctTo());
+        loanT.setAcctFrom(loanTDto.getAcctFrom());
+        loanT.setAmount(loanTDto.getAmount());
+        loanT.setDate(loanTDto.getDate());
+        loanT.setStatus(loanTDto.getStatus());
+        loanT.setTransactionType(loanTDto.getTransactionType());
+        loanT.setUserName(loanTDto.getUserName());
         loanT.setLoanId(loanTDto.getLoanId());
         return loanT;
 

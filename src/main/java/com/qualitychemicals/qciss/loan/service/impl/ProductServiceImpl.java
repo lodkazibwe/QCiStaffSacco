@@ -6,6 +6,8 @@ import com.qualitychemicals.qciss.loan.dao.ProductDao;
 import com.qualitychemicals.qciss.loan.dto.ProductDto;
 import com.qualitychemicals.qciss.loan.model.Product;
 import com.qualitychemicals.qciss.loan.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,12 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     @Autowired ProductConverter productConverter;
     @Autowired ProductDao productDao;
+    private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     @Override
     public Product addProduct(ProductDto productDto) {
+        logger.info("converting ...");
         Product product=productConverter.dtoToEntity(productDto);
+        logger.info("saving ...");
         return productDao.save(product);
     }
 
@@ -33,15 +38,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(ProductDto productDto, int id) {
+        logger.info("getting product ...");
         Product product=getProduct(id);
-        product.setMinAmount(productDto.getMinAmount());
-        product.setMaxAmount(productDto.getMaxAmount());
-        product.setDescription(productDto.getDescription());
-        product.setInterest(productDto.getInterest());
-        product.setMaxDuration(productDto.getMaxDuration());
-        product.setMinDuration(productDto.getMinDuration());
-        product.setName(productDto.getName());
-        product.setPenalty(productDto.getPenalty());
-        return productDao.save(product);
+        logger.info("updating product ...");
+        Product updatedProduct=productConverter.dtoToEntity(productDto);
+        updatedProduct.setId(product.getId());
+        logger.info("saving product ...");
+        return productDao.save(updatedProduct);
     }
 }

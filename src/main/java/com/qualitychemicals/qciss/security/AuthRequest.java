@@ -12,9 +12,8 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthRequest {
-    @NotEmpty(message = "user name must not be empty")
-    @Size(min=3, message = "user name at least three alphanumeric Characters")
-    @Pattern(regexp="^[a-zA-Z0-9]+$", message = "Invalid User name")
+    @NotEmpty(message = "profile name must not be empty")
+    @Size(min=3, message = "profile name at least three alphanumeric Characters")
     private String userName;
     @NotEmpty(message = "password must not be empty")
     @Size(min=6, message = "passKey must have at least 6 Characters")

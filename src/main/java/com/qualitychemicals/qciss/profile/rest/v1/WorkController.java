@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("profile/work")
 public class WorkController {
@@ -30,13 +31,31 @@ public class WorkController {
 
     }
 
-    @GetMapping("/get/{workId}")
+    @PutMapping("/myPayrollSaving/{amount}")
+    public ResponseEntity<WorkDto> updatePayrollSaving(@PathVariable double amount){
+
+        Work work=workService.updatePayrollSaving(amount);
+        logger.info("success...");
+        return new ResponseEntity<>(workConverter.entityToDto(work), HttpStatus.OK);
+
+    }
+
+    @PutMapping("/myPayrollShares/{amount}")
+    public ResponseEntity<WorkDto> updatePayrollShares(@PathVariable double amount){
+
+        Work work=workService.updatePayrollShares(amount);
+        logger.info("success...");
+        return new ResponseEntity<>(workConverter.entityToDto(work), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/get/{workId}")
     public ResponseEntity<WorkDto> getWork(@PathVariable int workId){
         Work work =workService.getWork(workId);
         return new ResponseEntity<>(workConverter.entityToDto(work),HttpStatus.OK);
 
     }
-    @GetMapping("/getByCompany/{companyName}")
+    @GetMapping("admin/getByCompany/{companyName}")
     public ResponseEntity<List<WorkDto>> getByCompany(@PathVariable String companyName){
         List<Work> works=workService.getByCompany(companyName);
         return new ResponseEntity<>(workConverter.entityToDto(works), HttpStatus.OK);
