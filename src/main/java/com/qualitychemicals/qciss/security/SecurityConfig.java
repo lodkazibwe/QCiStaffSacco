@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js"
                 ).permitAll()
 
-                .antMatchers("/profile/user/getAll").permitAll()//hasRole("ADMIN")
+                .antMatchers("/profile/admin/user/getAll").permitAll()//hasRole("ADMIN")
                 .antMatchers("/authenticate/get/**").permitAll()//
                 .anyRequest().authenticated().and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
