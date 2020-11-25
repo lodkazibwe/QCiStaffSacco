@@ -92,7 +92,7 @@ public class UserController {
         return new ResponseEntity<>(userConverter.entityToDto
                 (userService.getProfile(userName)), HttpStatus.OK);
     }
-    @GetMapping("/admin/getAll")
+    @GetMapping("/getAll")
     public ResponseEntity<List<UserDto>> getAll(){
         return new ResponseEntity<>(userConverter.entityToDto(userService.getAll()),
                 HttpStatus.OK);
