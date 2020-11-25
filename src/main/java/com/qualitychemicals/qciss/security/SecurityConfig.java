@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/profile/user/signUp").permitAll()
                 .antMatchers("/profile/user/addAdmin").hasRole("ROOT")
                 .antMatchers("/profile/user/register").hasRole("ADMIN")
+                .antMatchers("/profile/user/getAll").permitAll()
                 .antMatchers("/profile/user/admin/**").hasRole("ADMIN")
                 .antMatchers("/loan/admin/**").hasRole("ADMIN")
                 .antMatchers("/loan/product/**").hasRole("ADMIN")//
@@ -59,7 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js"
                 ).permitAll()
 
-                .antMatchers("/profile/user/admin/getAll").permitAll()//hasRole("ADMIN")
                 .antMatchers("/authenticate/get/**").permitAll()//
                 .anyRequest().authenticated().and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
