@@ -36,18 +36,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/loan/**").permitAll()
-                .antMatchers("/profile/**").permitAll()
-                .antMatchers("/transaction/**").permitAll()
-                /*.antMatchers("/profile/user/addRoot").permitAll()
+                .antMatchers("/profile/user/addRoot").permitAll()
                 .antMatchers("/profile/user/signUp").permitAll()
                 .antMatchers("/profile/user/addAdmin").hasRole("ROOT")
                 .antMatchers("/profile/user/register").hasRole("ADMIN")
+                .antMatchers("/profile/user/getAll").permitAll()
                 .antMatchers("/profile/user/admin/**").hasRole("ADMIN")
                 .antMatchers("/loan/admin/**").hasRole("ADMIN")
                 .antMatchers("/loan/product/**").hasRole("ADMIN")//
                 .antMatchers("/transaction/loan/release").hasRole("ADMIN")
-                .antMatchers("/transaction/loan/repay").hasRole("ADMIN")*/
+                .antMatchers("/transaction/loan/repay").hasRole("ADMIN")
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
@@ -61,8 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js"
                 ).permitAll()
-                .antMatchers("/profile/user/admin/getAll").permitAll()//hasRole("ADMIN")
-                .antMatchers("/authenticate/get/**").permitAll()
+
+                .antMatchers("/authenticate/get/**").permitAll()//
                 .anyRequest().authenticated().and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
