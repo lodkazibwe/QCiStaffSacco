@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qualitychemicals.qciss.loan.model.Cycle;
 import com.qualitychemicals.qciss.loan.model.HandlingMode;
 import com.qualitychemicals.qciss.loan.model.RepaymentMode;
-import com.qualitychemicals.qciss.transaction.model.TransactionType;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

@@ -1,15 +1,20 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
-import com.qualitychemicals.qciss.transaction.dao.TransactionDao;
-import com.qualitychemicals.qciss.transaction.model.ShareT;
-import com.qualitychemicals.qciss.transaction.model.Transaction;
+import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
+import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ShareTServiceImpl implements ShareTService {
@@ -17,30 +22,45 @@ public class ShareTServiceImpl implements ShareTService {
     @Autowired
     TransactionService transactionService;
     @Autowired AccountService accountService;
-    @Autowired
-    TransactionDao transactionDao;
+    @Autowired RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(ShareTServiceImpl.class);
     @Override
-    public ShareT mobileShares(double amount) {
+    public ShareTDto mobileShares(double amount) {
         logger.info("transacting...");
-        Transaction transaction=transactionService.receiveMobileMoney(amount);
+        TransactionDto transaction=transactionService.receiveMobileMoney(amount);
         logger.info("preparing transaction...");
-        ShareT shareT=new ShareT();
+        ShareTDto shareTDto=new ShareTDto();
         double shareCost=20000;
         double shares=amount/shareCost;
-        shareT.setShares(shares);
-        shareT.setUnitCost(shareCost);
-        shareT.setTransactionType(transaction.getTransactionType());
-        shareT.setAcctTo(transaction.getAcctTo());
-        shareT.setAcctFrom(transaction.getAcctFrom());
-        shareT.setUserName(transaction.getUserName());
-        shareT.setStatus(transaction.getStatus());
-        shareT.setDate(transaction.getDate());
-        shareT.setAmount(transaction.getAmount());
-        shareT.setId(transaction.getId());
+        shareTDto.setShares(shares);
+        shareTDto.setUnitCost(shareCost);
+        shareTDto.setTransactionType(transaction.getTransactionType());
+        shareTDto.setAcctTo(transaction.getAcctTo());
+        shareTDto.setAcctFrom(transaction.getAcctFrom());
+        shareTDto.setUserName(transaction.getUserName());
+        shareTDto.setStatus(transaction.getStatus());
+        shareTDto.setDate(transaction.getDate());
+        shareTDto.setAmount(transaction.getAmount());
+        shareTDto.setId(transaction.getId());
         logger.info("updating shares...");
         accountService.updateShares(amount/shareCost, transaction.getUserName());
         logger.info("saving transaction...");
-        return transactionDao.save(shareT);
+        ResponseEntity<ShareTDto> response=saveSavingT(shareTDto);
+        return response.getBody();
     }
+
+    private ResponseEntity<ShareTDto> saveSavingT(ShareTDto shareTDto) {
+        logger.info("transacting...");
+
+        try {
+            logger.info("connecting to payment service...");
+            final String uri="http://localhost:8082/transaction/shares/save";
+            HttpEntity<ShareTDto> request = new HttpEntity<>(shareTDto);
+            return restTemplate.exchange(uri, HttpMethod.POST,request,ShareTDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+
+    }
+
 }
