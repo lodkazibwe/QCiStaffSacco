@@ -2,7 +2,7 @@ package com.qualitychemicals.qciss.loan.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qualitychemicals.qciss.loan.model.*;
-import com.qualitychemicals.qciss.transaction.model.TransactionType;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

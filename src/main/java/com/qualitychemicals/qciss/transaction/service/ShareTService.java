@@ -1,7 +1,9 @@
 package com.qualitychemicals.qciss.transaction.service;
 
-import com.qualitychemicals.qciss.transaction.model.Transaction;
+
+import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
+import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 
 public interface ShareTService {
-    Transaction mobileShares(double amount);
+    ShareTDto mobileShares(double amount);
 }

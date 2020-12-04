@@ -1,4 +1,4 @@
-package com.qualitychemicals.qciss.transaction.model;
+package com.qualitychemicals.qciss.transaction.dto;
 
 public enum TransactionType {
     CASH, CHEQUE, MOBILE

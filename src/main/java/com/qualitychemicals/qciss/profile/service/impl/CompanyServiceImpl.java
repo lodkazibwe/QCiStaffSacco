@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.converter.CompanyConverter;
 import com.qualitychemicals.qciss.profile.dao.CompanyDao;
@@ -32,8 +33,13 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company addCompany(CompanyDto companyDto) {
         logger.info("converting...");
+        boolean bool =companyDao.existsByName(companyDto.getName());
+        if(bool){
+            throw new InvalidValuesException("company already exists");
+        }
         Company company=companyConverter.dtoToEntity(companyDto);
-        return companyDao.save(company);
+
+    return companyDao.save(company);
     }
 
     @Override

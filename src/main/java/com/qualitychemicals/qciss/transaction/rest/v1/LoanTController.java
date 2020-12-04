@@ -1,9 +1,7 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
-import com.qualitychemicals.qciss.transaction.converter.LoanTConverter;
 import com.qualitychemicals.qciss.transaction.dto.LoanPayDto;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
-import com.qualitychemicals.qciss.transaction.model.LoanT;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,13 +14,14 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/transaction/loan")
 public class LoanTController {
-    @Autowired LoanTService loanTService;
-    @Autowired LoanTConverter loanTConverter;
+    @Autowired
+    LoanTService loanTService;
 
-    @PutMapping("/release")//admin
+
+    @PutMapping("/admin/release")//admin
     public ResponseEntity<LoanTDto> releaseLoan(@Valid @RequestBody LoanPayDto loanPayDto){
-        LoanT loanT=loanTService.release(loanPayDto.getLoanId(), loanPayDto.getTransactionType());
-        return new ResponseEntity<>(loanTConverter.entityToDto(loanT), HttpStatus.OK);
+        LoanTDto loanTDto=loanTService.release(loanPayDto);
+        return new ResponseEntity<>(loanTDto, HttpStatus.OK);
     }
 
     @PostMapping("/mobileRepay")//profile
@@ -30,15 +29,15 @@ public class LoanTController {
         /*Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String profile=auth.getName();
         loanTDto.setUserName(profile);*/
-        LoanT loanT=loanTService.repayMobile(loanPayDto);
-        return new ResponseEntity<>(loanTConverter.entityToDto(loanT), HttpStatus.OK);
+        LoanTDto loanTDto=loanTService.repayMobile(loanPayDto);
+        return new ResponseEntity<>(loanTDto, HttpStatus.OK);
     }
 
 
-    @PostMapping("/Repay")//admin
+    @PostMapping("/admin/Repay")//admin
     public ResponseEntity<LoanTDto> repayLoanCash(@Valid @RequestBody LoanTDto loanTDto){
-        LoanT loanT=loanTService.repay(loanTDto);
-        return new ResponseEntity<>(loanTConverter.entityToDto(loanT), HttpStatus.OK);
+
+        return new ResponseEntity<>(loanTService.repay(loanTDto), HttpStatus.OK);
     }
 
 }
