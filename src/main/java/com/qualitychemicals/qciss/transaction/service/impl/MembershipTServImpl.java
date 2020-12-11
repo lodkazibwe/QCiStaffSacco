@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.transaction.dto.MembershipTDto;
+import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
 import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -35,7 +36,7 @@ public class MembershipTServImpl implements MembershipTService {
     @Override
     @Transactional
     public MembershipTDto payMembership(double amount) {
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount);
+        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.MEMBERSHIP);
         logger.info("preparing Transaction");
         MembershipTDto membershipTDto=new MembershipTDto();
         membershipTDto.setYear(2021);

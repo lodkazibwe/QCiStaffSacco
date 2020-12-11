@@ -3,7 +3,6 @@ package com.qualitychemicals.qciss.loan.service;
 import com.qualitychemicals.qciss.loan.dto.*;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
-import com.qualitychemicals.qciss.loan.model.Product;
 
 import java.util.Date;
 import java.util.List;
@@ -24,4 +23,5 @@ public interface LoanService {
     String deleteMyLoan(int loanId);
     Loan changeStatus(Loan loan, LoanStatus loanStatus);
     List<Loan> myLoans();
+    List<DueLoanDto> myDueLoans(Date date);
 }

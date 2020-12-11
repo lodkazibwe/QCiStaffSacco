@@ -5,7 +5,7 @@ import com.qualitychemicals.qciss.transaction.dto.*;
 
 public interface TransactionService {
     MobilePayment transactMobile(MobilePayment mobilePayment);
-    TransactionDto receiveMobileMoney(double amount);
+    TransactionDto receiveMobileMoney(double amount, TransactionCat category);
     LoanTransactionsDto loanTransactions(int loanId);
     UserTransactionsDto userTransactions(String userName);
     UserTransactionsDto myTransactions();

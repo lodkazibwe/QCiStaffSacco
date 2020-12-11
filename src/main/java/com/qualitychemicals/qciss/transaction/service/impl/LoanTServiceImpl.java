@@ -65,6 +65,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setLoanId(loanPayDto.getLoanId());
             loanTDto.setDate(new Date());
             loanTDto.setStatus(TransactionStatus.PENDING);
+            loanTDto.setCategory(TransactionCat.LOAN);
             loanTDto.setTransactionType(loanPayDto.getTransactionType());
             loanTDto.setUserName(userName);
             loanTDto.setAcctFrom("qciAcct");
@@ -157,6 +158,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setAcctFrom(mobile);
             loanTDto.setTransactionType(TransactionType.MOBILE);
             loanTDto.setStatus(TransactionStatus.SUCCESS);
+            loanTDto.setCategory(TransactionCat.LOAN);
             loanTDto.setDate(new Date());
             loanTDto.setAmount(loanPayDto.getAmount());
             loanTDto.setLoanId(loanPayDto.getLoanId());
@@ -190,6 +192,7 @@ public class LoanTServiceImpl implements LoanTService {
         loanTDto.setDate(new Date());
             loanTDto.setUserName(userName);
             loanTDto.setAcctFrom(loan.getBorrower());
+            loanTDto.setCategory(TransactionCat.LOAN);
             loanTDto.setAcctTo("QciAcct");
             logger.info("getting borrower profile...");
         Profile profile =userService.getProfile(loanTDto.getAcctFrom());

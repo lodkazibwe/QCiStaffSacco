@@ -88,6 +88,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account createAccount(AccountDto accountDto) {
+        return null;
+    }
+
+    @Override
     public void deleteSummary(int id) {
 
     }

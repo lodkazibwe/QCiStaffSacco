@@ -5,6 +5,7 @@ import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
 import com.qualitychemicals.qciss.transaction.dto.SavingType;
+import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
 import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -34,7 +35,7 @@ public class SavingTServiceImpl implements SavingTService {
     @Transactional
     public SavingTDto mobileSaving(double amount) {
         logger.info("transacting...");
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount);
+        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.SAVING);
         logger.info("setting transaction...");
         SavingTDto savingTDto=new SavingTDto();
         savingTDto.setSavingType(SavingType.DIRECT);

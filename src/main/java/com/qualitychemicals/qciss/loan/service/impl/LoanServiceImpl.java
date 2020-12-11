@@ -455,6 +455,7 @@ public class LoanServiceImpl  implements LoanService {
                 }), m -> new ArrayList<>(m.values())));
     }
 
+
     @Override
     @Transactional
     public String deleteMyLoan(int loanId) {
@@ -484,6 +485,14 @@ public class LoanServiceImpl  implements LoanService {
         String userName=auth.getName();
         logger.info("getting loans ...");
         return loanDao.findByBorrower(userName);
+    }
+
+    @Override
+    public List<DueLoanDto> myDueLoans(Date date) {
+        logger.info("getting user ...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        return dueLoans(date,userName);
     }
 
     @Override
