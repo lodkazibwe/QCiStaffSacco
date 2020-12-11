@@ -34,29 +34,34 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionDto receiveMobileMoney(double amount) {
-        logger.info("getting user");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
-        Profile profile =userService.getProfile(userName);
-        logger.info("setting payment...");
-        MobilePayment mobilePayment=new MobilePayment();
-        String mobile= profile.getPerson().getMobile();
-        mobilePayment.setTo("qciAcct");
-        mobilePayment.setFrom(mobile);
-        mobilePayment.setAmount(amount);
-        transactMobile(mobilePayment);
+    public TransactionDto receiveMobileMoney(double amount, TransactionCat category) {
 
-        logger.info("setting transaction...");
-        TransactionDto transactionDto=new TransactionDto();
-        transactionDto.setAmount(amount);
-        transactionDto.setDate(new Date());
-        transactionDto.setStatus(TransactionStatus.SUCCESS);
-        transactionDto.setTransactionType(TransactionType.MOBILE);
-        transactionDto.setUserName(userName);
-        transactionDto.setAcctFrom(mobile);
-        transactionDto.setAcctTo("qciAcct");
-        return transactionDto;
+        if(amount>=5000){
+            logger.info("getting user");
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userName = auth.getName();
+            Profile profile = userService.getProfile(userName);
+            logger.info("setting payment...");
+            MobilePayment mobilePayment = new MobilePayment();
+            String mobile = profile.getPerson().getMobile();
+            mobilePayment.setTo("qciAcct");
+            mobilePayment.setFrom(mobile);
+            mobilePayment.setAmount(amount);
+            transactMobile(mobilePayment);
+
+            logger.info("setting transaction...");
+            TransactionDto transactionDto = new TransactionDto();
+            transactionDto.setAmount(amount);
+            transactionDto.setDate(new Date());
+            transactionDto.setStatus(TransactionStatus.SUCCESS);
+            transactionDto.setTransactionType(TransactionType.MOBILE);
+            transactionDto.setUserName(userName);
+            transactionDto.setAcctFrom(mobile);
+            transactionDto.setAcctTo("qciAcct");
+            transactionDto.setCategory(category);
+            return transactionDto;
+        }throw new InvalidValuesException("send 5000 and above");
+
     }
 
     public  MobilePayment transactMobile(MobilePayment mobilePayment) {

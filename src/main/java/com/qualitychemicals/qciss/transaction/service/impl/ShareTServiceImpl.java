@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
+import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
 import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -27,7 +28,7 @@ public class ShareTServiceImpl implements ShareTService {
     @Override
     public ShareTDto mobileShares(double amount) {
         logger.info("transacting...");
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount);
+        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.SHARE);
         logger.info("preparing transaction...");
         ShareTDto shareTDto=new ShareTDto();
         double shareCost=20000;

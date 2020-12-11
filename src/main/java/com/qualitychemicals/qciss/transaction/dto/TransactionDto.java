@@ -23,6 +23,7 @@ public class TransactionDto {
     private String acctTo;
     @NotNull (message ="userName cannot be Blank")
     private String userName;
+    private TransactionCat category;
     private TransactionType transactionType;
     private TransactionStatus status;
 

@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.profile.model.Account;
 import java.util.List;
 
 public interface AccountService {
+    Account createAccount(AccountDto accountDto);
     Account updateAccount(AccountDto accountDto, int id);
     Account getSummary(int id);
     List<Account> getAll();

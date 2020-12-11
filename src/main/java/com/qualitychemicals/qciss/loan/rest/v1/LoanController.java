@@ -84,4 +84,11 @@ public class LoanController {
 
     }
 
+    @GetMapping("/myDueLoans/{date}")
+    public ResponseEntity<List<DueLoanDto>> myDueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        //List<Loan> loan =loanService.myDueLoans(date);
+        return new ResponseEntity<>(loanService.myDueLoans(date), HttpStatus.OK);
+
+    }
+
 }
