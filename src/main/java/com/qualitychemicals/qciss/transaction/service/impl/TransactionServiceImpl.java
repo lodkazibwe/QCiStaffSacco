@@ -130,6 +130,66 @@ public class TransactionServiceImpl implements TransactionService {
         throw new InvalidValuesException("invalid loan Id " );
     }
 
+    @Override
+    public AllTransactions allTransactions() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/getAll", AllTransactions.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public LoanTransactionsDto loanTransactions() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/loan/getAll", LoanTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public SavingsTransactionsDto savingTransactions() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/saving/getAll", SavingsTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public MembershipTransactionsDto membershipTransactions() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/membership/getAll", MembershipTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public SharesTransactionsDto shareTransactions() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/shares/getAll", SharesTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public AllTransactions allByType(TransactionType transactionType) {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/getAll" +transactionType, AllTransactions.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
     /*private ResponseEntity<TransactionDto> saveTransaction(TransactionDto transactionDto) {
         logger.info("transacting...");
 

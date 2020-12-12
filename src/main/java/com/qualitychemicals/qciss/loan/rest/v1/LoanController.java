@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.loan.dto.LoanDto;
 import com.qualitychemicals.qciss.loan.dto.LoanRequestDto;
 import com.qualitychemicals.qciss.loan.dto.LoanVerifyDto;
 import com.qualitychemicals.qciss.loan.model.Loan;
+import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.rest.v1.UserController;
 import io.swagger.annotations.ApiOperation;
@@ -72,7 +73,7 @@ public class LoanController {
         return new ResponseEntity<>(dueLoans, HttpStatus.OK);
 
     }
-    @DeleteMapping("/deleteLoan/{loanId}")
+    @DeleteMapping("/deleteLoanRequest/{loanId}")
     public ResponseEntity<String> deleteLoanRequest(@PathVariable int loanId){
         return new ResponseEntity<>(loanService.deleteMyLoan(loanId), HttpStatus.OK);
     }
@@ -80,6 +81,47 @@ public class LoanController {
     @GetMapping("/myLoans")
     public ResponseEntity<List<LoanDto>> myLoans(){
         List<Loan> loan =loanService.myLoans();
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/loanRequests")
+    public ResponseEntity<List<LoanDto>> loanRequests(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.PENDING);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/openLoans")
+    public ResponseEntity<List<LoanDto>> openLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.OPEN);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/checkedLoans")
+    public ResponseEntity<List<LoanDto>> checkedLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.CHECKED);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/approvedLoans")
+    public ResponseEntity<List<LoanDto>> approvedLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.APPROVED);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/passedMaturityLoans")
+    public ResponseEntity<List<LoanDto>> passedMaturityLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.PASSED_MATURITY);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/closedLoans")
+    public ResponseEntity<List<LoanDto>> closedLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.CLOSED);
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
 
     }

@@ -10,4 +10,10 @@ public interface TransactionService {
     UserTransactionsDto userTransactions(String userName);
     UserTransactionsDto myTransactions();
     LoanTransactionsDto myLoanTransactions(int loanId);
+    LoanTransactionsDto loanTransactions();
+    AllTransactions allTransactions();
+    SavingsTransactionsDto savingTransactions();
+    MembershipTransactionsDto membershipTransactions();
+    SharesTransactionsDto shareTransactions();
+    AllTransactions allByType(TransactionType transactionType);
 }

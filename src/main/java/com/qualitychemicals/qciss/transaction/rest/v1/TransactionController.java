@@ -1,9 +1,6 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
-
 import com.qualitychemicals.qciss.profile.dto.DeductionScheduleDTO;
-import com.qualitychemicals.qciss.transaction.dto.LoanTransactionsDto;
-import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
-import com.qualitychemicals.qciss.transaction.dto.UserTransactionsDto;
+import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,27 +16,61 @@ public class TransactionController {
     @Autowired
     TransactionService transactionService;
 
+
     @GetMapping("/loanTransactions/{loanId}")
     public ResponseEntity<LoanTransactionsDto> loanTransactions(@PathVariable int loanId){
               return  new ResponseEntity<>((transactionService.loanTransactions(loanId)), HttpStatus.OK);
 
     }
+    @GetMapping("/admin/getAll")
+    public ResponseEntity<AllTransactions> allTransactions(){
+       return new ResponseEntity<>(transactionService.allTransactions(), HttpStatus.OK);
 
-    @GetMapping("/userTransactions/{userName}")
+    }
+    @GetMapping("/admin/getAll/{transactionType}")
+    public ResponseEntity<AllTransactions> allByType(@PathVariable TransactionType transactionType){
+        /*return  new ResponseEntity<>(new AllTransactions(transactionConverter.entityToDto
+                (transactionService.allByType(transactionType))), HttpStatus.OK);*/
+        return new ResponseEntity<>(transactionService.allByType(transactionType), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/loanTransactions")
+    public ResponseEntity<LoanTransactionsDto> allLoanTransactions(){
+        return new ResponseEntity<>(transactionService.loanTransactions(), HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/savingTransactions")
+    public ResponseEntity<SavingsTransactionsDto> savingTransactions(){
+        return new ResponseEntity<>(transactionService.savingTransactions(), HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/membershipTransactions")
+    public ResponseEntity<MembershipTransactionsDto> membershipTransactions(){
+        return new ResponseEntity<>(transactionService.membershipTransactions(), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/shareTransactions")
+    public ResponseEntity<SharesTransactionsDto> shareTransactions(){
+        return new ResponseEntity<>(transactionService.shareTransactions(), HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/userTransactions/{userName}")
     public ResponseEntity<UserTransactionsDto> userTransactions(@PathVariable String userName){
         return  new ResponseEntity<>(transactionService.userTransactions(userName), HttpStatus.OK);
 
     }
 
-    @GetMapping("/myloanTransactions/{loanId}")
+    @GetMapping("/myLoanTransactions/{loanId}")
     public ResponseEntity<LoanTransactionsDto> myLoanTransactions(@PathVariable int loanId){
         return  new ResponseEntity<>((transactionService.myLoanTransactions(loanId)), HttpStatus.OK);
 
     }
 
+
     @GetMapping("/myTransactions")
     public ResponseEntity<UserTransactionsDto> myTransactions(){
-
         return  new ResponseEntity<>(transactionService.myTransactions(), HttpStatus.OK);
 
     }

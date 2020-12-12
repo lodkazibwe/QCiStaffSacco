@@ -505,4 +505,9 @@ public class LoanServiceImpl  implements LoanService {
         return loanDao.save(loan);
 
     }
+
+    @Override
+    public List<Loan> getLoan(LoanStatus status) {
+        return loanDao.findByStatus(status);
+    }
 }
