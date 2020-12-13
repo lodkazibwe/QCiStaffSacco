@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.loan.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.loan.converter.ProductConverter;
 import com.qualitychemicals.qciss.loan.dao.ProductDao;
@@ -20,10 +21,26 @@ public class ProductServiceImpl implements ProductService {
     private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
     @Override
     public Product addProduct(ProductDto productDto) {
-        logger.info("converting ...");
-        Product product=productConverter.dtoToEntity(productDto);
-        logger.info("saving ...");
-        return productDao.save(product);
+        boolean bool=checkProduct(productDto.getName(), productDto.getProductNumber());
+        if(bool) {
+
+            logger.info("converting ...");
+            Product product = productConverter.dtoToEntity(productDto);
+            logger.info("saving ...");
+            return productDao.save(product);
+        }else{throw new InvalidValuesException("Product already exists");}
+    }
+    private boolean checkProduct(String name, String number){
+        boolean bool=productDao.existsByName(name);
+        if(bool){ throw new InvalidValuesException("Product name already used");
+        }else{
+          boolean bool1=productDao.existsByProductNumber(number);
+            if(bool1) {
+                throw new InvalidValuesException("Product number already used");
+            }else{
+                return true;
+            }
+        }
     }
 
     @Override
