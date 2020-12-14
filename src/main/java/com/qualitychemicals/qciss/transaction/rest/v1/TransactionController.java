@@ -1,5 +1,5 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
-import com.qualitychemicals.qciss.profile.dto.DeductionScheduleDTO;
+import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +78,6 @@ public class TransactionController {
 
     @PutMapping("/admin/payrollRepayment")
     public ResponseEntity<List<TransactionDto>> payrollRepayment(@RequestBody DeductionScheduleDTO deductionSchedule){
-
-        return null;
+        return new ResponseEntity<>(transactionService.scheduleRepayment(deductionSchedule),HttpStatus.OK);
     }
 }

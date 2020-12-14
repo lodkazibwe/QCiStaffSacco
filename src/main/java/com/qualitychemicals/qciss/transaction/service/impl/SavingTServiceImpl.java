@@ -31,6 +31,7 @@ public class SavingTServiceImpl implements SavingTService {
     @Autowired RestTemplate restTemplate;
 
     private final Logger logger = LoggerFactory.getLogger(SavingTServiceImpl.class);
+
     @Override
     @Transactional
     public SavingTDto mobileSaving(double amount) {
@@ -54,6 +55,8 @@ public class SavingTServiceImpl implements SavingTService {
         return response.getBody();
     }
 
+
+
     private ResponseEntity<SavingTDto> saveSavingT(SavingTDto savingTDto) {
         logger.info("transacting...");
         try {
@@ -67,4 +70,13 @@ public class SavingTServiceImpl implements SavingTService {
 
     }
 
+    @Transactional
+    @Override
+    public SavingTDto systemSaving(SavingTDto savingTDto) {
+        logger.info("updating saving...");
+        accountService.updateSaving(savingTDto.getAmount(), savingTDto.getAcctFrom());
+        logger.info("saving transaction...");
+        ResponseEntity<SavingTDto> response=saveSavingT(savingTDto);
+        return response.getBody();
+    }
 }

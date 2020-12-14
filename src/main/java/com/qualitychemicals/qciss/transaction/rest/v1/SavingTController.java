@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/transaction/saving")
 public class SavingTController {
-    @Autowired SavingTService savingTService;
+    @Autowired
+    SavingTService savingTService;
 
     @PutMapping("/mobile/{amount}")
     public ResponseEntity<SavingTDto> mobileSaving(@PathVariable double amount){

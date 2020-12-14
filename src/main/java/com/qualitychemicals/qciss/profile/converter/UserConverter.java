@@ -23,6 +23,8 @@ public class UserConverter {
     public UserDto entityToDto(Profile profile){
         UserDto userDto =new UserDto();
         userDto.setUserId(profile.getId());
+        userDto.setUserName(profile.getUserName());
+        userDto.setStatus(profile.getStatus());
         userDto.setPersonDto(personConverter.entityToDto(profile.getPerson()));
         userDto.setAccountDto(accountConverter.entityToDto(profile.getAccount()));
         userDto.setWorkDto(workConverter.entityToDto(profile.getWork()));

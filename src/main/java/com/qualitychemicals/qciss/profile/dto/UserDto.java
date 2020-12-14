@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.dto;
 
+import com.qualitychemicals.qciss.profile.model.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,8 @@ import javax.validation.constraints.NotNull;
 
 public class UserDto {
     private int userId;
+    private String userName;
+    private Status status;
     @NotNull(message = "invalid  profile details...")
     @Valid
     private PersonDto personDto;

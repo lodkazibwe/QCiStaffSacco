@@ -6,7 +6,13 @@ import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
+import com.qualitychemicals.qciss.saccoData.dto.ScheduleLoanDto;
+import com.qualitychemicals.qciss.saccoData.service.DeductionScheduleService;
 import com.qualitychemicals.qciss.transaction.dto.*;
+import com.qualitychemicals.qciss.transaction.service.LoanTService;
+import com.qualitychemicals.qciss.transaction.service.SavingTService;
+import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,20 +29,29 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
     @Autowired UserService userService;
     @Autowired LoanService loanService;
     @Autowired RestTemplate restTemplate;
+    @Autowired
+    LoanTService loanTService;
+    @Autowired SavingTService savingTService;
+    @Autowired ShareTService shareTService;
+    @Autowired DeductionScheduleService deductionScheduleService;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     @Override
     @Transactional
     public TransactionDto receiveMobileMoney(double amount, TransactionCat category) {
 
-        if(amount>=5000){
+        if(amount>=3000){
             logger.info("getting user");
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String userName = auth.getName();
@@ -60,7 +75,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionDto.setAcctTo("qciAcct");
             transactionDto.setCategory(category);
             return transactionDto;
-        }throw new InvalidValuesException("send 5000 and above");
+        }throw new InvalidValuesException("send 3000 and above");
 
     }
 
@@ -188,6 +203,70 @@ public class TransactionServiceImpl implements TransactionService {
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }
+    }
+
+    @Override
+    @Transactional
+    public List<TransactionDto> scheduleRepayment(DeductionScheduleDTO deductionScheduleDTO) {
+
+        Profile profile=userService.getProfile(deductionScheduleDTO.getEmployee().getUid());
+        List<TransactionDto> transactionDtos=new ArrayList<>();
+        SavingTDto savingTDto=new SavingTDto();
+        savingTDto.setDate(new Date());
+        savingTDto.setSavingType(SavingType.MONTHLY);
+        savingTDto.setAcctFrom(profile.getUserName());
+        savingTDto.setAcctTo("QCiAcct");
+        savingTDto.setAmount(deductionScheduleDTO.getEmployee().getPayrollSavings());
+        savingTDto.setCategory(TransactionCat.SAVING);
+        savingTDto.setStatus(TransactionStatus.PENDING);
+        savingTDto.setTransactionType(TransactionType.CHEQUE);
+        savingTService.systemSaving(savingTDto);
+        transactionDtos.add(savingTDto);
+        //savingTDto.setUserName(userName);
+
+        ShareTDto shareTDto=new ShareTDto();
+        double amount=deductionScheduleDTO.getEmployee().getPayrollShares();
+        shareTDto.setAmount(amount);
+        shareTDto.setShares(amount/20000);
+        shareTDto.setUnitCost(20000);
+        shareTDto.setCategory(TransactionCat.SHARE);
+        shareTDto.setDate(new Date());
+        shareTDto.setAcctFrom(profile.getUserName());
+        shareTDto.setAcctTo("QCiAcct");
+        shareTDto.setStatus(TransactionStatus.PENDING);
+        shareTDto.setTransactionType(TransactionType.CHEQUE);
+        shareTService.systemShares(shareTDto);
+        transactionDtos.add(shareTDto);
+
+        List<ScheduleLoanDto> scheduleLoans=deductionScheduleDTO.getDueLoans();
+        for(ScheduleLoanDto scheduleLoan:scheduleLoans) {
+            LoanTDto loanTDto = new LoanTDto();
+            loanTDto.setDate(new Date());
+            loanTDto.setCategory(TransactionCat.LOAN);
+            loanTDto.setStatus(TransactionStatus.PENDING);
+            loanTDto.setAcctTo("QCiAcct");
+            loanTDto.setLoanId(scheduleLoan.getLoanId());
+            loanTDto.setAmount(scheduleLoan.getDue());
+            loanTDto.setTransactionType(TransactionType.CHEQUE);
+            loanTDto.setAcctFrom(profile.getUserName());
+            loanTService.repay(loanTDto);
+            transactionDtos.add(loanTDto);
+        }
+
+        deductionScheduleService.settleSchedule(deductionScheduleDTO.getId());
+        return transactionDtos;
+    }
+
+    @Override
+    public List<TransactionDto> scheduleRepayment(List<DeductionScheduleDTO> deductionScheduleDTOs) {
+        List<TransactionDto> transactionDtos=new ArrayList<>();
+        for (DeductionScheduleDTO deductionScheduleDTO:deductionScheduleDTOs){
+            List<TransactionDto> transactions =scheduleRepayment(deductionScheduleDTO);
+            transactionDtos= Stream.concat(transactionDtos.stream(), transactions
+            .stream()).collect(Collectors.toList());
+
+        }
+        return transactionDtos;
     }
 
     /*private ResponseEntity<TransactionDto> saveTransaction(TransactionDto transactionDto) {

@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -64,4 +65,14 @@ public class ShareTServiceImpl implements ShareTService {
 
     }
 
+    @Transactional
+    @Override
+    public ShareTDto systemShares(ShareTDto shareTDto) {
+        logger.info("updating shares...");
+        double shareCost=20000;
+        accountService.updateShares(shareTDto.getAmount()/shareCost, shareTDto.getAcctFrom());
+        logger.info("saving transaction...");
+        ResponseEntity<ShareTDto> response=saveSavingT(shareTDto);
+        return response.getBody();
+    }
 }
