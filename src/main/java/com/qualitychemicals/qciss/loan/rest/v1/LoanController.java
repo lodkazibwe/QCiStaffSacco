@@ -1,10 +1,7 @@
 package com.qualitychemicals.qciss.loan.rest.v1;
 
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
-import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
-import com.qualitychemicals.qciss.loan.dto.LoanDto;
-import com.qualitychemicals.qciss.loan.dto.LoanRequestDto;
-import com.qualitychemicals.qciss.loan.dto.LoanVerifyDto;
+import com.qualitychemicals.qciss.loan.dto.*;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.service.LoanService;
@@ -19,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -63,16 +59,38 @@ public class LoanController {
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
     }
 
+    @ApiOperation(value="reject a loan")
+    @PutMapping("/admin/reject")
+    public ResponseEntity<LoanDto> reject(@RequestBody LoanRejectDto loanRejectDto){
+        Loan loan =loanService.reject(loanRejectDto);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+    }
+
     @GetMapping("/admin/dueLoans/{date}")
-    public ResponseEntity<List<DueLoanDto>> DueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, 1);
-        Date myDate= cal.getTime();
-        List<DueLoanDto> dueLoans =loanService.dueLoans(myDate);
+    public ResponseEntity<List<DueLoanDto>> dueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        List<DueLoanDto> dueLoans =loanService.dueLoans(date);
         return new ResponseEntity<>(dueLoans, HttpStatus.OK);
 
     }
+
+    @GetMapping("/admin/userDueLoans/{userName}/{date}")
+    public ResponseEntity<List<DueLoanDto>> userDueLoans(@PathVariable String userName, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
+        List<DueLoanDto> dueLoans =loanService.dueLoans(date, userName);
+        return new ResponseEntity<>(dueLoans, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/outstandingLoans/{userName}")
+    public ResponseEntity<List<DueLoanDto>> userOutstandingLoans(@PathVariable String userName){
+        List<DueLoanDto> dueLoans =loanService.outstandingLoans(userName);
+        return new ResponseEntity<>(dueLoans, HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/outstandingLoans")
+    public ResponseEntity<List<DueLoanDto>> outstandingLoans(){
+        List<DueLoanDto> dueLoans =loanService.outstandingLoans();
+        return new ResponseEntity<>(dueLoans, HttpStatus.OK);
+    }
+
     @DeleteMapping("/deleteLoanRequest/{loanId}")
     public ResponseEntity<String> deleteLoanRequest(@PathVariable int loanId){
         return new ResponseEntity<>(loanService.deleteMyLoan(loanId), HttpStatus.OK);
@@ -126,11 +144,33 @@ public class LoanController {
 
     }
 
+    @GetMapping("/admin/rejectedLoans")
+    public ResponseEntity<List<LoanDto>> rejectedLoans(){
+        List<Loan> loan =loanService.getLoan(LoanStatus.REJECTED);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/getLoanAppraisal/{loanId}")
+    public ResponseEntity<AppraisalSheetDto> getLoanAppraisal(@PathVariable int loanId){
+        return new ResponseEntity<>(loanService.getLoanAppraisal(loanId), HttpStatus.OK);
+
+    }
+
+
     @GetMapping("/myDueLoans/{date}")
     public ResponseEntity<List<DueLoanDto>> myDueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         //List<Loan> loan =loanService.myDueLoans(date);
         return new ResponseEntity<>(loanService.myDueLoans(date), HttpStatus.OK);
 
     }
+
+    @GetMapping("/myOutstanding")
+    public ResponseEntity<List<DueLoanDto>> myOutstandingLoans(){
+        return new ResponseEntity<>(loanService.myOutstandingLoans(), HttpStatus.OK);
+
+    }
+
+
 
 }

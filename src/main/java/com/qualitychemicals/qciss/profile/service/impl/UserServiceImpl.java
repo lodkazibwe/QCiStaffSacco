@@ -1,6 +1,5 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
-import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.model.RepaymentMode;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
             String pin ="QC-"+rand;
             profile.setPassword(passwordEncoder.encode(pin));
 
-            String message="one time login pin QCiSS "+"Q-"+pin;
+            String message="use this pin to login "+pin;
             profile.getPerson().setImage("C:\\Users\\joeko\\Desktop\\file\\default.png");
             //generate profile/accountNumber********************************************************
             logger.info("generating member number...");
@@ -82,6 +81,7 @@ public class UserServiceImpl implements UserService {
             logger.info("profile values updated...");
             logger.info("saving...");
             Profile savedProfile = userDAO.save(profile);
+            logger.info("sending email...");
             emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
             logger.info(message+" for  "+ userName);
             logger.info("profile created...");
@@ -228,6 +228,9 @@ public class UserServiceImpl implements UserService {
     public Profile verifyUser(int userId) {
         Profile profile =getProfile(userId);
         profile.setStatus(Status.OPEN);
+        String email=profile.getPerson().getEmail();
+        logger.info("sending email...");
+        emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE","Your QC-SACCO account has been verified");
         return userDAO.save(profile);
     }
 

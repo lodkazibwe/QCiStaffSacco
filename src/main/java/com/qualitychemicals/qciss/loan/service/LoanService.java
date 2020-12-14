@@ -24,6 +24,13 @@ public interface LoanService {
     Loan changeStatus(Loan loan, LoanStatus loanStatus);
     List<Loan> myLoans();
     List<DueLoanDto> myDueLoans(Date date);
+    List<DueLoanDto> myOutstandingLoans();
+    List<DueLoanDto> outstandingLoans();
+    List<DueLoanDto> outstandingLoans(String borrower);
 
     List<Loan> getLoan(LoanStatus status);
+    List<Loan> getLoan(String userName, LoanStatus status);
+    AppraisalSheetDto getLoanAppraisal(int loanId);
+    Loan reject(LoanRejectDto loanRejectDto);
+
 }

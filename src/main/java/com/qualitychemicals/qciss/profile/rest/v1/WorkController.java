@@ -31,7 +31,7 @@ public class WorkController {
 
     }
 
-    @PutMapping("/myPayrollSaving/{amount}")
+    @PutMapping("/updatePayrollSaving/{amount}")
     public ResponseEntity<WorkDto> updatePayrollSaving(@PathVariable double amount){
 
         Work work=workService.updatePayrollSaving(amount);
@@ -40,7 +40,7 @@ public class WorkController {
 
     }
 
-    @PutMapping("/myPayrollShares/{amount}")
+    @PutMapping("/updatePayrollShares/{amount}")
     public ResponseEntity<WorkDto> updatePayrollShares(@PathVariable double amount){
 
         Work work=workService.updatePayrollShares(amount);

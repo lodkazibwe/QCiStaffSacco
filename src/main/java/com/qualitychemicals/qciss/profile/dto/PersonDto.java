@@ -20,8 +20,8 @@ public class PersonDto {
     @Size(min=2, message = "Last name at least two Characters")
     private String lastName;
     @NotNull(message = "nin cannot be null")
-    @Size(min=14, max=14,message = "NIN must have 14 Characters")
-    @Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
+    //@Size(min=14, max=14,message = "NIN must have 14 Characters")
+    //@Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
     @NotNull(message = "mobile cannot be null")
     @Size(min=10, max=10, message = "invalid Contact length")

@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class DeductionScheduleDTO {
     private EmployeeDto employee;
     private List<DueLoanDto> dueLoans;

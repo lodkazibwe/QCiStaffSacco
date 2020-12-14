@@ -15,7 +15,8 @@ public interface LoanDao extends JpaRepository<Loan, Integer > {
     List<Loan> findByStatus(LoanStatus status);
 
    @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
-           "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid,r.balance,r.balance,r.date,l.repaymentMode) " +
+           "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +
+           "r.balance,r.balance,r.date,r.date,l.repaymentMode) " +
            "FROM Loan l JOIN l.repayments r WHERE r.balance>0 and r.date<?1 ORDER BY r.date")
     List<DueLoanDto> getDueLoans(Date date);
 
@@ -24,8 +25,22 @@ public interface LoanDao extends JpaRepository<Loan, Integer > {
     List<Loan> findByBorrowerAndStatus(String borrower, LoanStatus status);
 
     @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
-            "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid,r.balance,r.balance,r.date,l.repaymentMode) " +
+            "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +
+            "r.balance,r.balance,r.date,r.date,l.repaymentMode) " +
             "FROM Loan l JOIN l.repayments r WHERE r.balance>0 and r.date<?1 and l.borrower=?2 ORDER BY r.date")
     List<DueLoanDto> getDueLoans(Date date,String borrower);
 
+    @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
+            "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +
+            "r.balance,r.balance,r.date,r.date,l.repaymentMode) " +
+            "FROM Loan l JOIN l.repayments r WHERE r.balance>0 and l.borrower=?1 ORDER BY r.date")
+    List<DueLoanDto> outstandingLoans(String borrower);
+
+    @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
+            "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +
+            "r.balance,r.balance,r.date,r.date,l.repaymentMode) " +
+            "FROM Loan l JOIN l.repayments r WHERE r.balance>0 ORDER BY r.date")
+    List<DueLoanDto> outstandingLoans();
+
 }
+

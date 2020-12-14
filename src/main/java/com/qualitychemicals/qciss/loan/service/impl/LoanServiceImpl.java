@@ -7,7 +7,11 @@ import com.qualitychemicals.qciss.loan.dao.LoanDao;
 import com.qualitychemicals.qciss.loan.dto.*;
 import com.qualitychemicals.qciss.loan.model.*;
 import com.qualitychemicals.qciss.loan.service.LoanService;
+import com.qualitychemicals.qciss.profile.converter.UserConverter;
+import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Account;
+import com.qualitychemicals.qciss.profile.model.Profile;
+import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +31,11 @@ import java.util.stream.Collectors;
 @Service
 public class LoanServiceImpl  implements LoanService {
     @Autowired LoanConverter loanConverter;
+    @Autowired UserConverter userConverter;
     @Autowired LoanDao loanDao;
     @Autowired UserService userService;
+    @Autowired
+    EmailService emailService;
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
@@ -83,7 +90,7 @@ public class LoanServiceImpl  implements LoanService {
         logger.info("checking user...");
         boolean bool = userService.isUserOpen(userName);
         if (bool) {
-            logger.info("pass User Open...");
+            logger.info("pass... User Open...");
             loanDto.setBorrower(userName);
             List<LoanStatus> loanStatuses=new ArrayList<>();
             loanStatuses.add(LoanStatus.PENDING);
@@ -260,7 +267,8 @@ public class LoanServiceImpl  implements LoanService {
             logger.info("setting loan repayments ...");
             loan.setRepayments(repaymentGen(loan.getRepaymentCycle(),cal1,cal2,amount, principal));
             loan.setApprovedBy(userName);
-            logger.info("approving loan ...");
+            logger.info("approving loan and sending email...");
+            sendLoanEmail(loan.getBorrower(), "your Loan has been Approved "+loan.getReleaseDate());
             return loanDao.save(loan);
         }else{
             logger.error("invalid loan ...");
@@ -432,27 +440,25 @@ public class LoanServiceImpl  implements LoanService {
     @Override
     @Transactional
     public List<DueLoanDto> dueLoans(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        Date myDate= cal.getTime();
         logger.info("getting repayments due ...");
-        List<DueLoanDto> dueLoans=loanDao.getDueLoans(date);
-        logger.info("filtering and merging...");
-        return dueLoans.stream().collect(Collectors.collectingAndThen(
-                Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
-            left.setDue(left.getDue()+right.getDue());
-            return left;
-        }), m -> new ArrayList<>(m.values())));
+        List<DueLoanDto> dueLoans=loanDao.getDueLoans(myDate);
+        return filterDueLoans(dueLoans);
 
     }
 
     @Override
     public List<DueLoanDto> dueLoans(Date date, String borrower) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, 1);
+        Date myDate= cal.getTime();
         logger.info("getting repayments due ...");
-        List<DueLoanDto> dueLoans=loanDao.getDueLoans(date, borrower);
-        logger.info("filtering and merging...");
-        return dueLoans.stream().collect(Collectors.collectingAndThen(
-                Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
-                    left.setDue(left.getDue()+right.getDue());
-                    return left;
-                }), m -> new ArrayList<>(m.values())));
+        List<DueLoanDto> dueLoans=loanDao.getDueLoans(myDate, borrower);
+        return filterDueLoans(dueLoans);
     }
 
 
@@ -466,8 +472,8 @@ public class LoanServiceImpl  implements LoanService {
         Loan loan=getLoan(loanId);
         LoanStatus status=loan.getStatus();
         logger.info("checking loan ...");
-        if((status==LoanStatus.PENDING || status==LoanStatus.CHECKED || status==LoanStatus.APPROVED) &
-                (loan.getBorrower().equals(userName))){
+        if((status==LoanStatus.PENDING || status==LoanStatus.CHECKED || status==LoanStatus.REJECTED
+                ) & (loan.getBorrower().equals(userName))){
             logger.info("deleting loan ...");
             loanDao.delete(loan);
             return "success";
@@ -496,6 +502,39 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    public List<DueLoanDto> myOutstandingLoans() {
+        logger.info("getting user ...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        return outstandingLoans(userName);
+    }
+
+    @Override
+    public List<DueLoanDto> outstandingLoans() {
+        logger.info("getting repayments due ...");
+        List<DueLoanDto> dueLoans=loanDao.outstandingLoans();
+        return filterDueLoans(dueLoans);
+    }
+
+    @Override
+    public List<DueLoanDto> outstandingLoans(String borrower) {
+        logger.info("getting repayments due ...");
+        List<DueLoanDto> dueLoans=loanDao.outstandingLoans(borrower);
+        return filterDueLoans(dueLoans);
+
+    }
+
+    private List<DueLoanDto> filterDueLoans(List<DueLoanDto> dueLoans){
+        logger.info("filtering and merging...");
+        return dueLoans.stream().collect(Collectors.collectingAndThen(
+                Collectors.toMap(DueLoanDto::getLoanId, Function.identity(), (left, right) -> {
+                    left.setDue(left.getDue()+right.getDue());
+                    left.setLastDueDate(right.getLastDueDate());
+                    return left;
+                }), m -> new ArrayList<>(m.values())));
+    }
+
+    @Override
     @Transactional
     public Loan changeStatus(Loan ln, LoanStatus loanStatus) {
         logger.info("getting loan ...");
@@ -509,5 +548,47 @@ public class LoanServiceImpl  implements LoanService {
     @Override
     public List<Loan> getLoan(LoanStatus status) {
         return loanDao.findByStatus(status);
+    }
+
+    @Override
+    public List<Loan> getLoan(String userName, LoanStatus status) {
+        return loanDao.findByBorrowerAndStatus(userName, status);
+    }
+
+    @Override
+    public AppraisalSheetDto getLoanAppraisal(int loanId) {
+        logger.info("getting loan request");
+        Loan loan=getLoan(loanId);
+        logger.info("getting outstanding loans");
+        List<DueLoanDto> outstandingLoans=outstandingLoans(loan.getBorrower());
+        logger.info("getting user profile");
+        Profile profile=userService.getProfile(loan.getBorrower());
+        logger.info("converting...");
+        LoanDto loanRequest=loanConverter.entityToDto(loan);
+        UserDto userDto=userConverter.entityToDto(profile);
+        return new AppraisalSheetDto(loanRequest,outstandingLoans,userDto);
+
+    }
+
+    @Override
+    public Loan reject(LoanRejectDto loanRejectDto) {
+        logger.info("getting user...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        logger.info("getting loan...");
+        Loan loan=getLoan(loanRejectDto.getId());
+        if(loan.getStatus()== LoanStatus.PENDING || loan.getStatus()== LoanStatus.CHECKED){
+            logger.info("rejecting loan");
+            loan.setStatus(LoanStatus.REJECTED);
+            loan.setPreparedBy(userName);
+            sendLoanEmail(loan.getBorrower(), loanRejectDto.getReason());
+            return loanDao.save(loan);
+        }
+        throw new InvalidValuesException("Loan already approved");
+    }
+
+    private void sendLoanEmail(String borrower, String message){
+        Profile profile=userService.getProfile(borrower);
+        emailService.sendSimpleMessage(profile.getPerson().getEmail(),"YOUR LOAN FEEDBACK", message);
     }
 }
