@@ -1,5 +1,7 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.google.cloud.storage.Blob;
+import com.google.firebase.cloud.StorageClient;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.dao.PersonDao;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
@@ -8,18 +10,25 @@ import com.qualitychemicals.qciss.profile.service.PersonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
 public class PersonServiceImpl implements PersonService {
     @Autowired
     PersonDao personDao;
+    @Autowired
+    private Environment environment;
 
     private final Logger logger= LoggerFactory.getLogger(PersonServiceImpl.class);
     @Override
@@ -91,4 +100,26 @@ public class PersonServiceImpl implements PersonService {
         return newFile.getAbsolutePath();
 
     }
+
+    public String uploadImage(MultipartFile myFile) throws IOException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+
+        InputStream file =  new BufferedInputStream(myFile.getInputStream());
+        String name="profile/"+ myFile.getOriginalFilename();
+
+        Blob blob=StorageClient.getInstance().bucket()
+                .create(name, file);
+
+        return name;
+
+    }
+
+    public String getImageUrl(String name) {
+
+        return String.format(environment.getProperty("firebase.image-url"), name);
+    }
+
+
+
 }

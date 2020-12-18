@@ -1,6 +1,10 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.firebase.notification.Notification;
+import com.qualitychemicals.qciss.firebase.notification.NotificationService;
+import com.qualitychemicals.qciss.firebase.notification.NotificationStatus;
+import com.qualitychemicals.qciss.firebase.notification.Subject;
 import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.model.RepaymentMode;
 import com.qualitychemicals.qciss.loan.service.LoanService;
@@ -12,6 +16,12 @@ import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
+import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
+import com.qualitychemicals.qciss.transaction.service.MembershipTService;
+import com.qualitychemicals.qciss.transaction.service.SavingTService;
+import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +47,10 @@ public class UserServiceImpl implements UserService {
     @Autowired PersonService personService;
     @Autowired
     LoanService loanService;
+    @Autowired NotificationService notificationService;
+    @Autowired SavingTService savingTService;
+    @Autowired MembershipTService membershipTService;
+    @Autowired ShareTService shareTService;
 
 
 
@@ -73,7 +87,7 @@ public class UserServiceImpl implements UserService {
             profile.setPassword(passwordEncoder.encode(pin));
 
             String message="use this pin to login "+pin;
-            profile.getPerson().setImage("C:\\Users\\joeko\\Desktop\\file\\default.png");
+            profile.getPerson().setImage("default.png");
             //generate profile/accountNumber********************************************************
             logger.info("generating member number...");
             String memberNo=getMemberNo(profile.getId());
@@ -81,15 +95,24 @@ public class UserServiceImpl implements UserService {
             logger.info("profile values updated...");
             logger.info("saving...");
             Profile savedProfile = userDAO.save(profile);
+            logger.info("initial transactions...");
+            double membership =20000-profile.getAccount().getPendingFee();
+            savingTService.initialSaving(profile.getAccount().getSavings(), userName);
+            membershipTService.initialMembership(membership, userName);
+            shareTService.initialShares(profile.getAccount().getShares(), userName);
+
             logger.info("sending email...");
             emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
             logger.info(message+" for  "+ userName);
             logger.info("profile created...");
+            //initialTransactions(userDTO.getAccountDto(), userName);
             return savedProfile;
 
         }
 
     }
+
+
 
     private String getMemberNo(int id) {
         Random random = new Random();
@@ -228,9 +251,13 @@ public class UserServiceImpl implements UserService {
     public Profile verifyUser(int userId) {
         Profile profile =getProfile(userId);
         profile.setStatus(Status.OPEN);
-        String email=profile.getPerson().getEmail();
-        logger.info("sending email...");
-        emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE","Your QC-SACCO account has been verified");
+        logger.info("sending notification...");
+        Notification notification=new Notification();
+        notification.setDate(new Date());
+        notification.setSentTo(profile.getUserName());
+        notification.setStatus(NotificationStatus.RECEIVED);
+        notification.setSubject(Subject.AccountVerify);
+        notificationService.sendNotification(notification);
         return userDAO.save(profile);
     }
 

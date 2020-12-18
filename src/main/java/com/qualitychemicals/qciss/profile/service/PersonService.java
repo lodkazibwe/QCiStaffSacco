@@ -15,6 +15,7 @@ public interface PersonService {
      void deletePerson(int id);
      int userExists(String email, String mobile);
      String updateImage(MultipartFile file, int id) throws IOException;
+     String uploadImage(MultipartFile myFile) throws IOException;
     //*getByName,search
 
 }

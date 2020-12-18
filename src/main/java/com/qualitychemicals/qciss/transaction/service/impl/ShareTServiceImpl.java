@@ -2,9 +2,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
-import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
-import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
-import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
+import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
@@ -13,10 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 @Service
 public class ShareTServiceImpl implements ShareTService {
@@ -47,11 +49,11 @@ public class ShareTServiceImpl implements ShareTService {
         logger.info("updating shares...");
         accountService.updateShares(amount/shareCost, transaction.getUserName());
         logger.info("saving transaction...");
-        ResponseEntity<ShareTDto> response=saveSavingT(shareTDto);
+        ResponseEntity<ShareTDto> response=saveShareT(shareTDto);
         return response.getBody();
     }
 
-    private ResponseEntity<ShareTDto> saveSavingT(ShareTDto shareTDto) {
+    private ResponseEntity<ShareTDto> saveShareT(ShareTDto shareTDto) {
         logger.info("transacting...");
 
         try {
@@ -72,7 +74,28 @@ public class ShareTServiceImpl implements ShareTService {
         double shareCost=20000;
         accountService.updateShares(shareTDto.getAmount()/shareCost, shareTDto.getAcctFrom());
         logger.info("saving transaction...");
-        ResponseEntity<ShareTDto> response=saveSavingT(shareTDto);
+        ResponseEntity<ShareTDto> response=saveShareT(shareTDto);
         return response.getBody();
+    }
+
+    public void initialShares(double qtty, String userName) {
+        if(qtty>0) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String user = auth.getName();
+            double unitCost =20000;
+            ShareTDto shareTDto = new ShareTDto();
+            shareTDto.setUserName(user);
+            shareTDto.setTransactionType(TransactionType.CHEQUE);
+            shareTDto.setStatus(TransactionStatus.SUCCESS);
+            shareTDto.setCategory(TransactionCat.MEMBERSHIP);
+            shareTDto.setAmount(unitCost*qtty);
+            shareTDto.setAcctTo("qciAcct");
+            shareTDto.setAcctFrom(userName);
+            shareTDto.setUnitCost(unitCost);
+            shareTDto.setShares(qtty);
+            shareTDto.setDate(new Date());
+            saveShareT(shareTDto);
+        }
+
     }
 }

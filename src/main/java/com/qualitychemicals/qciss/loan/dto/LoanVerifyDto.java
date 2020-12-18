@@ -15,6 +15,5 @@ public class LoanVerifyDto {
     private int id;
     @NotNull
     private double transferCharge;
-    @Null
     private String remarks;
 }

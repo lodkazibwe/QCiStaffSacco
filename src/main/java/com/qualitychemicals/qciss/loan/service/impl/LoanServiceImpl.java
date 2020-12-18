@@ -2,6 +2,8 @@ package com.qualitychemicals.qciss.loan.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.firebase.notification.NotificationService;
+import com.qualitychemicals.qciss.firebase.notification.Subject;
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
 import com.qualitychemicals.qciss.loan.dao.LoanDao;
 import com.qualitychemicals.qciss.loan.dto.*;
@@ -11,7 +13,6 @@ import com.qualitychemicals.qciss.profile.converter.UserConverter;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Profile;
-import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class LoanServiceImpl  implements LoanService {
     @Autowired LoanDao loanDao;
     @Autowired UserService userService;
     @Autowired
-    EmailService emailService;
+    NotificationService notificationService;
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
@@ -58,6 +59,9 @@ public class LoanServiceImpl  implements LoanService {
                     throw new InvalidValuesException("you have an outstanding loan for the product");
                 }
                 logger.info("processing loan...");
+                logger.info("sending notification loan...");
+                String text="New loan  Request ";
+                notificationService.sendNotification("ADMIN", text, Subject.LoanRequest);
                 return processLoan(loanDto);
             }
             logger.error("max loans reached...");
@@ -268,7 +272,7 @@ public class LoanServiceImpl  implements LoanService {
             loan.setRepayments(repaymentGen(loan.getRepaymentCycle(),cal1,cal2,amount, principal));
             loan.setApprovedBy(userName);
             logger.info("approving loan and sending email...");
-            sendLoanEmail(loan.getBorrower(), "your Loan has been Approved "+loan.getReleaseDate());
+            notificationService.sendNotification(loan.getBorrower(), "your Loan has been Approved "+loan.getReleaseDate(),Subject.LoanApprove);
             return loanDao.save(loan);
         }else{
             logger.error("invalid loan ...");
@@ -502,6 +506,16 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    public double myTotalDue() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        List<Loan> loans=loanDao.findByStatusAndBorrower(LoanStatus.OPEN, userName);
+        double total =0;
+        for(Loan loan:loans) total+=loan.getTotalDue();
+        return total;
+    }
+
+    @Override
     public List<DueLoanDto> myOutstandingLoans() {
         logger.info("getting user ...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -581,14 +595,10 @@ public class LoanServiceImpl  implements LoanService {
             logger.info("rejecting loan");
             loan.setStatus(LoanStatus.REJECTED);
             loan.setPreparedBy(userName);
-            sendLoanEmail(loan.getBorrower(), loanRejectDto.getReason());
+            notificationService.sendNotification(loan.getBorrower(), loanRejectDto.getReason(), Subject.LoanReject);
             return loanDao.save(loan);
         }
         throw new InvalidValuesException("Loan already approved");
     }
 
-    private void sendLoanEmail(String borrower, String message){
-        Profile profile=userService.getProfile(borrower);
-        emailService.sendSimpleMessage(profile.getPerson().getEmail(),"YOUR LOAN FEEDBACK", message);
-    }
 }

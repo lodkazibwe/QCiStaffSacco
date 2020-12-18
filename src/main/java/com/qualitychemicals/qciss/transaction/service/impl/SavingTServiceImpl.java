@@ -1,12 +1,10 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
-import com.qualitychemicals.qciss.transaction.dto.SavingType;
-import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
-import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
+import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
@@ -15,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 
 @Service
@@ -78,5 +80,24 @@ public class SavingTServiceImpl implements SavingTService {
         logger.info("saving transaction...");
         ResponseEntity<SavingTDto> response=saveSavingT(savingTDto);
         return response.getBody();
+    }
+
+    public void initialSaving(double amount, String userName) {
+        if(amount>0) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String user = auth.getName();
+            SavingTDto savingTDto = new SavingTDto();
+            savingTDto.setUserName(user);
+            savingTDto.setTransactionType(TransactionType.CHEQUE);
+            savingTDto.setStatus(TransactionStatus.SUCCESS);
+            savingTDto.setCategory(TransactionCat.SAVING);
+            savingTDto.setAmount(amount);
+            savingTDto.setAcctTo("qciAcct");
+            savingTDto.setAcctFrom(userName);
+            savingTDto.setSavingType(SavingType.DIRECT);
+            savingTDto.setDate(new Date());
+            saveSavingT(savingTDto);
+        }
+
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @Repository
 public interface LoanDao extends JpaRepository<Loan, Integer > {
     List<Loan> findByStatus(LoanStatus status);
+ List<Loan> findByStatusAndBorrower(LoanStatus status, String borrower);
 
    @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
            "l.id,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +

@@ -23,6 +23,7 @@ public interface LoanService {
     String deleteMyLoan(int loanId);
     Loan changeStatus(Loan loan, LoanStatus loanStatus);
     List<Loan> myLoans();
+    double myTotalDue();
     List<DueLoanDto> myDueLoans(Date date);
     List<DueLoanDto> myOutstandingLoans();
     List<DueLoanDto> outstandingLoans();

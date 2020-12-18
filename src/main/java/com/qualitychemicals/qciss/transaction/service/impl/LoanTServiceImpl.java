@@ -2,6 +2,10 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.firebase.notification.Notification;
+import com.qualitychemicals.qciss.firebase.notification.NotificationService;
+import com.qualitychemicals.qciss.firebase.notification.NotificationStatus;
+import com.qualitychemicals.qciss.firebase.notification.Subject;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.service.LoanService;
@@ -33,6 +37,7 @@ public class LoanTServiceImpl implements LoanTService {
     @Autowired
     TransactionService transactionService;
     @Autowired RestTemplate restTemplate;
+    @Autowired NotificationService notificationService;
     private final Logger logger = LoggerFactory.getLogger(LoanTServiceImpl.class);
 
     @Override
@@ -90,7 +95,10 @@ public class LoanTServiceImpl implements LoanTService {
                 logger.info("updating loan...");
                 loanService.changeStatus(loan, LoanStatus.OPEN);
                 assert loanTDt != null;
+                String message="You have received your loan money, "+loanTDt.getAmount();
+                notificationService.sendNotification(loan.getBorrower(),message,Subject.loanRelease);
                 return loanTDt;
+
             }else{
                 throw new InvalidValuesException("external application error "+httpStatus);
             }
@@ -230,5 +238,6 @@ public class LoanTServiceImpl implements LoanTService {
     public LoanTDto payPenalty(LoanTDto loanTDto) {
         return null;
     }
+
 }
 

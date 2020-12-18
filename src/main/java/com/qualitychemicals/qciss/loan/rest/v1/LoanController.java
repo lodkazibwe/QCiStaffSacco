@@ -102,6 +102,11 @@ public class LoanController {
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
 
     }
+    @GetMapping("/myTotalOutstanding")
+    public ResponseEntity<Double> myTotalDue(){
+        return new ResponseEntity<>(loanService.myTotalDue(), HttpStatus.OK);
+
+    }
 
     @GetMapping("/admin/loanRequests")
     public ResponseEntity<List<LoanDto>> loanRequests(){

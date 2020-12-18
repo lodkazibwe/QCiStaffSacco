@@ -3,9 +3,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.transaction.dto.MembershipTDto;
-import com.qualitychemicals.qciss.transaction.dto.TransactionCat;
-import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
+import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
@@ -14,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 @Service
 public class MembershipTServImpl implements MembershipTService {
@@ -65,6 +67,25 @@ public class MembershipTServImpl implements MembershipTService {
             return restTemplate.exchange(uri, HttpMethod.POST,request,MembershipTDto.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
+        }
+
+    }
+
+    public void initialMembership(double amount, String userName) {
+        if(amount>0) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String user = auth.getName();
+            MembershipTDto membershipTDto = new MembershipTDto();
+            membershipTDto.setUserName(user);
+            membershipTDto.setTransactionType(TransactionType.CHEQUE);
+            membershipTDto.setStatus(TransactionStatus.SUCCESS);
+            membershipTDto.setCategory(TransactionCat.SAVING);
+            membershipTDto.setAmount(amount);
+            membershipTDto.setAcctTo("qciAcct");
+            membershipTDto.setAcctFrom(userName);
+            membershipTDto.setYear(2020);
+            membershipTDto.setDate(new Date());
+            saveMembershipT(membershipTDto);
         }
 
     }

@@ -5,4 +5,5 @@ import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
 public interface SavingTService {
     SavingTDto mobileSaving(double amount);
     SavingTDto systemSaving(SavingTDto savingTDto);
+    void initialSaving(double amount, String userName);
 }

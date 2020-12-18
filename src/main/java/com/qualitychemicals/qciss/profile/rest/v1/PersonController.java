@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.rest.v1;
 
+import com.qualitychemicals.qciss.firebase.message.ChatService;
 import com.qualitychemicals.qciss.profile.converter.PersonConverter;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.model.Person;
@@ -23,11 +24,11 @@ public class PersonController {
     @Autowired PersonConverter personConverter;
     private final Logger logger= LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("uploadImage/{personId}")
-    public ResponseEntity<String> updateImage(@RequestParam("file")MultipartFile file, @PathVariable int personId)
+    @PostMapping("/uploadImage}")
+    public ResponseEntity<String> updateImage(@RequestParam("file")MultipartFile file)
             throws IOException {
         logger.info("processing image...");
-        String s= personService.updateImage(file, personId);
+        String s= personService.uploadImage(file);
         return new ResponseEntity<>(s, HttpStatus.OK);
     }
 
