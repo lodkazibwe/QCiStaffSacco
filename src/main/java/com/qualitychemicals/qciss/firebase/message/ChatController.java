@@ -15,7 +15,7 @@ public class ChatController {
     @Autowired ChatService chatService;
 
     @PostMapping("/sendMessage")
-    public ResponseEntity<Message> sendMessage(@Valid @RequestBody MessageDto messageDto){
+    public ResponseEntity<Message> sendMessage(@Valid @RequestBody MessageDto messageDto) throws ExecutionException, InterruptedException {
         return new ResponseEntity<>(chatService.sendMessage(messageDto), HttpStatus.OK);
     }
     @PostMapping("/admin/sendMessage/{userName}")
