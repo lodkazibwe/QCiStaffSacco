@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.firebase.message;
 
+import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
@@ -22,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class ChatService {
     private final Logger logger = LoggerFactory.getLogger(ChatService.class);
-    public Message sendMessage(MessageDto messageDto){
+    public Message sendMessage(MessageDto messageDto) throws ExecutionException, InterruptedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String sender=auth.getName();
         Date date =new Date();
@@ -33,9 +34,10 @@ public class ChatService {
         message.setStatus("RECEIVED");
 
         Firestore bdFirestore = FirestoreClient.getFirestore();
-        bdFirestore.collection("chat")
+        ApiFuture<WriteResult> future=bdFirestore.collection("chat")
                 .document(sender).collection("messages").document()
                 .set(message);
+        logger.info("Update time : " + future.get().getUpdateTime());
         return message;
     }
 
