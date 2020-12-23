@@ -1,10 +1,9 @@
 package com.qualitychemicals.qciss.firebase.message;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
-import com.qualitychemicals.qciss.loan.service.impl.LoanServiceImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -12,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +49,7 @@ public class ChatService {
         message.setStatus("RECEIVED");
 
         Firestore bdFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture =bdFirestore.collection("chat")
+        bdFirestore.collection("chat")
                 .document(userName).collection("messages").document()
                 .set(message);
         return message;
