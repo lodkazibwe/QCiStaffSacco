@@ -1,8 +1,11 @@
 package com.qualitychemicals.qciss.firebase.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin(maxAge = 3600)
@@ -11,10 +14,10 @@ import java.util.concurrent.ExecutionException;
 public class NotificationController {
     @Autowired NotificationService notificationService;
 
-   /* @PostMapping("/send")
+    @PostMapping("/send")
     public ResponseEntity<Notification> sendNote(@Valid @RequestBody Notification notification){
         return new ResponseEntity<>(notificationService.sendNotification(notification), HttpStatus.OK);
-    }*/
+    }
 
 
     @PutMapping("/readNotifications")
