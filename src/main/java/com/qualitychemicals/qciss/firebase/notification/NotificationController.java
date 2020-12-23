@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
 
+@CrossOrigin(maxAge = 3600)
 @RequestMapping("/notifications")
 @RestController
 public class NotificationController {

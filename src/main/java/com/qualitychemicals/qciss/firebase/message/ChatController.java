@@ -13,8 +13,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-@RequestMapping("/chat")
+
+@CrossOrigin(maxAge = 3600)
 @RestController
+@RequestMapping("/chat")
 public class ChatController {
     @Autowired ChatService chatService;
 
