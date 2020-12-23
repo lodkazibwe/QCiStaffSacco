@@ -26,14 +26,16 @@ public class Loan {
     private  Cycle repaymentCycle;
     private RepaymentMode repaymentMode;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
     private Date applicationDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
     private Date releaseDate;
     @Enumerated(EnumType.STRING)
-    private TransactionType disbursedBy;
+    private TransactionType disbursedBy ;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
     private Date firstRepaymentDate;
-
     private double handlingCharge;
     private double expressHandling;
     private double interest;

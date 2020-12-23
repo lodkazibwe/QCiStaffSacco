@@ -1,7 +1,6 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
-import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.transaction.dto.*;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -100,4 +100,52 @@ public class SavingTServiceImpl implements SavingTService {
         }
 
     }
+
+    @Override
+    public double totalSaving(Date date) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String myDate=jsn.format(date);
+        final String uri="http://localhost:8082/transaction/saving/totalSaving/" + myDate;
+        try {
+
+          final Double total= restTemplate.getForObject(uri, Double.class);
+            return total;
+      }catch (RestClientException e) {
+          throw new ResourceNotFoundException("Transaction Service down " );
+      }
+
+    }
+
+    @Override
+    public double totalSaving(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/saving/totalSaving/"+dateFrom+"/"+dateTo;
+        try {
+
+            final Double total= restTemplate.getForObject(uri, Double.class);
+            return total;
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public DateTransactions dateSaving(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/saving/dateSaving/2020-12-2/2020-12-4";
+        try {
+
+            DateTransactions dateTransactions= restTemplate.getForObject(uri, DateTransactions.class);
+            return dateTransactions;
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+
+    }
+
+
 }

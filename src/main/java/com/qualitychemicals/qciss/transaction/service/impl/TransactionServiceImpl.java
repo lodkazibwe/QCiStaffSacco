@@ -42,7 +42,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired RestTemplate restTemplate;
     @Autowired
     LoanTService loanTService;
-    @Autowired SavingTService savingTService;
+    @Autowired
+    SavingTService savingTService;
     @Autowired ShareTService shareTService;
     @Autowired DeductionScheduleService deductionScheduleService;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);

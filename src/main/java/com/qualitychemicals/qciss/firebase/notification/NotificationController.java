@@ -16,14 +16,14 @@ public class NotificationController {
     }*/
 
 
-    @PutMapping("/readNotifications}")
+    @PutMapping("/readNotifications")
     public void readNotifications(@PathVariable String userName) throws ExecutionException, InterruptedException {
         notificationService.readNotifications();
        // return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
     @PutMapping("/admin/readNotifications")
-    public void readNotificationsAdmin(@PathVariable String userName) throws ExecutionException, InterruptedException {
+    public void readNotificationsAdmin() throws ExecutionException, InterruptedException {
         notificationService.readNotificationsAdmin();
         // return new ResponseEntity<>("success", HttpStatus.OK);
     }

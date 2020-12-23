@@ -17,6 +17,7 @@ public class DeductionSchedule {
     @GeneratedValue
     private int id;
     private String company;
+    @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date date;
     private String key;

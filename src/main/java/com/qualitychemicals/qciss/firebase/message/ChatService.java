@@ -1,26 +1,29 @@
 package com.qualitychemicals.qciss.firebase.message;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.WriteBatch;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
+import com.qualitychemicals.qciss.loan.service.impl.LoanServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class ChatService {
-
+    private final Logger logger = LoggerFactory.getLogger(ChatService.class);
     public Message sendMessage(MessageDto messageDto){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String sender=auth.getName();
@@ -29,10 +32,10 @@ public class ChatService {
         message.setText(messageDto.getText());
         message.setSentBy(sender);
         message.setSentAt(date);
-        message.setStatus(Status.RECEIVED);
+        message.setStatus("RECEIVED");
 
         Firestore bdFirestore = FirestoreClient.getFirestore();
-        ApiFuture<WriteResult> collectionsApiFuture =bdFirestore.collection("chat")
+        bdFirestore.collection("chat")
                 .document(sender).collection("messages").document()
                 .set(message);
         return message;
@@ -45,7 +48,7 @@ public class ChatService {
         message.setText(messageDto.getText());
         message.setSentAt(date);
         message.setSentBy("ADMIN");
-        message.setStatus(Status.RECEIVED);
+        message.setStatus("RECEIVED");
 
         Firestore bdFirestore = FirestoreClient.getFirestore();
         ApiFuture<WriteResult> collectionsApiFuture =bdFirestore.collection("chat")
@@ -104,6 +107,28 @@ public class ChatService {
 
         writeBatch.commit().get();
     }
+
+    public List<Message> getMessages(String userName){
+        Firestore dbFirestore = FirestoreClient.getFirestore();
+        CollectionReference collectionReference =dbFirestore.collection("chat").document("0708252166").collection("messages");
+        //DocumentReference documentReference=dbFirestore.collection("chat").document(userName);
+        //assert queryDocumentSnapshots != null;
+        List<Message> messages= new ArrayList<>();
+        collectionReference.addSnapshotListener((queryDocumentSnapshots, e) -> {
+
+            for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                Message message = doc.toObject(Message.class);
+                message=new Message("hey","j",new Date(), "read");
+                messages.add(message);
+                logger.info("one");
+
+            }
+
+
+        });
+        messages.add(new Message("hey","j",new Date(), "read"));
+        return  messages;
+       }
 
 public String uploadImage(MultipartFile myFile) throws IOException {
     InputStream file =  new BufferedInputStream(myFile.getInputStream());

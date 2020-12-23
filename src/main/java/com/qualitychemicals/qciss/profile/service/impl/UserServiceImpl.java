@@ -16,9 +16,6 @@ import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
-import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
-import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
@@ -48,7 +45,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     LoanService loanService;
     @Autowired NotificationService notificationService;
-    @Autowired SavingTService savingTService;
+    @Autowired
+    SavingTService savingTService;
     @Autowired MembershipTService membershipTService;
     @Autowired ShareTService shareTService;
 

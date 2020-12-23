@@ -17,13 +17,13 @@ public class FirebaseInit {
 
             FileInputStream serviceAccount =
                     new FileInputStream("/home/qci_user/apps/QCiStaffSacco/serviceAcount.json");
+            //*/home/qci_user/apps/QCiStaffSacco
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://qc-sacco-default-rtdb.firebaseio.com")
                     .setStorageBucket("qc-sacco.appspot.com")
                     .build();
-
             FirebaseApp.initializeApp(options);
 
 

@@ -13,5 +13,5 @@ public class Message {
     private String text;
     private String sentBy;
     private Date sentAt;
-    private Status status;
+    private String status;
 }
