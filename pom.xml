@@ -116,8 +116,9 @@
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
-            <version>6.12.2</version>
+            <version>7.1.0</version>
         </dependency>
+
 
     </dependencies>
 

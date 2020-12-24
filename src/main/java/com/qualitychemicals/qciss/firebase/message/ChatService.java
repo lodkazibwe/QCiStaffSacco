@@ -5,11 +5,16 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
 
+import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
@@ -22,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class ChatService {
+    @Autowired RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(ChatService.class);
     public Message sendMessage(MessageDto messageDto) throws ExecutionException, InterruptedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -55,6 +61,15 @@ public class ChatService {
                 .document(userName).collection("messages").document()
                 .set(message);
         return message;
+    }
+
+    public SavingsTransactionsDto sendMessage() {
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/chat/sendMessage", SavingsTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
     }
 
     public void readMessage(ReadDto readDto){
