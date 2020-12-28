@@ -22,7 +22,7 @@ public class FirebaseInit {
                 .setDatabaseUrl("https://qc-sacco-default-rtdb.firebaseio.com")
                 .setStorageBucket("qc-sacco.appspot.com")
                 .build();
-        
+
 
             FirebaseApp.initializeApp(options);
 
