@@ -23,11 +23,7 @@ public class FirebaseInit {
                 .setStorageBucket("qc-sacco.appspot.com")
                 .build();
 
-
             FirebaseApp.initializeApp(options);
-
-
-
 
     }
 }

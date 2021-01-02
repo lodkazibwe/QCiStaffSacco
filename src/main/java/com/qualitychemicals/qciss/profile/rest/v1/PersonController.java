@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
 @RestController
 @RequestMapping("/profile/person")
 public class PersonController {

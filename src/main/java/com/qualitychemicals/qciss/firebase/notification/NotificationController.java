@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.concurrent.ExecutionException;
 
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
 @RequestMapping("/notifications")
 @RestController
 public class NotificationController {

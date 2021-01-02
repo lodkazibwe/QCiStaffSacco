@@ -76,7 +76,7 @@ public class ChatService {
         Firestore bdFirestore = FirestoreClient.getFirestore();
         bdFirestore.collection("chat").document(readDto.getUserName()).collection("messages")
                 .document(readDto.getKey()).update(
-                "status",Status.READ
+                "status","READ"
         );
 
     }
