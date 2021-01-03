@@ -29,6 +29,13 @@ import java.util.concurrent.ExecutionException;
 public class ChatService {
     @Autowired RestTemplate restTemplate;
     private final Logger logger = LoggerFactory.getLogger(ChatService.class);
+
+    public void createChat(String userName) {
+        Objct objct=new Objct(new Date());
+        Firestore bdFirestore = FirestoreClient.getFirestore();
+        bdFirestore.collection("chat").document(userName).set(objct);
+        bdFirestore.collection("notifications").document(userName).set(objct);
+    }
     public Message sendMessage(MessageDto messageDto) throws ExecutionException, InterruptedException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String sender=auth.getName();

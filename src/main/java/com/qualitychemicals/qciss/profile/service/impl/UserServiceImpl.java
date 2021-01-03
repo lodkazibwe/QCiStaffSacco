@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.firebase.message.ChatService;
 import com.qualitychemicals.qciss.firebase.notification.Notification;
 import com.qualitychemicals.qciss.firebase.notification.NotificationService;
 import com.qualitychemicals.qciss.firebase.notification.NotificationStatus;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
     SavingTService savingTService;
     @Autowired MembershipTService membershipTService;
     @Autowired ShareTService shareTService;
+    @Autowired ChatService chatService;
 
 
 
@@ -98,11 +100,15 @@ public class UserServiceImpl implements UserService {
             savingTService.initialSaving(profile.getAccount().getSavings(), userName);
             membershipTService.initialMembership(membership, userName);
             shareTService.initialShares(profile.getAccount().getShares(), userName);
+            logger.info("subscribing to chat and notifications...");
+            chatService.createChat(userName);
 
             logger.info("sending email...");
             emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
             logger.info(message+" for  "+ userName);
+
             logger.info("profile created...");
+
             //initialTransactions(userDTO.getAccountDto(), userName);
             return savedProfile;
 
