@@ -38,11 +38,12 @@ public class AuthController {
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
                 );
-            } catch (InvalidValuesException e) {
+            } catch (Exception e) {
                 logger.info("invalid user name or pass....");
                 throw new InvalidValuesException("Incorrect profile name or password");
 
             }
+            logger.info("getting user details....");
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(authRequest.getUserName());
 
             final String jwt = jwtUtil.generateToken(userDetails);
