@@ -76,8 +76,10 @@ public class UserController {
 
     @GetMapping("/get")
     public ResponseEntity<UserDto> myProfile(){
+        logger.info("getting user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
+        logger.info(userName);
         return new ResponseEntity<>(userConverter.entityToDto
                 (userService.getProfile(userName)), HttpStatus.OK);
     }
