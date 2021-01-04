@@ -242,11 +242,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Profile getProfile(String userName) {
-
+        logger.info("getting profile....");
         Profile profile =userDAO.findByUserName(userName);
         if (profile ==null){
+            logger.info("invalid user name....");
             throw new ResourceNotFoundException("No Profile With Name: " +userName);
         }
+        logger.info("success  profile fetched....");
         return profile;
 
     }
