@@ -20,9 +20,5 @@ public class MembershipTController {
         return new ResponseEntity<>(membershipTService.payMembership(amount), HttpStatus.OK);
     }
 
-    @GetMapping("/admin/membershipTransactions")
-    public ResponseEntity<MembershipTransactionsDto> membershipTransactions(){
-        return new ResponseEntity<>(membershipTService.membershipTransactions(), HttpStatus.OK);
 
-    }
 }

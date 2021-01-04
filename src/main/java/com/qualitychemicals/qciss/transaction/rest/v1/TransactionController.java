@@ -1,6 +1,9 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.transaction.dto.*;
+import com.qualitychemicals.qciss.transaction.service.MembershipTService;
+import com.qualitychemicals.qciss.transaction.service.SavingTService;
+import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,9 @@ import java.util.List;
 public class TransactionController {
     @Autowired
     TransactionService transactionService;
+    @Autowired ShareTService shareTService;
+    @Autowired SavingTService savingTService;
+    @Autowired MembershipTService membershipTService;
 
 
     @GetMapping("/loanTransactions/{loanId}")
@@ -80,4 +86,23 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDto>> payrollRepayment(@RequestBody DeductionScheduleDTO deductionSchedule){
         return new ResponseEntity<>(transactionService.scheduleRepayment(deductionSchedule),HttpStatus.OK);
     }
+
+    @GetMapping("/admin/shareTransactions")
+    public ResponseEntity<SharesTransactionsDto> myShareTransactions(){
+        return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);
+
+    }
+    @GetMapping("/admin/savingTransactions")
+    public ResponseEntity<SavingsTransactionsDto> mySavingTransactions(){
+        return new ResponseEntity<>(savingTService.savingTransactions(), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/membershipTransactions")
+    public ResponseEntity<MembershipTransactionsDto> myMembershipTransactions(){
+        return new ResponseEntity<>(membershipTService.membershipTransactions(), HttpStatus.OK);
+
+    }
+
 }
+

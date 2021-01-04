@@ -200,7 +200,7 @@ public class TransactionServiceImpl implements TransactionService {
     public AllTransactions allByType(TransactionType transactionType) {
         try {
             return restTemplate.getForObject(
-                    "http://localhost:8082/transaction/getAll" +transactionType, AllTransactions.class);
+                    "http://localhost:8082/transaction/getAll/" +transactionType, AllTransactions.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }

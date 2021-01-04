@@ -45,9 +45,5 @@ public class SavingTController {
 
     }
 
-    @GetMapping("/admin/savingTransactions")
-    public ResponseEntity<SavingsTransactionsDto> savingTransactions(){
-        return new ResponseEntity<>(savingTService.savingTransactions(), HttpStatus.OK);
 
-    }
 }

@@ -20,9 +20,5 @@ public class ShareTController {
         return new ResponseEntity<>(shareTService.mobileShares(amount), HttpStatus.OK);
     }
 
-    @GetMapping("/admin/shareTransactions")
-    public ResponseEntity<SharesTransactionsDto> shareTransactions(){
-        return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);
 
-    }
 }
