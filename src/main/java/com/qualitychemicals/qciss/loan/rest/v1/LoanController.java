@@ -20,7 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 
-@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
+//@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
+@CrossOrigin
 @RestController
 @RequestMapping("/loan")
 public class LoanController {
