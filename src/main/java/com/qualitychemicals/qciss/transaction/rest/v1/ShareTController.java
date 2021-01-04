@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
+import com.qualitychemicals.qciss.transaction.dto.SharesTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,5 +18,11 @@ public class ShareTController {
     @PostMapping("/buy/{amount}")
     public ResponseEntity<ShareTDto> BuyMobile(@PathVariable double amount){
         return new ResponseEntity<>(shareTService.mobileShares(amount), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/shareTransactions")
+    public ResponseEntity<SharesTransactionsDto> shareTransactions(){
+        return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);
+
     }
 }

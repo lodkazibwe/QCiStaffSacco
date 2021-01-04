@@ -90,4 +90,16 @@ public class MembershipTServImpl implements MembershipTService {
 
     }
 
+    @Override
+    public MembershipTransactionsDto membershipTransactions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String user = auth.getName();
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/membership/membershipTrans/"+user, MembershipTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
 }

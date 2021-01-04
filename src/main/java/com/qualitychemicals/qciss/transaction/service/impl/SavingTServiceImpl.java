@@ -147,5 +147,17 @@ public class SavingTServiceImpl implements SavingTService {
 
     }
 
+    @Override
+    public SavingsTransactionsDto savingTransactions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String user = auth.getName();
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/saving/savingTransactions/"+user, SavingsTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
 
 }

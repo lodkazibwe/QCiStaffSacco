@@ -2,6 +2,7 @@ package com.qualitychemicals.qciss.transaction.rest.v1;
 
 import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
+import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,6 +42,12 @@ public class SavingTController {
             (@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
              @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateTo){
         return new ResponseEntity<>(savingTService.dateSaving(dateFrom, dateTo), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/savingTransactions")
+    public ResponseEntity<SavingsTransactionsDto> savingTransactions(){
+        return new ResponseEntity<>(savingTService.savingTransactions(), HttpStatus.OK);
 
     }
 }

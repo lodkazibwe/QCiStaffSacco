@@ -98,4 +98,16 @@ public class ShareTServiceImpl implements ShareTService {
         }
 
     }
+
+    @Override
+    public SharesTransactionsDto shareTransactions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String user = auth.getName();
+        try {
+            return restTemplate.getForObject(
+                    "http://localhost:8082/transaction/shares/shareTransactions/"+user, SharesTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
 }

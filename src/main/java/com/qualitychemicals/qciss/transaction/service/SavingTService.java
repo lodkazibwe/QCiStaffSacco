@@ -2,6 +2,7 @@ package com.qualitychemicals.qciss.transaction.service;
 
 import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
+import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
 
 import java.util.Date;
 
@@ -15,4 +16,5 @@ public interface SavingTService {
 
     DateTransactions dateSaving(Date dateFrom, Date dateTo);
 
+    SavingsTransactionsDto savingTransactions();
 }

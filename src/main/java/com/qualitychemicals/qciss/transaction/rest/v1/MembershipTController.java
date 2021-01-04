@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
 import com.qualitychemicals.qciss.transaction.dto.MembershipTDto;
+import com.qualitychemicals.qciss.transaction.dto.MembershipTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,5 +18,11 @@ public class MembershipTController {
     @PutMapping("/pay/{amount}")
     public ResponseEntity<MembershipTDto> payMembership(@PathVariable double amount){
         return new ResponseEntity<>(membershipTService.payMembership(amount), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/membershipTransactions")
+    public ResponseEntity<MembershipTransactionsDto> membershipTransactions(){
+        return new ResponseEntity<>(membershipTService.membershipTransactions(), HttpStatus.OK);
+
     }
 }
