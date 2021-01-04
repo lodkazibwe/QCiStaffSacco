@@ -98,6 +98,22 @@ public class UserController {
         return new ResponseEntity<>(userConverter.entityToDto(userService.getAll()),
                 HttpStatus.OK);
     }
+    @GetMapping("/admin/getPendingUsers")
+    public ResponseEntity<List<UserDto>> getAllPending(){
+        return new ResponseEntity<>(userConverter.entityToDto(userService.getAllPending()),
+                HttpStatus.OK);
+    }
+    @GetMapping("/admin/getClosedUsers")
+    public ResponseEntity<List<UserDto>> getAllClosed(){
+        return new ResponseEntity<>(userConverter.entityToDto(userService.getAllClosed()),
+                HttpStatus.OK);
+    }
+    @GetMapping("/admin/getOpenUsers")
+    public ResponseEntity<List<UserDto>> getAllOpen(){
+        return new ResponseEntity<>(userConverter.entityToDto(userService.getAllOpen()),
+                HttpStatus.OK);
+    }
+
 
     @GetMapping("/admin/getAccount/{userId}")
     public ResponseEntity<AccountDto> getUserAccount(@PathVariable int userId){

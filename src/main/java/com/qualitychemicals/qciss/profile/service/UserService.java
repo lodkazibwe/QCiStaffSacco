@@ -35,5 +35,11 @@ public interface UserService {
     List<EmployeeDto> getEmployees(String company);
     List<DeductionScheduleDTO> deductionSchedule(String company);
 
+    List<Profile> getAllOpen();
+
+    List<Profile> getAllPending();
+
+    List<Profile> getAllClosed();
+
     //Profile addRoot(PersonDto personDto);
 }

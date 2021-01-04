@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.profile.dao;
 import com.qualitychemicals.qciss.profile.dto.EmployeeDto;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Profile;
+import com.qualitychemicals.qciss.profile.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,4 +21,5 @@ public interface UserDao extends JpaRepository<Profile, Integer> {
     boolean existsByUserName(String userName);
     Profile findByUserName(String userName);
 
+    List<Profile> findByStatus(Status status);
 }

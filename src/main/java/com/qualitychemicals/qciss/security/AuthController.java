@@ -1,7 +1,10 @@
 package com.qualitychemicals.qciss.security;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
+import com.qualitychemicals.qciss.loan.service.impl.LoanServiceImpl;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ public class AuthController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired UserService userService;
 
+    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @PostMapping("get/token")
     public ResponseEntity<?> createAuthToken(@Valid @RequestBody AuthRequest authRequest){
         boolean bool=userService.isUserClosed(authRequest.getUserName());
@@ -29,15 +34,19 @@ public class AuthController {
             throw new InvalidValuesException("profile blocked");
         }else {
             try {
+                logger.info("authenticating....");
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
                 );
             } catch (InvalidValuesException e) {
+                logger.info("invalid user name or pass....");
                 throw new InvalidValuesException("Incorrect profile name or password");
+
             }
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(authRequest.getUserName());
 
             final String jwt = jwtUtil.generateToken(userDetails);
+            logger.info("authenticated....");
 
             return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
         }

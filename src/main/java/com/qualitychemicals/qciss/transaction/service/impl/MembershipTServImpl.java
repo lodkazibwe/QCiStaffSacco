@@ -96,7 +96,7 @@ public class MembershipTServImpl implements MembershipTService {
         String user = auth.getName();
         try {
             return restTemplate.getForObject(
-                    "http://localhost:8082/transaction/membership/membershipTrans/"+user, MembershipTransactionsDto.class);
+                    "http://localhost:8082/transaction/membership/membershipTrans/" +user, MembershipTransactionsDto.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }

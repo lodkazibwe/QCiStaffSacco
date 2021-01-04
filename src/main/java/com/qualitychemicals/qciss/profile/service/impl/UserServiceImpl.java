@@ -343,4 +343,18 @@ public class UserServiceImpl implements UserService {
         return deductionSchedules;
     }
 
+    @Override
+    public List<Profile> getAllOpen() {
+        return userDAO.findByStatus(Status.OPEN);
+    }
+
+    @Override
+    public List<Profile> getAllPending() {
+        return userDAO.findByStatus(Status.PENDING);
+    }
+
+    @Override
+    public List<Profile> getAllClosed() {
+        return userDAO.findByStatus(Status.CLOSED);
+    }
 }
