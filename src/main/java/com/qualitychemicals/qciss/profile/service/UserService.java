@@ -41,5 +41,7 @@ public interface UserService {
 
     List<Profile> getAllClosed();
 
+    void addRole(String userName,String Role);
+
     //Profile addRoot(PersonDto personDto);
 }

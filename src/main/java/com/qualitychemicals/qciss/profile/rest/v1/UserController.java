@@ -57,7 +57,7 @@ public class UserController {
 
     @PostMapping("/addRoot")
     public ResponseEntity<UserDto> defaultUser(@Valid @RequestBody UserDto userDto){
-        //check if exists
+
         String rootEmail="lordkazibwe@gmail.com";
         userDto.getPersonDto().setEmail(rootEmail);
         logger.info("starting...");
@@ -67,7 +67,6 @@ public class UserController {
     }
     @PostMapping("/addAdmin")
     public ResponseEntity<UserDto> addAdmin(@Valid @RequestBody UserDto userDto){
-        //check if exists
         logger.info("starting...");
         Profile profile = userService.addProfile(userDto, "ADMIN", Status.OPEN);
         return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);

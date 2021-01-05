@@ -29,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -51,6 +52,8 @@ public class UserServiceImpl implements UserService {
     @Autowired MembershipTService membershipTService;
     @Autowired ShareTService shareTService;
     @Autowired ChatService chatService;
+
+
 
 
 
@@ -343,6 +346,15 @@ public class UserServiceImpl implements UserService {
         }
 
         return deductionSchedules;
+    }
+
+
+
+
+    public void addRole(String userName, String role) {
+        Profile profile=getProfile(userName);
+        profile.getRole().add(new Role("role"));
+        updateProfile(profile);
     }
 
     @Override

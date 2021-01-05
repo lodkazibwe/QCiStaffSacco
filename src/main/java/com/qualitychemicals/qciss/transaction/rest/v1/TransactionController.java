@@ -42,7 +42,7 @@ public class TransactionController {
 
     }
 
-    @GetMapping("/admin/loanTransactions")
+    @GetMapping("/loanTransactions")
     public ResponseEntity<LoanTransactionsDto> allLoanTransactions(){
         return new ResponseEntity<>(transactionService.loanTransactions(), HttpStatus.OK);
 
@@ -88,18 +88,18 @@ public class TransactionController {
         return new ResponseEntity<>(transactionService.scheduleRepayment(deductionSchedule),HttpStatus.OK);
     }
 
-    @GetMapping("/shareTransactions")
+    @GetMapping("/admin/shareTransactions")
     public ResponseEntity<SharesTransactionsDto> myShareTransactions(){
         return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);
 
     }
-    @GetMapping("/savingTransactions")
+    @GetMapping("/admin/savingTransactions")
     public ResponseEntity<SavingsTransactionsDto> mySavingTransactions(){
         return new ResponseEntity<>(savingTService.savingTransactions(), HttpStatus.OK);
 
     }
 
-    @GetMapping("/membershipTransactions")
+    @GetMapping("/admin/membershipTransactions")
     public ResponseEntity<MembershipTransactionsDto> myMembershipTransactions(){
         return new ResponseEntity<>(membershipTService.membershipTransactions(), HttpStatus.OK);
 
