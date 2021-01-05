@@ -21,6 +21,7 @@ public class EmailServiceImpl  implements EmailService {
         mailMessage.setTo(to);
         mailMessage.setSubject(subject);
         mailMessage.setText(text);
+        //mailMessage.setFrom("app@qcstaffsacco.com");
         logger.info("sending email...");
         mailSender.send(mailMessage);
     }

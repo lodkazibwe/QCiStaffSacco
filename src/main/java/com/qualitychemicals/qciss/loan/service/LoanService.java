@@ -24,6 +24,7 @@ public interface LoanService {
     Loan changeStatus(Loan loan, LoanStatus loanStatus);
     List<Loan> myLoans();
     double myTotalDue();
+    double totalDue();
     List<DueLoanDto> myDueLoans(Date date);
     List<DueLoanDto> myOutstandingLoans();
     List<DueLoanDto> outstandingLoans();

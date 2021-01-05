@@ -108,6 +108,10 @@ public class LoanController {
         return new ResponseEntity<>(loanService.myTotalDue(), HttpStatus.OK);
 
     }
+    @GetMapping("/admin/totalOutstanding")
+    public ResponseEntity<Double> totalDue(){
+        return new ResponseEntity<>(loanService.totalDue(), HttpStatus.OK);
+    }
 
     @GetMapping("/admin/loanRequests")
     public ResponseEntity<List<LoanDto>> loanRequests(){

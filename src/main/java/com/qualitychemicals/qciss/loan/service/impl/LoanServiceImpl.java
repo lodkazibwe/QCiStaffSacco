@@ -516,6 +516,14 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    public double totalDue() {
+        List<Loan> loans=loanDao.findByStatus(LoanStatus.OPEN);
+        double total =0;
+        for(Loan loan:loans) total+=loan.getTotalDue();
+        return total;
+    }
+
+    @Override
     public List<DueLoanDto> myOutstandingLoans() {
         logger.info("getting user ...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

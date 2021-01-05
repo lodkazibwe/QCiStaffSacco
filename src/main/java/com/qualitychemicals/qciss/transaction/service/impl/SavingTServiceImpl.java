@@ -136,7 +136,7 @@ public class SavingTServiceImpl implements SavingTService {
         SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
         String dateFrom=jsn.format(date1);
         String dateTo=jsn.format(date2);
-        final String uri="http://localhost:8082/transaction/saving/dateSaving/2020-12-2/2020-12-4";
+        final String uri="http://localhost:8082/transaction/saving/dateSaving/"+dateFrom+"/"+dateTo;
         try {
 
             DateTransactions dateTransactions= restTemplate.getForObject(uri, DateTransactions.class);

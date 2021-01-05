@@ -20,14 +20,14 @@ public class ProductController {
     @Autowired ProductService productService;
     @Autowired ProductConverter productConverter;
 
-    @PostMapping("/add")
+    @PostMapping("/admin/add")
     public ResponseEntity<ProductDto> addLoanProduct(@Valid @RequestBody ProductDto productDto){
         Product product=productService.addProduct(productDto);
         return new ResponseEntity<>(productConverter.entityToDto(product), HttpStatus.OK);
 
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/admin/update/{id}")
     public ResponseEntity<ProductDto> updateLoanProduct(@Valid @RequestBody ProductDto productDto, @PathVariable int id){
         Product product=productService.updateProduct(productDto, id);
         return new ResponseEntity<>(productConverter.entityToDto(product), HttpStatus.OK);

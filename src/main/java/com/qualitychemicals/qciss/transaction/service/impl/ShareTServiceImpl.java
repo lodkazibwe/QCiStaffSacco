@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Service
@@ -106,6 +107,49 @@ public class ShareTServiceImpl implements ShareTService {
         try {
             return restTemplate.getForObject(
                     "http://localhost:8082/transaction/shares/shareTransactions/"+user, SharesTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public double totalShares(Date date) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String myDate=jsn.format(date);
+        final String uri="http://localhost:8082/transaction/shares/totalShares/" + myDate;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public double totalShares(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/shares/totalShares/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+
+    }
+
+    @Override
+    public DateTransactions dateShares(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/shares/dateShares/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, DateTransactions.class);
+
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }

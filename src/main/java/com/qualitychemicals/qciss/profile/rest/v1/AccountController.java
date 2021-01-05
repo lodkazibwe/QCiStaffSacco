@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.profile.converter.AccountConverter;
 import com.qualitychemicals.qciss.profile.dto.AccountDto;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.service.AccountService;
+import com.qualitychemicals.qciss.profile.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 //@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
 @CrossOrigin
@@ -25,6 +23,7 @@ public class AccountController {
     AccountConverter accountConverter;
     @Autowired
     AccountService accountService;
+    @Autowired EmailService emailService;
 
     private final Logger logger= LoggerFactory.getLogger(AccountController.class);
 
@@ -36,5 +35,11 @@ public class AccountController {
                 (accountService.myAccount(userName)), HttpStatus.OK);
     }
 
+
+    @PostMapping("/mail")
+    public ResponseEntity<String> sendMail(){
+        emailService.sendSimpleMessage("qcstaffsacco.com/webmail","webmail","CODE-1231");
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
 
 }

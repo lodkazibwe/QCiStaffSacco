@@ -1,7 +1,6 @@
 package com.qualitychemicals.qciss.security;
 
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
-import com.qualitychemicals.qciss.loan.service.impl.LoanServiceImpl;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,30 +52,6 @@ public class AuthController {
         }
 
     }
-
-    /*@PostMapping("get/oneTime")
-    public ResponseEntity<?> oneTimeAuthToken(@Valid @RequestBody OneTimeLoginDto oneTimeLoginDto){
-        boolean bool=userService.isUserClosed(oneTimeLoginDto.getMobile());
-        if(bool){
-            throw new InvalidValuesException("profile blocked");
-        }else {
-            try {
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(oneTimeLoginDto.getMobile(), oneTimeLoginDto.getPin())
-                );
-            } catch (InvalidValuesException e) {
-                throw new InvalidValuesException("Incorrect profile name or password");
-            }
-            UserDetails userDetails = myUserDetailsService.loadUserByUsername(oneTimeLoginDto.getMobile());
-            final String jwt = jwtUtil.generateToken(userDetails);
-
-            Random random = new Random();
-            String pin = String.format("%04d", random.nextInt(100000));
-            userService.updatePass(oneTimeLoginDto.getMobile(), pin);
-
-            return new ResponseEntity<>(new AuthResponse(jwt), HttpStatus.OK);
-        }
-    }*/
 
     @PutMapping("/requestPin/{contact}")//admin
     public ResponseEntity<?> requestPin(@PathVariable String contact){

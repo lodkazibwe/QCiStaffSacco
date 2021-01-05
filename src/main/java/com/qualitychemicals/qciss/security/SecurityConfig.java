@@ -47,9 +47,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/company/**").hasRole("ADMIN")
                 .antMatchers("/loan/admin/**").hasRole("ADMIN")
                 .antMatchers("/schedule/admin/**").hasRole("ADMIN")
-                .antMatchers("/loan/product/**").hasRole("ADMIN")//
+                .antMatchers("/loan/product/admin/**").hasRole("ADMIN")//
                 .antMatchers("/transaction/loan/release").hasRole("ADMIN")
                 .antMatchers("/transaction/loan/repay").hasRole("ADMIN")
+                .antMatchers("/transaction/saving/admin/**").hasRole("ADMIN")
                 .antMatchers(
                         HttpMethod.GET,
                         "/",
@@ -64,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js"
                 ).permitAll()
 
-                .antMatchers("/authenticate/get/**").permitAll()//
+                .antMatchers("/authenticate/get/**").permitAll()///profile/account
                 .anyRequest().authenticated().and().sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Service
@@ -102,4 +103,45 @@ public class MembershipTServImpl implements MembershipTService {
         }
     }
 
+    @Override
+    public double totalMembership(Date date) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String myDate=jsn.format(date);
+        final String uri="http://localhost:8082/transaction/membership/totalMembership/" + myDate;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public double totalMembership(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/membership/totalMembership/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public DateTransactions dateMembership(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/membership/dateMembership/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, DateTransactions.class);
+
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
 }

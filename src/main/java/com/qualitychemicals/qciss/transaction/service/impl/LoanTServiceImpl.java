@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Service
@@ -232,6 +233,48 @@ public class LoanTServiceImpl implements LoanTService {
         throw new InvalidValuesException("invalid Loan...");
     }
 
+
+    @Override
+    public double totalRepay(Date date) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String myDate=jsn.format(date);
+        final String uri="http://localhost:8082/transaction/loan/totalLoanPayments/" + myDate;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public double totalRepay(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/loan/totalLoanPayments/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, Double.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public DateTransactions dateRepay(Date date1, Date date2) {
+        SimpleDateFormat jsn = new SimpleDateFormat("yyyy-MM-dd");
+        String dateFrom=jsn.format(date1);
+        String dateTo=jsn.format(date2);
+        final String uri="http://localhost:8082/transaction/loan/dateLoanPayments/"+dateFrom+"/"+dateTo;
+        try {
+
+            return restTemplate.getForObject(uri, DateTransactions.class);
+
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
 
     @Override
     @Transactional
