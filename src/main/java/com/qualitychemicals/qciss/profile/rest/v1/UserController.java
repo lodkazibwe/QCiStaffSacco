@@ -55,7 +55,7 @@ public class UserController {
         return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
     }
 
-    @PostMapping("/addRoot")
+   /* @PostMapping("/addRoot")
     public ResponseEntity<UserDto> defaultUser(@Valid @RequestBody UserDto userDto){
 
         String rootEmail="lordkazibwe@gmail.com";
@@ -64,8 +64,8 @@ public class UserController {
         Profile profile = userService.addProfile(userDto, "ROOT", Status.OPEN);
         return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
 
-    }
-    @PostMapping("/addAdmin")
+    }*/
+    @PostMapping("addAdmin")
     public ResponseEntity<UserDto> addAdmin(@Valid @RequestBody UserDto userDto){
         logger.info("starting...");
         Profile profile = userService.addProfile(userDto, "ADMIN", Status.OPEN);
@@ -81,6 +81,12 @@ public class UserController {
         logger.info(userName);
         return new ResponseEntity<>(userConverter.entityToDto
                 (userService.getProfile(userName)), HttpStatus.OK);
+    }
+
+    @GetMapping("/admin/getAdmins")
+    public ResponseEntity<List<PersonDto>> getAdmins(){
+        return new ResponseEntity<>(
+                userService.getAdmins(), HttpStatus.OK);
     }
 
 

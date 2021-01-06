@@ -88,6 +88,7 @@ public class TransactionController {
         return new ResponseEntity<>(transactionService.scheduleRepayment(deductionSchedule),HttpStatus.OK);
     }
 
+
     @GetMapping("/admin/shareTransactions")
     public ResponseEntity<SharesTransactionsDto> myShareTransactions(){
         return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);

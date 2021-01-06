@@ -59,7 +59,7 @@ public class MembershipTServImpl implements MembershipTService {
     }
 
     private ResponseEntity<MembershipTDto> saveMembershipT(MembershipTDto membershipTDto) {
-        logger.info("transacting...");
+        logger.info("transacting Membershipfee...");
 
         try {
             logger.info("connecting to payment service...");
@@ -74,21 +74,24 @@ public class MembershipTServImpl implements MembershipTService {
 
     public void initialMembership(double amount, String userName) {
         if(amount>0) {
+            logger.info("getting user... ");
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = auth.getName();
+            logger.info("user "+user);
             MembershipTDto membershipTDto = new MembershipTDto();
             membershipTDto.setUserName(user);
             membershipTDto.setTransactionType(TransactionType.CHEQUE);
             membershipTDto.setStatus(TransactionStatus.SUCCESS);
-            membershipTDto.setCategory(TransactionCat.SAVING);
+            membershipTDto.setCategory(TransactionCat.MEMBERSHIP);
             membershipTDto.setAmount(amount);
             membershipTDto.setAcctTo("qciAcct");
             membershipTDto.setAcctFrom(userName);
-            membershipTDto.setYear(2020);
+            membershipTDto.setYear(2021);
             membershipTDto.setDate(new Date());
+            logger.info("saving membershipT");
             saveMembershipT(membershipTDto);
         }
-
+        logger.info("no membership fee");
     }
 
     @Override

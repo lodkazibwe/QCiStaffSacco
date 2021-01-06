@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.profile.dao;
 
 import com.qualitychemicals.qciss.profile.dto.EmployeeDto;
+import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.model.Status;
@@ -22,4 +23,9 @@ public interface UserDao extends JpaRepository<Profile, Integer> {
     Profile findByUserName(String userName);
 
     List<Profile> findByStatus(Status status);
+
+    @Query("SELECT new com.qualitychemicals.qciss.profile.dto.PersonDto(" +
+            "p.id,p.person.firstName,p.person.lastName,p.person.nin,p.person.mobile,p.person.email,p.person.dob,p.person.gender,p.person.residence)"+
+            "FROM Profile p JOIN p.role r WHERE r.role=?1")
+    List<PersonDto> getRoleUser(String role);
 }

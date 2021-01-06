@@ -23,7 +23,7 @@ public class CompanyController {
     @Autowired CompanyConverter companyConverter;
     private final Logger logger= LoggerFactory.getLogger(CompanyController.class);
 
-    @PostMapping("/add")
+    @PostMapping("root/add")
     @Transactional
     public ResponseEntity<CompanyDto> addCompany(@Valid @RequestBody CompanyDto companyDto){
         logger.info("adding company...");
@@ -42,7 +42,7 @@ public class CompanyController {
     }
 
     @Transactional
-    @GetMapping("/update")
+    @GetMapping("admin/update")
     public ResponseEntity<CompanyDto> updateCompany(@Valid @RequestBody CompanyDto companyDto){
         logger.info("updating company...");
         Company company=companyService.updateCompany(companyDto);

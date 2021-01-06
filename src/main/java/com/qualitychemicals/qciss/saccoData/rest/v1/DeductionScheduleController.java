@@ -19,17 +19,17 @@ public class DeductionScheduleController {
     @Autowired DeductionScheduleConverter deductionScheduleConverter;
     @Autowired DeductionScheduleService deductionScheduleService;
 
-    @PostMapping("/admin/save/{company}")
+    @PostMapping("/root/save/{company}")
     public ResponseEntity<List<DeductionScheduleDTO>> save(@RequestBody List<DeductionScheduleDTO> deductionScheduleDTOs, @PathVariable String company){
         return new ResponseEntity<>(deductionScheduleConverter.entityToDto(deductionScheduleService
                 .save(deductionScheduleDTOs,company,new Date())), HttpStatus.OK);
     }
 
-    @GetMapping("/admin/get/{company}/{date}")
+    @GetMapping("/root/get/{company}/{date}")
     public ResponseEntity<List<DeductionScheduleDTO>> get(
             @PathVariable String company, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         return new ResponseEntity<>(deductionScheduleConverter.entityToDto(deductionScheduleService
                 .get(company,date)), HttpStatus.OK);
     }
-    //getByStatus
+
 }

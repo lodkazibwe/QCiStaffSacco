@@ -99,10 +99,15 @@ public class UserServiceImpl implements UserService {
             logger.info("saving...");
             Profile savedProfile = userDAO.save(profile);
             logger.info("initial transactions...");
-            double membership =20000-profile.getAccount().getPendingFee();
+            double membership;
+            membership = 20000-(profile.getAccount().getPendingFee());
+            logger.info("updating savings...");
             savingTService.initialSaving(profile.getAccount().getSavings(), userName);
-            membershipTService.initialMembership(membership, userName);
+            logger.info("updating shares...");
             shareTService.initialShares(profile.getAccount().getShares(), userName);
+            logger.info("membership "+membership);
+            logger.info("updating membership...");
+            membershipTService.initialMembership(membership, userName);
             logger.info("subscribing to chat and notifications...");
             chatService.createChat(userName);
 
@@ -205,7 +210,10 @@ public class UserServiceImpl implements UserService {
         return profile.getAccount();
     }
 
-
+    @Override
+    public List<PersonDto> getAdmins() {
+        return userDAO.getRoleUser("ADMIN");
+    }
 
     @Override
     public String requestPin(String contact) {
@@ -353,7 +361,7 @@ public class UserServiceImpl implements UserService {
 
     public void addRole(String userName, String role) {
         Profile profile=getProfile(userName);
-        profile.getRole().add(new Role("role"));
+        profile.getRole().add(new Role(role));
         updateProfile(profile);
     }
 

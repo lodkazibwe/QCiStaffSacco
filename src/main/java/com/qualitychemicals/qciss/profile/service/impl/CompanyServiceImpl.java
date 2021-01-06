@@ -35,10 +35,11 @@ public class CompanyServiceImpl implements CompanyService {
         logger.info("converting...");
         boolean bool =companyDao.existsByName(companyDto.getName());
         if(bool){
+            logger.info("company already exists...");
             throw new InvalidValuesException("company already exists");
         }
         Company company=companyConverter.dtoToEntity(companyDto);
-
+        logger.info("saving...");
     return companyDao.save(company);
     }
 
