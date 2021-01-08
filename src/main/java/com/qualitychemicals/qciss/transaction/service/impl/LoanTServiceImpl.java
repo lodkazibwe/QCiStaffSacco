@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -39,6 +40,8 @@ public class LoanTServiceImpl implements LoanTService {
     TransactionService transactionService;
     @Autowired RestTemplate restTemplate;
     @Autowired NotificationService notificationService;
+    @Autowired
+    AppConfigReader appConfigReader;
     private final Logger logger = LoggerFactory.getLogger(LoanTServiceImpl.class);
 
     @Override
@@ -74,7 +77,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setCategory(TransactionCat.LOAN);
             loanTDto.setTransactionType(loanPayDto.getTransactionType());
             loanTDto.setUserName(userName);
-            loanTDto.setAcctFrom("qciAcct");
+            loanTDto.setAcctFrom(appConfigReader.getSaccoAccount());
             loanTDto.setAcctTo(loan.getBorrower());
             logger.info("setting transaction amount...");
         double totalCharge=getTotalCharge(loan);
@@ -85,7 +88,7 @@ public class LoanTServiceImpl implements LoanTService {
                 Profile profile =userService.getProfile(loan.getBorrower());
                 MobilePayment mobilePayment=new MobilePayment();
                 mobilePayment.setAmount(amount);//******
-                mobilePayment.setFrom("qciAcct");
+                mobilePayment.setFrom(appConfigReader.getSaccoAccount());
                 mobilePayment.setTo(profile.getPerson().getMobile());
                 transactionService.transactMobile(mobilePayment);
             }
@@ -155,7 +158,7 @@ public class LoanTServiceImpl implements LoanTService {
             logger.info("preparing mobile transaction...");
             MobilePayment mobilePayment=new MobilePayment();
             String mobile= profile.getPerson().getMobile();
-            mobilePayment.setTo("qciAcct");
+            mobilePayment.setTo(appConfigReader.getSaccoAccount());
             mobilePayment.setFrom(mobile);
             mobilePayment.setAmount(loanPayDto.getAmount());
             logger.info("transacting mobile...");
@@ -171,7 +174,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setDate(new Date());
             loanTDto.setAmount(loanPayDto.getAmount());
             loanTDto.setLoanId(loanPayDto.getLoanId());
-            loanTDto.setAcctTo("qciAcct");
+            loanTDto.setAcctTo(appConfigReader.getSaccoAccount());
             logger.info("updating loan...");
             loanService.repay(loanPayDto.getLoanId(), loanPayDto.getAmount());
             logger.info("saving transaction...");
@@ -202,7 +205,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setUserName(userName);
             loanTDto.setAcctFrom(loan.getBorrower());
             loanTDto.setCategory(TransactionCat.LOAN);
-            loanTDto.setAcctTo("QciAcct");
+            loanTDto.setAcctTo(appConfigReader.getSaccoAccount());
             logger.info("getting borrower profile...");
         Profile profile =userService.getProfile(loanTDto.getAcctFrom());
             logger.info("checking borrower and loan...");

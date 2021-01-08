@@ -6,10 +6,14 @@ import com.qualitychemicals.qciss.profile.model.TOE;
 import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +25,18 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
     UserService userService;
     @Autowired PersonService personService;
     @Autowired CompanyService companyService;
+    @Autowired AppConfigReader appConfigReader;
     private final Logger logger = LoggerFactory.getLogger(StartUp.class);
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("POST CONSTRUCT");
         logger.info("checking user...");
-        int  val=personService.userExists("qckazam@gmail.com", "0700123123");
+        String email=appConfigReader.getEmail();
+        logger.info("start up email: " +email);
+        String contact=appConfigReader.getContact();
+        logger.info("start up contact: " +contact);
+
+        int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
             logger.info("system already initialized...");
             return;
@@ -37,8 +47,8 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         personDto.setFirstName("Baluku");
         personDto.setLastName("Roben");
         personDto.setNin("NIN");
-        personDto.setMobile("0700123123");
-        personDto.setEmail("qckazam@gmail.com");
+        personDto.setMobile(contact);
+        personDto.setEmail(email);
         personDto.setDob(new Date());
         personDto.setGender("MALE");
         personDto.setResidence("Kampala");

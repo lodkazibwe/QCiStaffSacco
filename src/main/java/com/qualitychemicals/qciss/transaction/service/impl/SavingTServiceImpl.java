@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -31,6 +32,8 @@ public class SavingTServiceImpl implements SavingTService {
     @Autowired
     TransactionService transactionService;
     @Autowired RestTemplate restTemplate;
+    @Autowired
+    AppConfigReader appConfigReader;
 
     private final Logger logger = LoggerFactory.getLogger(SavingTServiceImpl.class);
 
@@ -92,7 +95,7 @@ public class SavingTServiceImpl implements SavingTService {
             savingTDto.setStatus(TransactionStatus.SUCCESS);
             savingTDto.setCategory(TransactionCat.SAVING);
             savingTDto.setAmount(amount);
-            savingTDto.setAcctTo("qciAcct");
+            savingTDto.setAcctTo(appConfigReader.getSaccoAccount());
             savingTDto.setAcctFrom(userName);
             savingTDto.setSavingType(SavingType.DIRECT);
             savingTDto.setDate(new Date());

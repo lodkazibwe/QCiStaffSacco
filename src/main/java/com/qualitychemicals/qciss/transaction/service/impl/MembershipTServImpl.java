@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -29,6 +30,8 @@ public class MembershipTServImpl implements MembershipTService {
     @Autowired UserService userService;
     @Autowired AccountService accountService;
     @Autowired RestTemplate restTemplate;
+    @Autowired
+    AppConfigReader appConfigReader;
     private final Logger logger= LoggerFactory.getLogger(MembershipTServImpl.class);
     @Override
     public MembershipTDto payMembership(MembershipTDto membershipTDto) {
@@ -84,7 +87,7 @@ public class MembershipTServImpl implements MembershipTService {
             membershipTDto.setStatus(TransactionStatus.SUCCESS);
             membershipTDto.setCategory(TransactionCat.MEMBERSHIP);
             membershipTDto.setAmount(amount);
-            membershipTDto.setAcctTo("qciAcct");
+            membershipTDto.setAcctTo(appConfigReader.getSaccoAccount());
             membershipTDto.setAcctFrom(userName);
             membershipTDto.setYear(2021);
             membershipTDto.setDate(new Date());

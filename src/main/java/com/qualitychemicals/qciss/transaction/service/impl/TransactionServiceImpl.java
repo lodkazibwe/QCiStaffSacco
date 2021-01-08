@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.saccoData.dto.ScheduleLoanDto;
 import com.qualitychemicals.qciss.saccoData.service.DeductionScheduleService;
@@ -46,6 +47,9 @@ public class TransactionServiceImpl implements TransactionService {
     SavingTService savingTService;
     @Autowired ShareTService shareTService;
     @Autowired DeductionScheduleService deductionScheduleService;
+    @Autowired
+    AppConfigReader appConfigReader;
+
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     @Override
@@ -60,7 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
             logger.info("setting payment...");
             MobilePayment mobilePayment = new MobilePayment();
             String mobile = profile.getPerson().getMobile();
-            mobilePayment.setTo("qciAcct");
+            mobilePayment.setTo(appConfigReader.getSaccoAccount());
             mobilePayment.setFrom(mobile);
             mobilePayment.setAmount(amount);
             transactMobile(mobilePayment);
@@ -73,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionDto.setTransactionType(TransactionType.MOBILE);
             transactionDto.setUserName(userName);
             transactionDto.setAcctFrom(mobile);
-            transactionDto.setAcctTo("qciAcct");
+            transactionDto.setAcctTo(appConfigReader.getSaccoAccount());
             transactionDto.setCategory(category);
             return transactionDto;
         }throw new InvalidValuesException("send 3000 and above");
@@ -148,9 +152,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public AllTransactions allTransactions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
         try {
             return restTemplate.getForObject(
-                    "http://localhost:8082/transaction/getAll", AllTransactions.class);
+                    "http://localhost:8082/transaction/getAll/"+userName, AllTransactions.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }
@@ -216,7 +222,7 @@ public class TransactionServiceImpl implements TransactionService {
         savingTDto.setDate(new Date());
         savingTDto.setSavingType(SavingType.MONTHLY);
         savingTDto.setAcctFrom(profile.getUserName());
-        savingTDto.setAcctTo("QCiAcct");
+        savingTDto.setAcctTo(appConfigReader.getSaccoAccount());
         savingTDto.setAmount(deductionScheduleDTO.getEmployee().getPayrollSavings());
         savingTDto.setCategory(TransactionCat.SAVING);
         savingTDto.setStatus(TransactionStatus.PENDING);
@@ -233,7 +239,7 @@ public class TransactionServiceImpl implements TransactionService {
         shareTDto.setCategory(TransactionCat.SHARE);
         shareTDto.setDate(new Date());
         shareTDto.setAcctFrom(profile.getUserName());
-        shareTDto.setAcctTo("QCiAcct");
+        shareTDto.setAcctTo(appConfigReader.getSaccoAccount());
         shareTDto.setStatus(TransactionStatus.PENDING);
         shareTDto.setTransactionType(TransactionType.CHEQUE);
         shareTService.systemShares(shareTDto);
@@ -245,7 +251,7 @@ public class TransactionServiceImpl implements TransactionService {
             loanTDto.setDate(new Date());
             loanTDto.setCategory(TransactionCat.LOAN);
             loanTDto.setStatus(TransactionStatus.PENDING);
-            loanTDto.setAcctTo("QCiAcct");
+            loanTDto.setAcctTo(appConfigReader.getSaccoAccount());
             loanTDto.setLoanId(scheduleLoan.getLoanId());
             loanTDto.setAmount(scheduleLoan.getDue());
             loanTDto.setTransactionType(TransactionType.CHEQUE);

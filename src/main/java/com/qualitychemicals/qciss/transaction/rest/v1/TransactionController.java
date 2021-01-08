@@ -24,7 +24,7 @@ public class TransactionController {
     @Autowired MembershipTService membershipTService;
 
 
-    @GetMapping("/loanTransactions/{loanId}")
+    @GetMapping("/admin/loanTransactions/{loanId}")
     public ResponseEntity<LoanTransactionsDto> loanTransactions(@PathVariable int loanId){
               return  new ResponseEntity<>((transactionService.loanTransactions(loanId)), HttpStatus.OK);
 

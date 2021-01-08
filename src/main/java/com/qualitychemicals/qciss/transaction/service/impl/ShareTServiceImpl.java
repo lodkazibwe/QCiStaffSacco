@@ -2,6 +2,7 @@ package com.qualitychemicals.qciss.transaction.service.impl;
 
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
+import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -28,6 +29,8 @@ public class ShareTServiceImpl implements ShareTService {
     TransactionService transactionService;
     @Autowired AccountService accountService;
     @Autowired RestTemplate restTemplate;
+    @Autowired
+    AppConfigReader appConfigReader;
     private final Logger logger = LoggerFactory.getLogger(ShareTServiceImpl.class);
     @Override
     public ShareTDto mobileShares(double amount) {
@@ -90,7 +93,7 @@ public class ShareTServiceImpl implements ShareTService {
             shareTDto.setStatus(TransactionStatus.SUCCESS);
             shareTDto.setCategory(TransactionCat.MEMBERSHIP);
             shareTDto.setAmount(unitCost*qtty);
-            shareTDto.setAcctTo("qciAcct");
+            shareTDto.setAcctTo(appConfigReader.getSaccoAccount());
             shareTDto.setAcctFrom(userName);
             shareTDto.setUnitCost(unitCost);
             shareTDto.setShares(qtty);
