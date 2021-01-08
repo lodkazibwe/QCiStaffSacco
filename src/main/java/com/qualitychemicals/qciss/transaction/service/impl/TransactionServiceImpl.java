@@ -152,11 +152,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public AllTransactions allTransactions() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
+
         try {
             return restTemplate.getForObject(
-                    "http://localhost:8082/transaction/getAll/"+userName, AllTransactions.class);
+                    "http://localhost:8082/transaction/getAll", AllTransactions.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }
@@ -164,9 +163,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public LoanTransactionsDto loanTransactions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
         try {
             return restTemplate.getForObject(
-                    "http://localhost:8082/transaction/loan/getAll", LoanTransactionsDto.class);
+                    "http://localhost:8082/transaction/loan/getAll/"+userName, LoanTransactionsDto.class);
         }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
         }
