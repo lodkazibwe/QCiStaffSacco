@@ -44,7 +44,6 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
 
         int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
-            companyService.addCompany(new CompanyDto(1,"CiplaQCIL",50000));
             logger.info("system already initialized...");
             return;
         }
