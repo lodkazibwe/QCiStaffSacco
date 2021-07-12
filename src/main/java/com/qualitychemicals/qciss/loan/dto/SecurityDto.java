@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class SecurityDto {
     private int id;
-    @NotNull(message ="description cannot be null")
+    @NotNull(message = "description cannot be null")
     private String description;
-    @NotNull(message ="guarantor cannot be null")
+    @NotNull(message = "guarantor cannot be null")
     private String guarantor;
     private String file;
 }

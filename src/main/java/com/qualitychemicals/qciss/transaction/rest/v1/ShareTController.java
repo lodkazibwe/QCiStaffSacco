@@ -22,7 +22,7 @@ public class ShareTController {
 
     @PostMapping("/buy/{amount}")
     public ResponseEntity<ShareTDto> BuyMobile(@PathVariable double amount){
-        return new ResponseEntity<>(shareTService.mobileShares(amount), HttpStatus.OK);
+        return new ResponseEntity<>(shareTService.buyShares(amount), HttpStatus.OK);
     }
 
     @GetMapping("/admin/totalShares/{date}")

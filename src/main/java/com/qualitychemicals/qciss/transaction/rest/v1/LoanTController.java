@@ -28,21 +28,21 @@ public class LoanTController {
         return new ResponseEntity<>(loanTDto, HttpStatus.OK);
     }
 
-    @PostMapping("/mobileRepay")//profile
-    public ResponseEntity<LoanTDto> repayLoanMobile(@Valid @RequestBody LoanPayDto loanPayDto){
+    @PostMapping("/repay")//profile
+    public ResponseEntity<LoanTDto> repayLoanWallet(@Valid @RequestBody LoanPayDto loanPayDto){
         /*Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String profile=auth.getName();
         loanTDto.setUserName(profile);*/
-        LoanTDto loanTDto=loanTService.repayMobile(loanPayDto);
+        LoanTDto loanTDto=loanTService.walletRepay(loanPayDto);
         return new ResponseEntity<>(loanTDto, HttpStatus.OK);
     }
 
 
-    @PostMapping("/admin/Repay")//admin
+    /*@PostMapping("/admin/Repay")//admin
     public ResponseEntity<LoanTDto> repayLoanCash(@Valid @RequestBody LoanTDto loanTDto){
 
         return new ResponseEntity<>(loanTService.repay(loanTDto), HttpStatus.OK);
-    }
+    }*/
 
     @GetMapping("/admin/totalRepayment/{date}")
     public ResponseEntity<Double> totalRepayment(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){

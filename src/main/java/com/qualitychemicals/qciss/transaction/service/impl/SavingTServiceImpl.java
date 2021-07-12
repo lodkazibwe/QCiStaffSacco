@@ -1,9 +1,16 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
+import com.qualitychemicals.qciss.account.model.SavingsAccount;
+import com.qualitychemicals.qciss.account.model.UserAccount;
+import com.qualitychemicals.qciss.account.model.Wallet;
+import com.qualitychemicals.qciss.account.service.SavingsAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
+import com.qualitychemicals.qciss.saccoData.service.SavingService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -32,32 +39,54 @@ public class SavingTServiceImpl implements SavingTService {
     @Autowired
     TransactionService transactionService;
     @Autowired RestTemplate restTemplate;
-    @Autowired
-    AppConfigReader appConfigReader;
+    @Autowired MyUserDetailsService myUserDetailsService;
+    @Autowired WalletService walletService;
+    @Autowired SavingsAccountService savingsAccountService;
+    @Autowired SavingService savingService;
 
     private final Logger logger = LoggerFactory.getLogger(SavingTServiceImpl.class);
 
     @Override
     @Transactional
     public SavingTDto mobileSaving(double amount) {
-        logger.info("transacting...");
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.SAVING);
-        logger.info("setting transaction...");
-        SavingTDto savingTDto=new SavingTDto();
-        savingTDto.setSavingType(SavingType.DIRECT);
-        savingTDto.setTransactionType(transaction.getTransactionType());
-        savingTDto.setAcctTo(transaction.getAcctTo());
-        savingTDto.setAcctFrom(transaction.getAcctFrom());
-        savingTDto.setUserName(transaction.getUserName());
-        savingTDto.setStatus(transaction.getStatus());
-        savingTDto.setDate(transaction.getDate());
-        savingTDto.setAmount(transaction.getAmount());
-        savingTDto.setId(transaction.getId());
-        logger.info("updating saving...");
-        accountService.updateSaving(amount, transaction.getUserName());
-        logger.info("saving transaction...");
-        ResponseEntity<SavingTDto> response=saveSavingT(savingTDto);
-        return response.getBody();
+        String user =myUserDetailsService.currentUser();
+        Wallet wallet =walletService.getWallet("WAL"+user);
+        SavingsAccount savingsAccount =savingsAccountService.getSavingsAccount("SAV"+user);
+        if(amount>wallet.getAmount()){
+            throw new InvalidValuesException("low wallet bal");
+        }else{
+            logger.info("preparing transaction...");
+            SavingTDto savingTDto=new SavingTDto();
+            savingTDto.setDate(new Date());
+            savingTDto.setAmount(amount);
+            savingTDto.setStatus(TransactionStatus.PENDING);
+            savingTDto.setTransactionType("saving");
+            savingTDto.setUserName(user);
+            savingTDto.setAccountId(savingsAccount.getId());
+            savingTDto.setCreationDateTime(new Date());
+            savingTDto.setNarrative("Wallet savings");
+            savingTDto.setAccount(savingsAccount.getAccountRef());
+            savingTDto.setWallet(wallet.getAccountRef());
+            SavingTDto response =saveSavingT(savingTDto).getBody();
+            assert response != null;
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating wallet..."));
+                userAccount.setAmount(amount*-1);
+                userAccount.setAccountRef(wallet.getAccountRef());
+                walletService.transact(userAccount);
+                logger.info(("updating savingsAccount..."));
+                userAccount.setAccountRef("SHA"+user);
+                userAccount.setAmount(amount);
+                savingsAccountService.transact(userAccount);
+                logger.info(("updating sacco saving account..."));
+                savingService.updateSaving(amount);
+            }
+            return response;
+
+        }
+
     }
 
 
@@ -79,13 +108,13 @@ public class SavingTServiceImpl implements SavingTService {
     @Override
     public SavingTDto systemSaving(SavingTDto savingTDto) {
         logger.info("updating saving...");
-        accountService.updateSaving(savingTDto.getAmount(), savingTDto.getAcctFrom());
+        accountService.updateSaving(savingTDto.getAmount(), "savingTDto.getAcctFrom()");
         logger.info("saving transaction...");
         ResponseEntity<SavingTDto> response=saveSavingT(savingTDto);
         return response.getBody();
     }
 
-    public void initialSaving(double amount, String userName) {
+    /*public void initialSaving(double amount, String userName) {
         if(amount>0) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = auth.getName();
@@ -102,7 +131,7 @@ public class SavingTServiceImpl implements SavingTService {
             saveSavingT(savingTDto);
         }
 
-    }
+    }*/
 
     @Override
     public double totalSaving(Date date) {

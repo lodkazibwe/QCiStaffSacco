@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class AppraisalSheetDto {
-private LoanDto loanRequest;
-//private List<LoanDto> userLoans;
-private List<DueLoanDto> outstandingLoans;
-private UserDto userDto;
+    private LoanDto loanRequest;
+    //private List<LoanDto> userLoans;
+    private List<DueLoanDto> outstandingLoans;
+    private UserDto userDto;
 
 }

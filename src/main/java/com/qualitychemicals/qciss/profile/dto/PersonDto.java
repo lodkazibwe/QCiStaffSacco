@@ -24,7 +24,7 @@ public class PersonDto {
     //@Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
     @NotNull(message = "mobile cannot be null")
-    @Size(min=10, max=10, message = "invalid Contact length")
+    @Size(min=9, max=9, message = "invalid Contact length")
     @Pattern(regexp="(^[0-9]{10})", message = "invalid Contact")
     private String mobile;
     @NotBlank(message="email cannot be blank")

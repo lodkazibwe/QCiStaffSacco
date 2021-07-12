@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.*;
 
-//@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
 @CrossOrigin
 @RestController
 @RequestMapping("/profile/user")
@@ -47,25 +46,16 @@ public class UserController {
         return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
     }
 
-    @PostMapping("/register")
+    /*@PostMapping("/register")
     @Transactional
     public ResponseEntity<UserDto> createProfile(@Valid @RequestBody UserDto userDto){
         logger.info("starting...");
         Profile profile = userService.addProfile(userDto, "USER", Status.OPEN);
         return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
-    }
-
-   /* @PostMapping("/addRoot")
-    public ResponseEntity<UserDto> defaultUser(@Valid @RequestBody UserDto userDto){
-
-        String rootEmail="lordkazibwe@gmail.com";
-        userDto.getPersonDto().setEmail(rootEmail);
-        logger.info("starting...");
-        Profile profile = userService.addProfile(userDto, "ROOT", Status.OPEN);
-        return new ResponseEntity<>(userConverter.entityToDto(profile), HttpStatus.OK);
-
     }*/
-    @PostMapping("addAdmin")
+
+
+    @PostMapping("/addAdmin")
     public ResponseEntity<UserDto> addAdmin(@Valid @RequestBody UserDto userDto){
         logger.info("starting...");
         Profile profile = userService.addProfile(userDto, "ADMIN", Status.OPEN);

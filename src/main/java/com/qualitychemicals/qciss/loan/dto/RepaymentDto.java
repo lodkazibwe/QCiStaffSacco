@@ -15,7 +15,7 @@ import java.util.Date;
 public class RepaymentDto {
     @ApiModelProperty(notes = "Generated RepaymentDao ID")
     private int id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @ApiModelProperty(notes = "Generated Date of RepaymentDao")
     private Date date;
     @ApiModelProperty(notes = "Generated RepaymentDao Amount")

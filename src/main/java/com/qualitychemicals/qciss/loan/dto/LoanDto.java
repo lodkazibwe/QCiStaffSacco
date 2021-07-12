@@ -32,17 +32,17 @@ public class LoanDto {
     @ApiModelProperty(notes = "mode of repayment (SALARY, SO, SYSTEM)")
     private RepaymentMode repaymentMode;
     @ApiModelProperty(notes = "generated date of loan application")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date applicationDate;
     @ApiModelProperty(notes = "generated loan release Date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date releaseDate;
     @NotNull(message = "disbursedBy cannot be blank")
     @ApiModelProperty(notes = "how the cash is received (cash, mobile,bank)")
     private TransactionType disbursedBy;
     @NotNull(message = "missing first repayment date ")
     @ApiModelProperty(notes = "first Date of Repayment")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date firstRepaymentDate;
     @ApiModelProperty(notes = "Generated total interest")
     private double interest;
@@ -76,7 +76,7 @@ public class LoanDto {
     @ApiModelProperty(notes = "Generated admin userName/ID")
     private String approvedBy;
     @ApiModelProperty(notes = "Generated borrower(userName/contact)")
-    private String  borrower;
+    private String borrower;
 
     @NotNull(message = "securityDto cannot be null")
     private SecurityDto securityDto;

@@ -11,6 +11,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+
 @Data
 public class LoanRequestDto {
     @NotNull(message = "product cannot be null")
@@ -33,7 +34,7 @@ public class LoanRequestDto {
     private TransactionType disbursedBy;
     @NotNull(message = "missing first repayment date ")
     @ApiModelProperty(notes = "first Date of Repayment")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date firstRepaymentDate;
     @NotNull(message = "handlingMode cannot be null")
     private HandlingMode handlingMode;

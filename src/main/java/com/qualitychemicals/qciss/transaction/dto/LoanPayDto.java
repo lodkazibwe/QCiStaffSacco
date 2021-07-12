@@ -12,8 +12,8 @@ import javax.validation.constraints.NotNull;
 public class LoanPayDto {
     @NotNull
     private int loanId;
-    @NotNull
-    private TransactionType transactionType;
+    //@NotNull
+   // private String loanRef;
     @NotNull
     private double amount;
 

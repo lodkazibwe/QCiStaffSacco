@@ -89,18 +89,18 @@ public class TransactionController {
     }
 
 
-    @GetMapping("/admin/shareTransactions")
+    @GetMapping("/shareTransactions")
     public ResponseEntity<SharesTransactionsDto> myShareTransactions(){
         return new ResponseEntity<>(shareTService.shareTransactions(), HttpStatus.OK);
 
     }
-    @GetMapping("/admin/savingTransactions")
+    @GetMapping("/savingTransactions")
     public ResponseEntity<SavingsTransactionsDto> mySavingTransactions(){
         return new ResponseEntity<>(savingTService.savingTransactions(), HttpStatus.OK);
 
     }
 
-    @GetMapping("/admin/membershipTransactions")
+    @GetMapping("/membershipTransactions")
     public ResponseEntity<MembershipTransactionsDto> myMembershipTransactions(){
         return new ResponseEntity<>(membershipTService.membershipTransactions(), HttpStatus.OK);
 

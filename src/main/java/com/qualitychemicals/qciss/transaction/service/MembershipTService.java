@@ -9,7 +9,7 @@ import java.util.Date;
 public interface MembershipTService {
     MembershipTDto payMembership(double amount);
     MembershipTDto payMembership(MembershipTDto membershipTDto);
-    void initialMembership(double amount, String userName);
+    //void initialMembership(double amount, String userName);
 
     MembershipTransactionsDto membershipTransactions();
 

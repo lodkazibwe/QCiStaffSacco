@@ -1,17 +1,19 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
+import com.qualitychemicals.qciss.account.model.UserAccount;
+import com.qualitychemicals.qciss.account.model.Wallet;
+import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
-import com.qualitychemicals.qciss.firebase.notification.Notification;
 import com.qualitychemicals.qciss.firebase.notification.NotificationService;
-import com.qualitychemicals.qciss.firebase.notification.NotificationStatus;
 import com.qualitychemicals.qciss.firebase.notification.Subject;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
 import com.qualitychemicals.qciss.loan.service.LoanService;
-import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
+import com.qualitychemicals.qciss.saccoData.model.LoanAccount;
+import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -20,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +42,9 @@ public class LoanTServiceImpl implements LoanTService {
     @Autowired RestTemplate restTemplate;
     @Autowired NotificationService notificationService;
     @Autowired
-    AppConfigReader appConfigReader;
+    WalletService walletService;
+    @Autowired LoanAccountService loanAccountService;
+    @Autowired MyUserDetailsService myUserDetailsService;
     private final Logger logger = LoggerFactory.getLogger(LoanTServiceImpl.class);
 
     @Override
@@ -50,6 +53,7 @@ public class LoanTServiceImpl implements LoanTService {
 
         logger.info("getting loan...");
         Loan loan=loanService.getLoan(loanPayDto.getLoanId());
+        Wallet wallet =walletService.getWallet("WAL"+loan.getBorrower());
         logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
@@ -62,50 +66,81 @@ public class LoanTServiceImpl implements LoanTService {
                 loan.setTopUpLoanBalance(topUpLoan.getTotalDue());
                 LoanTDto loanTDto=new LoanTDto();
                 loanTDto.setLoanId(topUpLoan.getId());
+                loanTDto.setLoanRef(topUpLoan.getLoanNumber());
                 loanTDto.setAmount(topUpLoan.getTotalDue());
-                loanTDto.setTransactionType(TransactionType.CASH);
-                loanTDto.setAcctFrom(topUpLoan.getBorrower());
+                loanTDto.setUserName(userName);
+                loanTDto.setDate(new Date());
+                loanTDto.setAccount(topUpLoan.getLoanNumber());
+                loanTDto.setTransactionType("loan");
+                loanTDto.setStatus(TransactionStatus.PENDING);
+                loanTDto.setNarrative("loan topped Up");
+                loanTDto.setWallet(wallet.getAccountRef());
+                loanTDto.setCreationDateTime(new Date());
                 logger.info("closing top up loan...");
-                repay(loanTDto);
-
+                loanService.repay(topUpLoan.getId(), topUpLoan.getTotalDue());
+                saveLoanT(loanTDto);
+                logger.info("updating sacco loan account...");
+                LoanAccount loanAccount =new LoanAccount();
+                loanAccount.setAmount(0.0);
+                loanAccount.setTransferCharge(0.0);
+                loanAccount.setInterestReceivable(0.0);
+                loanAccount.setInsuranceFee(0.0);
+                loanAccount.setHandlingCharge(0.0);
+                loanAccount.setEarlyTopUpCharge(0.0);
+                loanAccount.setAmountIn(loanTDto.getAmount());
+                loanAccountService.updateLoanAccount(loanAccount);
             }
             logger.info("setting transaction...");
             LoanTDto loanTDto=new LoanTDto();
             loanTDto.setLoanId(loanPayDto.getLoanId());
             loanTDto.setDate(new Date());
+            loanTDto.setCreationDateTime(new Date());
             loanTDto.setStatus(TransactionStatus.PENDING);
-            loanTDto.setCategory(TransactionCat.LOAN);
-            loanTDto.setTransactionType(loanPayDto.getTransactionType());
+            loanTDto.setWallet("user-WALLET");// user wallet
+            loanTDto.setNarrative("loan charges");
+            loanTDto.setAccount(loan.getLoanNumber());
             loanTDto.setUserName(userName);
-            loanTDto.setAcctFrom(appConfigReader.getSaccoAccount());
-            loanTDto.setAcctTo(loan.getBorrower());
-            logger.info("setting transaction amount...");
-        double totalCharge=getTotalCharge(loan);
-        double amount=loan.getPrincipal()-totalCharge;
-            loanTDto.setAmount(amount*-1);
-            if(loanPayDto.getTransactionType()==TransactionType.MOBILE){
-                logger.info("transacting mobile...");
-                Profile profile =userService.getProfile(loan.getBorrower());
-                MobilePayment mobilePayment=new MobilePayment();
-                mobilePayment.setAmount(amount);//******
-                mobilePayment.setFrom(appConfigReader.getSaccoAccount());
-                mobilePayment.setTo(profile.getPerson().getMobile());
-                transactionService.transactMobile(mobilePayment);
-            }
-            ResponseEntity<LoanTDto> response=saveLoanT(loanTDto);
-            HttpStatus httpStatus=response.getStatusCode();
-            LoanTDto loanTDt=response.getBody();
-            if(httpStatus==HttpStatus.OK){
+            loanTDto.setLoanRef(loan.getLoanNumber());
+            loanTDto.setTransactionType("loan");
+            loanTDto.setLoanId(loan.getId());
+            logger.info("setting transaction charges and adding transaction...");
+            double totalCharge=getTotalCharge(loan);
+            loanTDto.setAmount(totalCharge);
+            saveLoanT(loanTDto);
+            logger.info("setting loan amount and saving...");
+            loanTDto.setNarrative("loan Received");
+            loanTDto.setAmount(loan.getPrincipal());
+
+        double amount=loan.getPrincipal()-totalCharge-loan.getTopUpLoanBalance();
+
+            LoanTDto response=saveLoanT(loanTDto).getBody();
+            assert response != null;
+
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
                 logger.info("updating loan...");
                 loanService.changeStatus(loan, LoanStatus.OPEN);
-                assert loanTDt != null;
-                String message="You have received your loan money, "+loanTDt.getAmount();
+                logger.info("updating accounts...");
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating wallet..."));
+                userAccount.setAmount(amount);
+                userAccount.setAccountRef(wallet.getAccountRef());
+                walletService.transact(userAccount);
+                logger.info("updating sacco loan account...");
+                LoanAccount loanAccount =new LoanAccount();
+                loanAccount.setAmount(loan.getPrincipal());
+                loanAccount.setTransferCharge(loan.getTransferCharge());
+                loanAccount.setInterestReceivable(loan.getInterest());
+                loanAccount.setInsuranceFee(loan.getInsuranceFee());
+                loanAccount.setAmountIn(0.0);
+                loanAccount.setHandlingCharge(loan.getHandlingCharge());
+                loanAccount.setEarlyTopUpCharge(loan.getEarlyTopUpCharge());
+                loanAccountService.updateLoanAccount(loanAccount);
+                String message="You have received your loan money, "+response.getAmount();
                 notificationService.sendNotification(loan.getBorrower(),message,Subject.loanRelease);
-                return loanTDt;
 
-            }else{
-                throw new InvalidValuesException("external application error "+httpStatus);
             }
+            return response;
 
         }
         else{
@@ -133,53 +168,67 @@ public class LoanTServiceImpl implements LoanTService {
     private double getTotalCharge(Loan loan) {
         logger.info("getting total charge...");
         return loan.getHandlingCharge()+loan.getInsuranceFee()
-                +loan.getEarlyTopUpCharge()+loan.getExpressHandling()+loan.getTopUpLoanBalance();
+                +loan.getEarlyTopUpCharge()+loan.getExpressHandling()+loan.getPenalty();
     }
 
 
     @Override
     @Transactional
-    public LoanTDto repayMobile(LoanPayDto loanPayDto) {
+    public LoanTDto walletRepay(LoanPayDto loanPayDto) {
         logger.info("getting user...");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
+        String userName =myUserDetailsService.currentUser();
+        Wallet wallet =walletService.getWallet("WAL"+userName);
         logger.info("getting loan...");
         Loan loan=loanService.getLoan(loanPayDto.getLoanId());
-        Profile profile =userService.getProfile(userName);
         logger.info("checking loan...");
         if(loan.getStatus()==LoanStatus.OPEN || loan.getStatus()==LoanStatus.PASSED_MATURITY ){
             logger.info("checking user...");
-        if(loan.getBorrower().equals(userName)){
+        if(loan.getBorrower().equals(userName)){//*************************
             logger.info("comparing amounts...");
-            if(loan.getTotalDue()<loanPayDto.getAmount()){
+            if(loan.getTotalDue()<loanPayDto.getAmount() || loanPayDto.getAmount()>wallet.getAmount()){
                 logger.error("invalid amount...");
                 throw new InvalidValuesException("invalid Amount...");
             }
-            logger.info("preparing mobile transaction...");
-            MobilePayment mobilePayment=new MobilePayment();
-            String mobile= profile.getPerson().getMobile();
-            mobilePayment.setTo(appConfigReader.getSaccoAccount());
-            mobilePayment.setFrom(mobile);
-            mobilePayment.setAmount(loanPayDto.getAmount());
-            logger.info("transacting mobile...");
-            transactionService.transactMobile(mobilePayment);
+
             logger.info("preparing transaction...");
-           //LoanT loanT=new LoanT();
             LoanTDto loanTDto=new LoanTDto();
-            loanTDto.setUserName(userName);
-            loanTDto.setAcctFrom(mobile);
-            loanTDto.setTransactionType(TransactionType.MOBILE);
-            loanTDto.setStatus(TransactionStatus.SUCCESS);
-            loanTDto.setCategory(TransactionCat.LOAN);
-            loanTDto.setDate(new Date());
+            loanTDto.setLoanId(loan.getId());
+            loanTDto.setLoanRef(loan.getLoanNumber());
             loanTDto.setAmount(loanPayDto.getAmount());
-            loanTDto.setLoanId(loanPayDto.getLoanId());
-            loanTDto.setAcctTo(appConfigReader.getSaccoAccount());
+            loanTDto.setUserName(userName);
+            loanTDto.setDate(new Date());
+            loanTDto.setAccount(loan.getLoanNumber());
+            loanTDto.setTransactionType("loan");
+            loanTDto.setStatus(TransactionStatus.PENDING);
+            loanTDto.setNarrative("loan Repayment");
+            loanTDto.setWallet(wallet.getAccountRef());
+            loanTDto.setCreationDateTime(new Date());
+
             logger.info("updating loan...");
             loanService.repay(loanPayDto.getLoanId(), loanPayDto.getAmount());
             logger.info("saving transaction...");
-            ResponseEntity<LoanTDto> response=saveLoanT(loanTDto);
-            return response.getBody();
+            LoanTDto response=saveLoanT(loanTDto).getBody();
+            assert response != null;
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
+                logger.info("updating accounts...");
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating wallet..."));
+                userAccount.setAmount(loanPayDto.getAmount()*-1);
+                userAccount.setAccountRef(wallet.getAccountRef());
+                walletService.transact(userAccount);
+                logger.info("updating sacco loan account...");
+                LoanAccount loanAccount =new LoanAccount();
+                loanAccount.setAmount(0.0);
+                loanAccount.setTransferCharge(0.0);
+                loanAccount.setInterestReceivable(0.0);
+                loanAccount.setInsuranceFee(0.0);
+                loanAccount.setAmountIn(loanPayDto.getAmount());
+                loanAccount.setHandlingCharge(0.0);
+                loanAccount.setEarlyTopUpCharge(0.0);
+                loanAccountService.updateLoanAccount(loanAccount);
+            }
+            return response;
 
         }else {
             logger.error("invalid profile or loan...");
@@ -189,9 +238,9 @@ public class LoanTServiceImpl implements LoanTService {
         throw new InvalidValuesException(" cant repay Loan ..."+ loan.getId());
     }
 
-    @Override
-    @Transactional
-    public LoanTDto repay(LoanTDto loanTDto) {
+
+   /* @Transactional
+    public LoanTDto repay(LoanTDto loanTDto, String owner) {
         logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
@@ -203,11 +252,9 @@ public class LoanTServiceImpl implements LoanTService {
        // LoanT loanT=loanTConverter.dtoToEntity(loanTDto);
         loanTDto.setDate(new Date());
             loanTDto.setUserName(userName);
-            loanTDto.setAcctFrom(loan.getBorrower());
-            loanTDto.setCategory(TransactionCat.LOAN);
-            loanTDto.setAcctTo(appConfigReader.getSaccoAccount());
+
             logger.info("getting borrower profile...");
-        Profile profile =userService.getProfile(loanTDto.getAcctFrom());
+        Profile profile =userService.getProfile(owner);
             logger.info("checking borrower and loan...");
         if(loan.getBorrower().equals(profile.getUserName())){
             logger.info("checking amount...");
@@ -216,17 +263,17 @@ public class LoanTServiceImpl implements LoanTService {
                 throw new InvalidValuesException("invalid Amount...");
             }
             logger.info("transacting...");
-            ResponseEntity<LoanTDto> response=saveLoanT(loanTDto);
-            HttpStatus httpStatus=response.getStatusCode();
-            LoanTDto loanTDt=response.getBody();
-            if(httpStatus==HttpStatus.OK){
+            LoanTDto response=saveLoanT(loanTDto).getBody();
+            assert response != null;
+
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
                 logger.info("updating loan...");
                 loanService.repay(loanTDto.getLoanId(), loanTDto.getAmount());
-                assert loanTDt != null;
-                return loanTDt;
-            }else{
-                throw new InvalidValuesException("external application error "+httpStatus);
-            }
+                logger.info("updating wallet...");
+
+
+
+            }return response;
 
         }else{
             logger.error("invalid Profile or Loan...");
@@ -234,7 +281,7 @@ public class LoanTServiceImpl implements LoanTService {
         }}
         logger.error("invalid Loan...");
         throw new InvalidValuesException("invalid Loan...");
-    }
+    }*/
 
 
     @Override

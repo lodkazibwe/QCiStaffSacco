@@ -1,8 +1,15 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
+import com.qualitychemicals.qciss.account.model.UserAccount;
+import com.qualitychemicals.qciss.account.model.Wallet;
+import com.qualitychemicals.qciss.account.service.SharesAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
-import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
+import com.qualitychemicals.qciss.saccoData.model.Share;
+import com.qualitychemicals.qciss.saccoData.service.ShareService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -29,32 +36,59 @@ public class ShareTServiceImpl implements ShareTService {
     TransactionService transactionService;
     @Autowired AccountService accountService;
     @Autowired RestTemplate restTemplate;
-    @Autowired
-    AppConfigReader appConfigReader;
+    @Autowired MyUserDetailsService myUserDetailsService;
+    @Autowired WalletService walletService;
+    @Autowired ShareService shareService;
+    @Autowired SharesAccountService sharesAccountService;
+
     private final Logger logger = LoggerFactory.getLogger(ShareTServiceImpl.class);
     @Override
-    public ShareTDto mobileShares(double amount) {
-        logger.info("transacting...");
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.SHARE);
-        logger.info("preparing transaction...");
-        ShareTDto shareTDto=new ShareTDto();
-        double shareCost=20000;
-        double shares=amount/shareCost;
-        shareTDto.setShares(shares);
-        shareTDto.setUnitCost(shareCost);
-        shareTDto.setTransactionType(transaction.getTransactionType());
-        shareTDto.setAcctTo(transaction.getAcctTo());
-        shareTDto.setAcctFrom(transaction.getAcctFrom());
-        shareTDto.setUserName(transaction.getUserName());
-        shareTDto.setStatus(transaction.getStatus());
-        shareTDto.setDate(transaction.getDate());
-        shareTDto.setAmount(transaction.getAmount());
-        shareTDto.setId(transaction.getId());
-        logger.info("updating shares...");
-        accountService.updateShares(amount/shareCost, transaction.getUserName());
-        logger.info("saving transaction...");
-        ResponseEntity<ShareTDto> response=saveShareT(shareTDto);
-        return response.getBody();
+    public ShareTDto buyShares(double amount) {
+        String user =myUserDetailsService.currentUser();
+        Wallet wallet =walletService.getWallet("WAL"+user);
+        Share share =shareService.getShareInfo();
+        if(amount>wallet.getAmount()){
+            throw new InvalidValuesException("low wallet bal");
+        }else{
+            double shares =amount/(share.getShareValue());
+            logger.info("preparing transaction...");
+            ShareTDto shareTDto =new ShareTDto();
+            shareTDto.setShares(shares);
+            shareTDto.setUserName(user);
+            shareTDto.setStatus(TransactionStatus.PENDING);
+            shareTDto.setDate(new Date());
+            shareTDto.setCreationDateTime(new Date());
+            shareTDto.setAmount(amount);
+            shareTDto.setTransactionType("share");
+            shareTDto.setShareValue(share.getShareValue());
+            shareTDto.setAccount("SHA"+user);
+            shareTDto.setNarrative("Bought shares");
+            shareTDto.setWallet(wallet.getAccountRef());
+            ShareTDto response =saveShareT(shareTDto).getBody();
+            assert response != null;
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating wallet..."));
+                userAccount.setAmount(amount*-1);
+                userAccount.setAccountRef(wallet.getAccountRef());
+                walletService.transact(userAccount);
+                logger.info(("updating shareAccount..."));
+                userAccount.setAccountRef("SHA"+user);
+                userAccount.setAmount(amount);
+                sharesAccountService.transact(userAccount);
+                logger.info(("updating sacco share account..."));
+                Share update =new Share();
+                update.setAmount(amount);
+                update.setSharesSold(shares);
+                update.setSharesAvailable(shares*-1);
+                shareService.updateShare(update);
+
+            }
+            return  response;
+
+        }
+
     }
 
     private ResponseEntity<ShareTDto> saveShareT(ShareTDto shareTDto) {
@@ -76,13 +110,13 @@ public class ShareTServiceImpl implements ShareTService {
     public ShareTDto systemShares(ShareTDto shareTDto) {
         logger.info("updating shares...");
         double shareCost=20000;
-        accountService.updateShares(shareTDto.getAmount()/shareCost, shareTDto.getAcctFrom());
+        accountService.updateShares(shareTDto.getAmount()/shareCost, "shareTDto.getAcctFrom()");
         logger.info("saving transaction...");
         ResponseEntity<ShareTDto> response=saveShareT(shareTDto);
         return response.getBody();
     }
 
-    public void initialShares(double qtty, String userName) {
+    /*public void initialShares(double qtty, String userName) {
         if(qtty>0) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = auth.getName();
@@ -101,7 +135,7 @@ public class ShareTServiceImpl implements ShareTService {
             saveShareT(shareTDto);
         }
 
-    }
+    }*/
 
     @Override
     public SharesTransactionsDto shareTransactions() {

@@ -8,10 +8,9 @@ import com.qualitychemicals.qciss.transaction.dto.SharesTransactionsDto;
 import java.util.Date;
 
 public interface ShareTService {
-    ShareTDto mobileShares(double amount);
+    ShareTDto buyShares(double amount);
     ShareTDto systemShares(ShareTDto shareTDto);
-    void initialShares(double qtty, String userName);
-
+    //void initialShares(double qtty, String userName);
     double totalShares(Date date);
     double totalShares(Date dateFrom, Date dateTo);
 

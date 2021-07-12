@@ -14,6 +14,7 @@ import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +35,7 @@ public class LoanServiceImpl  implements LoanService {
     @Autowired UserService userService;
     @Autowired
     NotificationService notificationService;
+    @Autowired LoanAccountService loanAccountService;
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
@@ -116,6 +115,13 @@ public class LoanServiceImpl  implements LoanService {
         }
     }
 
+    private String loanNumber(){
+        int count=loanAccountService.getCount();
+        Random random = new Random();
+        String rand = String.format("%04d", random.nextInt(100));
+        return "QC"+count+""+rand;
+    }
+
     private Loan processLoan(LoanDto loanDto) {
         logger.info("processing loan...");
         Loan loan = loanConverter.dtoToEntity(loanDto);
@@ -144,6 +150,7 @@ public class LoanServiceImpl  implements LoanService {
 
             loan.setStatus(LoanStatus.PENDING);
             loan.setRepayments(null);
+            loan.setLoanNumber(loanNumber());
             loan.setPreparedBy(null);
             loan.setApprovedBy(null);
             loan.setApplicationDate(new Date());

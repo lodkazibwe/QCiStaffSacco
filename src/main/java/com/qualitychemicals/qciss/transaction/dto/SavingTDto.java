@@ -13,5 +13,5 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class SavingTDto extends TransactionDto{
     @NotNull
-    private SavingType savingType;
+    private int accountId;
 }

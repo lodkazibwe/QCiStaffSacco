@@ -2,7 +2,6 @@ package com.qualitychemicals.qciss.transaction.rest.v1;
 
 import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.MembershipTDto;
-import com.qualitychemicals.qciss.transaction.dto.MembershipTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

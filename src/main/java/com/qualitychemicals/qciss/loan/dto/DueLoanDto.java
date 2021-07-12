@@ -22,9 +22,9 @@ public class DueLoanDto {
     private double totalPaid;
     private double due;
     private double nextDue;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date nextDueDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date lastDueDate;
     private RepaymentMode repaymentMode;
 

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoanTDto extends TransactionDto{
     private int loanId;
+    private String loanRef;
 }

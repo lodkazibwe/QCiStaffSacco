@@ -7,13 +7,12 @@ import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
+import com.qualitychemicals.qciss.saccoData.model.*;
+import com.qualitychemicals.qciss.saccoData.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,14 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired PersonService personService;
     @Autowired CompanyService companyService;
     @Autowired AppConfigReader appConfigReader;
+    @Autowired ShareService shareService;
+    @Autowired SavingService savingService;
+    @Autowired SaccoAccountService saccoAccountService;
+    @Autowired MembershipService membershipService;
+    @Autowired LoanAccountService loanAccountService;
+
     private final Logger logger = LoggerFactory.getLogger(StartUp.class);
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("POST CONSTRUCT");
@@ -73,9 +79,48 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         workDto.setCompanyName("Other");
         userDto.setWorkDto(workDto);
 
+       // companyService.addCompany(new CompanyDto(1,"CiplaQCIL",50000));
+
+        logger.info("adding sacco data...");
+        LoanAccount loanAccount =new LoanAccount();
+        loanAccount.setCount(100);
+        loanAccount.setName("LOAN-ACCOUNT");
+        loanAccount.setDescription("account for loan amount in loans");
+        loanAccountService.addLoanAccount(loanAccount);
+
+        Membership membership= new Membership();
+        membership.setName("MEMBERSHIP");
+        membership.setDescription("account for membership information and amount");
+        membership.setMembershipFee(20000.0);
+        membershipService.addMembership(membership);
+
+        Saving saving =new Saving();
+        saving.setName("SAVING");
+        saving.setDescription("account for total amount in saving ");
+        savingService.addSaving(saving);
+
+        Share share =new Share();
+        share.setName("SHARES");
+        share.setDescription("account for shares information and amount");
+        share.setShareValue(20000.0);
+        share.setTotalShares(10000.0);
+        share.setReservedShares(5000.0);
+        share.setSharesAvailable(3500.0);
+        shareService.addShare(share);
+
+        SaccoAccount saccoAccount =new SaccoAccount();
+        saccoAccount.setName("YO-ACCOUNT");
+        saccoAccount.setDescription("total sacco amount in yo-wallet");
+        saccoAccountService.addAccount(saccoAccount);
+
+        saccoAccount.setName("BANK-ACCOUNT");
+        saccoAccount.setDescription("total sacco amount in bank-account");
+        saccoAccountService.addAccount(saccoAccount);
+        logger.info("sacco data added...");
+
         userService.addProfile(userDto,"ROOT", Status.OPEN);
-        userService.addRole("0700123123","ADMIN");
-        companyService.addCompany(new CompanyDto(1,"CiplaQCIL",50000));
+        userService.addRole(contact,"ADMIN");
+
 
 
 

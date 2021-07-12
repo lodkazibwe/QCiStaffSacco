@@ -19,7 +19,7 @@ public class Account {
     private String memberNo;
     private String position;
     private double savings;
-    private double Shares;
+    private double shares;
     private double pendingFee;
     //private double monthlySaving;
 

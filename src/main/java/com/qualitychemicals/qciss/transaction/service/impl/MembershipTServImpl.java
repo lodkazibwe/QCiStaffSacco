@@ -1,9 +1,16 @@
 package com.qualitychemicals.qciss.transaction.service.impl;
 
+import com.qualitychemicals.qciss.account.model.UserAccount;
+import com.qualitychemicals.qciss.account.model.Wallet;
+import com.qualitychemicals.qciss.account.service.MembershipAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.service.AccountService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
+import com.qualitychemicals.qciss.saccoData.service.MembershipService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
@@ -28,11 +35,16 @@ public class MembershipTServImpl implements MembershipTService {
     @Autowired
     TransactionService transactionService;
     @Autowired UserService userService;
+    @Autowired MyUserDetailsService myUserDetailsService;
     @Autowired AccountService accountService;
     @Autowired RestTemplate restTemplate;
+    @Autowired WalletService walletService;
+    @Autowired MembershipAccountService membershipAccountService;
+    @Autowired MembershipService membershipService;
     @Autowired
     AppConfigReader appConfigReader;
     private final Logger logger= LoggerFactory.getLogger(MembershipTServImpl.class);
+
     @Override
     public MembershipTDto payMembership(MembershipTDto membershipTDto) {
 
@@ -42,23 +54,43 @@ public class MembershipTServImpl implements MembershipTService {
     @Override
     @Transactional
     public MembershipTDto payMembership(double amount) {
-        TransactionDto transaction=transactionService.receiveMobileMoney(amount, TransactionCat.MEMBERSHIP);
-        logger.info("preparing Transaction");
-        MembershipTDto membershipTDto=new MembershipTDto();
-        membershipTDto.setYear(2021);
-        membershipTDto.setTransactionType(transaction.getTransactionType());
-        membershipTDto.setAcctTo(transaction.getAcctTo());
-        membershipTDto.setAcctFrom(transaction.getAcctFrom());
-        membershipTDto.setUserName(transaction.getUserName());
-        membershipTDto.setStatus(transaction.getStatus());
-        membershipTDto.setDate(transaction.getDate());
-        membershipTDto.setAmount(transaction.getAmount());
-        membershipTDto.setId(transaction.getId());
-        logger.info("updating membership fee...");
-        accountService.updateMembership(amount, membershipTDto.getUserName());
-        logger.info("savingTransaction");
-        ResponseEntity<MembershipTDto> response=saveMembershipT(membershipTDto);
-        return response.getBody();
+        String user =myUserDetailsService.currentUser();
+        Wallet wallet =walletService.getWallet("WAL"+user);
+        if(amount>wallet.getAmount()){
+            throw new InvalidValuesException("low wallet bal");
+        }else{
+            MembershipTDto membershipTDto =new MembershipTDto();
+            membershipTDto.setYear(2021);
+            membershipTDto.setAccount("MEM"+user);
+            membershipTDto.setAmount(amount);
+            membershipTDto.setCreationDateTime(new Date());
+            membershipTDto.setDate(new Date());
+            membershipTDto.setNarrative("paid membership fee");
+            membershipTDto.setTransactionType("membership");
+            membershipTDto.setStatus(TransactionStatus.PENDING);
+            membershipTDto.setUserName(user);
+            membershipTDto.setWallet(wallet.getAccountRef());
+            MembershipTDto response =saveMembershipT(membershipTDto).getBody();
+            assert response != null;
+            if(response.getStatus().equals(TransactionStatus.SUCCESS)){
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating wallet..."));
+                userAccount.setAmount(amount*-1);
+                userAccount.setAccountRef(wallet.getAccountRef());
+                walletService.transact(userAccount);
+                logger.info(("updating membership..."));
+                userAccount.setAccountRef("MEM"+user);
+                userAccount.setAmount(amount);
+                membershipAccountService.transact(userAccount);
+                logger.info(("updating sacco membership account..."));
+                membershipService.updateMembership(amount);
+
+            }
+            return response;
+
+        }
+
     }
 
     private ResponseEntity<MembershipTDto> saveMembershipT(MembershipTDto membershipTDto) {
@@ -75,7 +107,7 @@ public class MembershipTServImpl implements MembershipTService {
 
     }
 
-    public void initialMembership(double amount, String userName) {
+    /*public void initialMembership(double amount, String userName) {
         if(amount>0) {
             logger.info("getting user... ");
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -83,19 +115,15 @@ public class MembershipTServImpl implements MembershipTService {
             logger.info("user "+user);
             MembershipTDto membershipTDto = new MembershipTDto();
             membershipTDto.setUserName(user);
-            membershipTDto.setTransactionType(TransactionType.CHEQUE);
             membershipTDto.setStatus(TransactionStatus.SUCCESS);
-            membershipTDto.setCategory(TransactionCat.MEMBERSHIP);
             membershipTDto.setAmount(amount);
-            membershipTDto.setAcctTo(appConfigReader.getSaccoAccount());
-            membershipTDto.setAcctFrom(userName);
             membershipTDto.setYear(2021);
             membershipTDto.setDate(new Date());
             logger.info("saving membershipT");
             saveMembershipT(membershipTDto);
         }
         logger.info("no membership fee");
-    }
+    }*/
 
     @Override
     public MembershipTransactionsDto membershipTransactions() {

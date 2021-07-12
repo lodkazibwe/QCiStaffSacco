@@ -25,12 +25,18 @@ public class PersonController {
     @Autowired PersonConverter personConverter;
     private final Logger logger= LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("/uploadImage}")
+    @PostMapping("/uploadImage")
     public ResponseEntity<String> updateImage(@RequestParam("file")MultipartFile file)
             throws IOException {
         logger.info("processing image...");
         String s= personService.uploadImage(file);
         return new ResponseEntity<>(s, HttpStatus.OK);
+    }
+
+    @GetMapping("/myImage")
+    public ResponseEntity<String> getImage(){
+        return  new ResponseEntity<>(personService.downloadUrl(), HttpStatus.OK);
+
     }
 
 

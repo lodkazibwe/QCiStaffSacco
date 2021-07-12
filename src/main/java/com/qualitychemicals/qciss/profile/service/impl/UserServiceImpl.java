@@ -1,5 +1,13 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
+import com.qualitychemicals.qciss.account.dto.MembershipAccountDto;
+import com.qualitychemicals.qciss.account.dto.SavingsAccountDto;
+import com.qualitychemicals.qciss.account.dto.SharesAccountDto;
+import com.qualitychemicals.qciss.account.dto.WalletDto;
+import com.qualitychemicals.qciss.account.service.MembershipAccountService;
+import com.qualitychemicals.qciss.account.service.SavingsAccountService;
+import com.qualitychemicals.qciss.account.service.SharesAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.firebase.message.ChatService;
 import com.qualitychemicals.qciss.firebase.notification.Notification;
@@ -17,9 +25,8 @@ import com.qualitychemicals.qciss.profile.service.CompanyService;
 import com.qualitychemicals.qciss.profile.service.EmailService;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.transaction.service.MembershipTService;
-import com.qualitychemicals.qciss.transaction.service.SavingTService;
-import com.qualitychemicals.qciss.transaction.service.ShareTService;
+import com.qualitychemicals.qciss.saccoData.model.Membership;
+import com.qualitychemicals.qciss.saccoData.service.MembershipService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +36,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
@@ -47,11 +53,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     LoanService loanService;
     @Autowired NotificationService notificationService;
-    @Autowired
-    SavingTService savingTService;
-    @Autowired MembershipTService membershipTService;
-    @Autowired ShareTService shareTService;
     @Autowired ChatService chatService;
+    @Autowired MembershipAccountService membershipAccountService;
+    @Autowired SavingsAccountService savingsAccountService;
+    @Autowired SharesAccountService sharesAccountService;
+    @Autowired WalletService walletService;
+    @Autowired MembershipService membershipService;
+
 
 
 
@@ -88,17 +96,19 @@ public class UserServiceImpl implements UserService {
             String rand = String.format("%04d", random.nextInt(10000));
             String pin ="QC-"+rand;
             profile.setPassword(passwordEncoder.encode(pin));
+            logger.info("use this pin to login "+pin);
 
             String message="use this pin to login "+pin;
             profile.getPerson().setImage("default.png");
             //generate profile/accountNumber********************************************************
-            logger.info("generating member number...");
-            String memberNo=getMemberNo(profile.getId());
-            profile.getAccount().setMemberNo(memberNo);
+            //logger.info("generating member number...");
+            //String memberNo=getMemberNo(profile.getId());
+            //profile.getAccount().setMemberNo(memberNo);
             logger.info("profile values updated...");
             logger.info("saving...");
             Profile savedProfile = userDAO.save(profile);
-            logger.info("initial transactions...");
+
+            /*logger.info("initial transactions...");
             double membership;
             membership = 20000-(profile.getAccount().getPendingFee());
             logger.info("updating savings...");
@@ -107,7 +117,11 @@ public class UserServiceImpl implements UserService {
             shareTService.initialShares(profile.getAccount().getShares(), userName);
             logger.info("membership "+membership);
             logger.info("updating membership...");
-            membershipTService.initialMembership(membership, userName);
+            membershipTService.initialMembership(membership, userName);*/
+
+            logger.info("creating wallet and other accounts....");
+            String name =userDTO.getPersonDto().getFirstName()+" "+userDTO.getPersonDto().getLastName();
+            createAccounts(userName, name);
             logger.info("subscribing to chat and notifications...");
             chatService.createChat(userName);
 
@@ -124,13 +138,59 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    private void createAccounts(String contact, String name){
+        logger.info("creating wallet....");
+        WalletDto walletDto =new WalletDto();
+        walletDto.setAccountRef("WAL"+contact);
+        walletDto.setLastTransaction(1);
+        walletDto.setAmount(5000.0);
+        walletDto.setContact(contact);
+        walletDto.setUser(contact);
+        walletDto.setName(name);
+        walletService.addWallet(walletDto);
+
+        logger.info("creating savingAcct....");
+        SavingsAccountDto savingsAccountDto =new SavingsAccountDto();
+        savingsAccountDto.setUser(contact);
+        savingsAccountDto.setLastTransaction(1);
+        savingsAccountDto.setInterest(0.0);
+        savingsAccountDto.setAmount(0.0);
+        savingsAccountDto.setAccountRef("SAV"+contact);
+        savingsAccountDto.setName(name);
+        savingsAccountService.addSavingsAccount(savingsAccountDto);
+
+        logger.info("creating ShareAcct....");
+        SharesAccountDto sharesAccountDto =new SharesAccountDto();
+        sharesAccountDto.setUser(contact);
+        sharesAccountDto.setShares(0.0);
+        sharesAccountDto.setRecordShares(0.0);
+        sharesAccountDto.setLastTransaction(1);
+        sharesAccountDto.setDividend(0.0);
+        sharesAccountDto.setAmount(0.0);
+        sharesAccountDto.setAccountRef("SHA"+contact);
+        sharesAccountDto.setName(name);
+        sharesAccountService.addSharesAccount(sharesAccountDto);
+
+        logger.info("creating MemberAcct....");
+        MembershipAccountDto membershipAccountDto =new MembershipAccountDto();
+        Membership membership =membershipService.getMembership();
+        membershipAccountDto.setSurplus(0.0);
+        membershipAccountDto.setUser(contact);
+        membershipAccountDto.setLastTransaction(1);
+        membershipAccountDto.setBalance(membership.getMembershipFee());
+        membershipAccountDto.setAmount(0.0);
+        membershipAccountDto.setAccountRef("MEM"+contact);
+        membershipAccountDto.setName(name);
+        membershipAccountService.addMembershipAccount(membershipAccountDto);
+
+    }
 
 
-    private String getMemberNo(int id) {
+   /* private String getMemberNo(int id) {
         Random random = new Random();
         String rand = String.format("%04d", random.nextInt(100));
         return  "QCS/SS/"+rand+"/"+id;
-    }
+    }*/
 
     @Override
     @Transactional
@@ -167,7 +227,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Profile updateProfile(Profile profile) {
-        return userDAO.save(profile);
+        return null;
+        //return userDAO.save(profile);
     }
 
     @Override

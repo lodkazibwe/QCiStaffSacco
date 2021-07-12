@@ -12,7 +12,6 @@ public interface DeductionScheduleDao extends JpaRepository<DeductionSchedule, I
     List<DeductionSchedule> findByCompanyAndDate(String company, Date date);
     boolean existsByKey(String yearMonth);
 
-
     /*@Modifying(clearAutomatically = true)
     @Query("DELETE from DeductionSchedule d WHERE d.key = ?1")
     void deleteDeductionScheduleWithKey(String key);*/

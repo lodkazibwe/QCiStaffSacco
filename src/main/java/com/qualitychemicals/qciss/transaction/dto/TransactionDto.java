@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -13,19 +15,21 @@ import java.util.Date;
 @NoArgsConstructor
 public class TransactionDto {
     private int id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
-    @NotNull(message ="amount cannot be Blank")
+    @NotNull(message = "amount cannot be Blank")
     private double amount;
-    @NotNull(message ="acctFrom cannot be Blank")
-    private String acctFrom;
-    @NotNull (message ="acctTo cannot be Blank")
-    private String acctTo;
-    @NotNull (message ="userName cannot be Blank")
+    @NotNull(message = "acctFrom cannot be Blank")
+    private String account;
+    @NotNull(message = "narrative cannot be Blank")
+    private String narrative;
+    @NotNull(message = "userName cannot be Blank")
     private String userName;
-    private TransactionCat category;
-    private TransactionType transactionType;
+    private String wallet;
     private TransactionStatus status;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING )//locale = "pt-BR", timezone = "EAT"
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creationDateTime;
+    private String transactionType;
 
 }

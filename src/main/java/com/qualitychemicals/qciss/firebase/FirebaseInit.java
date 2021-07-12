@@ -15,7 +15,7 @@ public class FirebaseInit {
     @PostConstruct
     public void initialize() throws IOException {
         FileInputStream serviceAccount =
-                new FileInputStream("/home/qci_user/apps/QCiStaffSacco/serviceAcount.json");//
+                new FileInputStream("./serviceAcount.json");// /home/qci_user/apps/QCiStaffSacco
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
