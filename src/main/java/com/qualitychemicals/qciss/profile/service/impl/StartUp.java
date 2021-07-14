@@ -44,6 +44,11 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
 
         int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
+            logger.info("adding...");
+            SaccoAccount saccoAccount =new SaccoAccount();
+            saccoAccount.setName("YO-ACCOUNT");
+            saccoAccount.setDescription("total sacco amount in yo-wallet");
+            saccoAccountService.addAccount(saccoAccount);
             logger.info("system already initialized...");
             return;
         }
@@ -113,9 +118,10 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         saccoAccount.setDescription("total sacco amount in yo-wallet");
         saccoAccountService.addAccount(saccoAccount);
 
-        saccoAccount.setName("BANK-ACCOUNT");
-        saccoAccount.setDescription("total sacco amount in bank-account");
-        saccoAccountService.addAccount(saccoAccount);
+        SaccoAccount saccoAccount1 =new SaccoAccount();
+        saccoAccount1.setName("BANK-ACCOUNT");
+        saccoAccount1.setDescription("total sacco amount in bank-account");
+        saccoAccountService.addAccount(saccoAccount1);
         logger.info("sacco data added...");
 
         userService.addProfile(userDto,"ROOT", Status.OPEN);

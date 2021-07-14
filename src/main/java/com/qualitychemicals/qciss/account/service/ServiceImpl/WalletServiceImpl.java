@@ -97,6 +97,7 @@ public class WalletServiceImpl implements WalletService {
         Wallet wallet =getWallet("WAL"+userName);
         logger.info("getting successful deposits...");
         List<TransactionDto> transactions= refreshTransactions(wallet.getAccountRef());
+        logger.info("transactions fetched successfully...");
         for(TransactionDto transactionDto: transactions){
             logger.info("updating wallet...");
             UserAccount userAccount =new UserAccount();
@@ -123,7 +124,7 @@ public class WalletServiceImpl implements WalletService {
             return Objects.requireNonNull(restTemplate.getForObject(uri + walletRef, AllTransactions.class))
                     .getTransactions();
         }catch (RestClientException e) {
-            throw new ResourceNotFoundException("refresh failed..." );
+            throw new ResourceNotFoundException("payment service error......" );
         }
 
     }
