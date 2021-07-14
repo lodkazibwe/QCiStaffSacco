@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import com.qualitychemicals.qciss.saccoData.service.SavingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 public class SavingServiceImpl implements SavingService {
@@ -17,7 +18,7 @@ public class SavingServiceImpl implements SavingService {
     public Saving addSaving(Saving saving) {
         boolean bool =saccoAccountService.existsByName("SAVING");
         if(bool){
-            return null;
+            throw new ResourceAccessException("account already exists");
         }
         saving.setName("SAVING");
         return savingDao.save(saving);
@@ -32,6 +33,10 @@ public class SavingServiceImpl implements SavingService {
 
     @Override
     public Saving getSavingInfo() {
-        return savingDao.findByName("SAVING");
+        Saving saving =savingDao.findByName("SAVING");
+        if (saving == null) {
+            throw new ResourceAccessException("admin sav_account not found");
+        }
+        return saving;
     }
 }

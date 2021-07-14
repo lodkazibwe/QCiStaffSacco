@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.saccoData.service.MembershipService;
 import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 public class MembershipServiceImpl implements MembershipService {
@@ -19,7 +20,7 @@ public class MembershipServiceImpl implements MembershipService {
     public Membership addMembership(Membership membership) {
         boolean bool =saccoAccountService.existsByName("MEMBERSHIP");
         if(bool){
-            return null;
+            throw new ResourceAccessException("account already exists");
         }
         membership.setName("MEMBERSHIP");
         return membershipDao.save(membership);
@@ -34,7 +35,10 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Override
     public Membership getMembership() {
-
-        return membershipDao.findByName("MEMBERSHIP");
+            Membership membership =membershipDao.findByName("MEMBERSHIP");
+        if (membership == null) {
+            throw new ResourceAccessException("admin mem_account not found");
+        }
+        return membership;
     }
 }

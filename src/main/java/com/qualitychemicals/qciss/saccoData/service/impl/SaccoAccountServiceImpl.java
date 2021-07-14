@@ -5,6 +5,7 @@ import com.qualitychemicals.qciss.saccoData.model.SaccoAccount;
 import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class SaccoAccountServiceImpl implements SaccoAccountService {
     public SaccoAccount addAccount(SaccoAccount saccoAccount) {
         boolean bool =existsByName(saccoAccount.getName());
         if(bool){
-            return null;
+            throw new ResourceAccessException("account already exists");
         }
 
         return saccoAccountDao.save(saccoAccount);
@@ -30,7 +31,11 @@ public class SaccoAccountServiceImpl implements SaccoAccountService {
 
     @Override
     public SaccoAccount getSaccoAccount(String name) {
-        return saccoAccountDao.findByName(name);
+        SaccoAccount saccoAccount =saccoAccountDao.findByName(name);
+        if (saccoAccount == null) {
+            throw new ResourceAccessException("admin account not found");
+        }
+        return saccoAccount;
 
     }
 

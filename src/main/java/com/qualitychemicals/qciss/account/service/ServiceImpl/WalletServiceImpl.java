@@ -54,7 +54,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getMyWallet() {
-        return null;
+        return getWallet("WAL"+myUserDetailsService.currentUser());
+        //return null;
     }
 
     @Transactional
@@ -83,7 +84,7 @@ public class WalletServiceImpl implements WalletService {
             HttpEntity<String> message =restTemplate.exchange(uri, HttpMethod.POST,request,String.class);
                return message.getBody();
             }catch (RestClientException e) {
-              throw new ResourceNotFoundException("Deposit request not submitted..." );
+              throw new ResourceNotFoundException("payment gateway error..." );
                    }
 
     }
@@ -129,7 +130,11 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWallet(String accountRef) {
-        return walletDao.findByAccountRef(accountRef);
+        Wallet wallet =walletDao.findByAccountRef(accountRef);
+        if (wallet == null) {
+            throw new ResourceNotFoundException("No such account: ");
+        }
+        return wallet;
     }
 
     @Override

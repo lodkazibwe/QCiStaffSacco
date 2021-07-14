@@ -9,6 +9,7 @@ import com.qualitychemicals.qciss.account.service.SavingsAccountService;
 import com.qualitychemicals.qciss.account.service.UserAccountService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,11 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
     UserAccountService userAccountService;
     @Autowired SavingsAccountConverter savingsAccountConverter;
     @Autowired SavingsAccountDao savingsAccountDao;
+    @Autowired MyUserDetailsService myUserDetailsService;
 
     @Override
     public SavingsAccount getMyAccount() {
-        return null;
+        return getSavingsAccount("SAV"+myUserDetailsService.currentUser());
     }
 
     @Override
@@ -49,7 +51,11 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
     @Override
     public SavingsAccount getSavingsAccount(String accountRef) {
-        return savingsAccountDao.findByAccountRef(accountRef);
+        SavingsAccount savingsAccount =savingsAccountDao.findByAccountRef(accountRef);
+        if (savingsAccount == null) {
+            throw new ResourceNotFoundException("No such account: ");
+        }
+        return savingsAccount;
     }
 
     @Override

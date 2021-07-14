@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.saccoData.model.Share;
 import com.qualitychemicals.qciss.saccoData.service.ShareService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +23,11 @@ public class SharesAccountServiceImpl implements SharesAccountService {
     @Autowired SharesAccountConverter sharesAccountConverter;
     @Autowired SharesAccountDao sharesAccountDao;
     @Autowired ShareService shareService;
+    @Autowired MyUserDetailsService myUserDetailsService;
 
     @Override
     public SharesAccount getMyAccount() {
-        return null;
+        return getSharesAccount("SHA"+myUserDetailsService.currentUser());
     }
 
     @Override
@@ -53,7 +55,12 @@ public class SharesAccountServiceImpl implements SharesAccountService {
 
     @Override
     public SharesAccount getSharesAccount(String accountRef) {
-        return sharesAccountDao.findByAccountRef(accountRef);
+        SharesAccount sharesAccount =sharesAccountDao.findByAccountRef(accountRef);
+        if (sharesAccount == null) {
+            throw new ResourceNotFoundException("No such account: ");
+        }
+
+        return sharesAccount;
     }
 
     @Override

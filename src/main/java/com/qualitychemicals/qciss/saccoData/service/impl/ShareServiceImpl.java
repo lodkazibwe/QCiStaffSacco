@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import com.qualitychemicals.qciss.saccoData.service.ShareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 public class ShareServiceImpl implements ShareService {
@@ -17,7 +18,7 @@ public class ShareServiceImpl implements ShareService {
     public Share addShare(Share share) {
         boolean bool =saccoAccountService.existsByName("SHARES");
         if(bool){
-            return null;
+            throw new ResourceAccessException("account already exists");
         }
         return shareDao.save(share);
     }
@@ -33,6 +34,10 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     public Share getShareInfo() {
-        return shareDao.findByName("SHARES");
+        Share share =shareDao.findByName("SHARES");
+        if (share == null) {
+            throw new ResourceAccessException("admin sha_account not found");
+        }
+        return share;
     }
 }

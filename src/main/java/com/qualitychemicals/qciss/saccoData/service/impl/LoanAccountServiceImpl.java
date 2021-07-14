@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
 import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 @Service
 public class LoanAccountServiceImpl implements LoanAccountService {
@@ -50,7 +51,11 @@ public class LoanAccountServiceImpl implements LoanAccountService {
 
     @Override
     public LoanAccount getLoanAccount() {
-        return loanAccountDao.findByName("LOAN-ACCOUNT");
+        LoanAccount loanAccount =loanAccountDao.findByName("LOAN-ACCOUNT");
+        if (loanAccount == null) {
+            throw new ResourceAccessException("admin loan account not found");
+        }
+        return loanAccount;
     }
 
 

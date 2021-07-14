@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.saccoData.model.Membership;
 import com.qualitychemicals.qciss.saccoData.service.MembershipService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,8 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
     @Autowired MembershipAccountDao membershipAccountDao;
     @Autowired MembershipAccountConverter membershipAccountConverter;
     @Autowired MembershipService membershipService;
+    @Autowired
+    MyUserDetailsService myUserDetailsService;
 
     @Override
     public MembershipAccount addMembershipAccount(MembershipAccountDto membershipAccountDto) {
@@ -35,7 +38,8 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
 
     @Override
     public MembershipAccount getMyAccount() {
-        return null;
+        return getMembershipAccount("MEM"+myUserDetailsService.currentUser());
+
     }
 
     @Override
@@ -63,7 +67,12 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
 
     @Override
     public MembershipAccount getMembershipAccount(String accountRef) {
-        return membershipAccountDao.findByAccountRef(accountRef);
+        MembershipAccount membershipAccount =membershipAccountDao.findByAccountRef(accountRef);
+        if (membershipAccount == null) {
+            throw new ResourceNotFoundException("No such account: ");
+        }
+        return  membershipAccount;
+
     }
 
     @Override
