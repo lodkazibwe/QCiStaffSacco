@@ -56,10 +56,10 @@ public class UserAccountController {
 
     }
 
-    @GetMapping("/get/{name}")
+    /*@GetMapping("/get/{name}")
     public ResponseEntity<SaccoAccount> getSaccoAccount(@PathVariable String name){
         return  new ResponseEntity<>(saccoAccountService.getSaccoAccount(name), HttpStatus.OK);
 
-    }
+    }*/
 
 }
