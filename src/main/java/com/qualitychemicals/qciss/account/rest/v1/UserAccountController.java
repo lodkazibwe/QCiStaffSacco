@@ -11,13 +11,12 @@ import com.qualitychemicals.qciss.account.service.MembershipAccountService;
 import com.qualitychemicals.qciss.account.service.SavingsAccountService;
 import com.qualitychemicals.qciss.account.service.SharesAccountService;
 import com.qualitychemicals.qciss.account.service.UserAccountService;
+import com.qualitychemicals.qciss.saccoData.model.SaccoAccount;
+import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,6 +32,7 @@ public class UserAccountController {
     @Autowired SavingsAccountService savingsAccountService;
     @Autowired SharesAccountService sharesAccountService;
     @Autowired SharesAccountConverter sharesAccountConverter;
+    @Autowired SaccoAccountService saccoAccountService;
 
     @GetMapping("/membership")
     public ResponseEntity<MembershipAccountDto> myMembershipAccount(){
@@ -55,4 +55,11 @@ public class UserAccountController {
         return  new ResponseEntity<>(userAccountService.getMyAll(), HttpStatus.OK);
 
     }
+
+    @GetMapping("/get/{name}")
+    public ResponseEntity<SaccoAccount> getSaccoAccount(@PathVariable String name){
+        return  new ResponseEntity<>(saccoAccountService.getSaccoAccount(name), HttpStatus.OK);
+
+    }
+
 }
