@@ -11,6 +11,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn()
 public class DayAccount {
     @Id
     @GeneratedValue
@@ -19,6 +21,5 @@ public class DayAccount {
     @Temporal(TemporalType.DATE)
     private Date date;
     private String name;
-    private double amountOut;
-    private double amountIn;
+    private double balCf;
 }

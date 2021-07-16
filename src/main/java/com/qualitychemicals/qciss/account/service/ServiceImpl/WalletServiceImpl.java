@@ -9,8 +9,8 @@ import com.qualitychemicals.qciss.account.service.UserAccountService;
 import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
-import com.qualitychemicals.qciss.saccoData.model.SaccoAccount;
-import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
+import com.qualitychemicals.qciss.saccoData.model.ExternalAccount;
+import com.qualitychemicals.qciss.saccoData.service.ExternalAccountService;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.AllTransactions;
 import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
@@ -38,7 +38,8 @@ public class WalletServiceImpl implements WalletService {
     RestTemplate restTemplate;
     @Autowired
     MyUserDetailsService myUserDetailsService;
-    @Autowired SaccoAccountService saccoAccountService;
+    @Autowired
+    ExternalAccountService externalAccountService;
 
     private final Logger logger = LoggerFactory.getLogger(WalletServiceImpl.class);
 
@@ -55,7 +56,6 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Wallet getMyWallet() {
         return getWallet("WAL"+myUserDetailsService.currentUser());
-        //return null;
     }
 
     @Transactional
@@ -106,11 +106,11 @@ public class WalletServiceImpl implements WalletService {
             userAccount.setAmount(transactionDto.getAmount()*-1);
             transact(userAccount);
             logger.info("update sacco account...");
-            SaccoAccount saccoAccount =new SaccoAccount();
-            saccoAccount.setAmount(transactionDto.getAmount()*-1);
-            saccoAccount.setDescription("nnn");
-            saccoAccount.setName("YO-ACCOUNT");
-            saccoAccountService.updateAccount(saccoAccount);
+            ExternalAccount externalAccount =new ExternalAccount();
+            externalAccount.setAmount(transactionDto.getAmount()*-1);
+            externalAccount.setDescription("nnn");
+            externalAccount.setName("YO_ACCOUNT");
+            externalAccountService.updateAccount(externalAccount);
         }
 
         return getWallet("WAL"+userName);

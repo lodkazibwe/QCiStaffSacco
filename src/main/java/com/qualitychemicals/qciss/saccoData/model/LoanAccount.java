@@ -14,15 +14,20 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @Entity
 public class LoanAccount extends SaccoAccount{
+    private int count;
+    private double interestReceivable;
+    private double principalOutstanding;
 
-    private double interestReceivable; //totalInterestOutstanding
-    private double amountIn;
+    /************reset daily*****************/
+    private double interestIn;
+    private double principalOut;
+    private double principalIn;
+
     private double handlingCharge;
     private double expressHandling;
     private double insuranceFee;
     private double transferCharge;
     private double earlyTopUpCharge;
-    private int count;
-    //private int totalOutstandingLoans;
+
 
 }

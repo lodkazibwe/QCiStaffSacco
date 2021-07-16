@@ -17,4 +17,7 @@ public class Membership extends SaccoAccount{
 
     private double membershipFee;
 
+    /************reset daily*****************/
+    private double dayMembership;
+
 }

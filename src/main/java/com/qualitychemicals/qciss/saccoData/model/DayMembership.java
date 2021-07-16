@@ -1,23 +1,19 @@
 package com.qualitychemicals.qciss.saccoData.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class DayMembership {
-    @Id
-    @GeneratedValue
-    private int id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    private Date date;
-    private double amount;
-    private double surplus;
+public class DayMembership extends DayAccount{
+    private double dayMembership;
+
 }

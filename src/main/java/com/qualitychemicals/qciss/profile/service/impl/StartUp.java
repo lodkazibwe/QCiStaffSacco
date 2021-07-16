@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -30,10 +31,12 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired SaccoAccountService saccoAccountService;
     @Autowired MembershipService membershipService;
     @Autowired LoanAccountService loanAccountService;
+    @Autowired ExternalAccountService externalAccountService;
 
     private final Logger logger = LoggerFactory.getLogger(StartUp.class);
 
     @Override
+    @Transactional
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("POST CONSTRUCT");
         logger.info("checking user...");
@@ -44,6 +47,16 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
 
         int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
+            ExternalAccount externalAccount =new ExternalAccount();
+            externalAccount.setName("YO_ACCOUNT");
+            externalAccount.setDescription("total sacco amount in yo-wallet");
+            externalAccountService.addAccount(externalAccount);
+
+            ExternalAccount externalAccount1 =new ExternalAccount();
+            externalAccount1.setName("BANK_ACCOUNT");
+            externalAccount1.setDescription("total sacco amount in bank-account");
+            externalAccountService.addAccount(externalAccount1);
+            logger.info("sacco data added...");
             logger.info("system already initialized...");
             return;
         }
@@ -84,7 +97,7 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         logger.info("adding sacco data...");
         LoanAccount loanAccount =new LoanAccount();
         loanAccount.setCount(100);
-        loanAccount.setName("LOAN-ACCOUNT");
+        loanAccount.setName("LOAN");
         loanAccount.setDescription("account for loan amount in loans");
         loanAccountService.addLoanAccount(loanAccount);
 
@@ -100,7 +113,7 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         savingService.addSaving(saving);
 
         Share share =new Share();
-        share.setName("SHARES");
+        share.setName("SHARE");
         share.setDescription("account for shares information and amount");
         share.setShareValue(20000.0);
         share.setTotalShares(10000.0);
@@ -108,15 +121,15 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         share.setSharesAvailable(3500.0);
         shareService.addShare(share);
 
-        SaccoAccount saccoAccount =new SaccoAccount();
-        saccoAccount.setName("YO-ACCOUNT");
-        saccoAccount.setDescription("total sacco amount in yo-wallet");
-        saccoAccountService.addAccount(saccoAccount);
+        ExternalAccount externalAccount =new ExternalAccount();
+        externalAccount.setName("YO_ACCOUNT");
+        externalAccount.setDescription("total sacco amount in yo-wallet");
+        externalAccountService.addAccount(externalAccount);
 
-        SaccoAccount saccoAccount1 =new SaccoAccount();
-        saccoAccount1.setName("BANK-ACCOUNT");
-        saccoAccount1.setDescription("total sacco amount in bank-account");
-        saccoAccountService.addAccount(saccoAccount1);
+        ExternalAccount externalAccount1 =new ExternalAccount();
+        externalAccount1.setName("BANK_ACCOUNT");
+        externalAccount1.setDescription("total sacco amount in bank-account");
+        externalAccountService.addAccount(externalAccount1);
         logger.info("sacco data added...");
 
         userService.addProfile(userDto,"ROOT", Status.OPEN);

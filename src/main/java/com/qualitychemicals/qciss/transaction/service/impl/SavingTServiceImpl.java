@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -47,7 +48,7 @@ public class SavingTServiceImpl implements SavingTService {
     private final Logger logger = LoggerFactory.getLogger(SavingTServiceImpl.class);
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public SavingTDto mobileSaving(double amount) {
         String user =myUserDetailsService.currentUser();
         Wallet wallet =walletService.getWallet("WAL"+user);
@@ -76,10 +77,12 @@ public class SavingTServiceImpl implements SavingTService {
                 userAccount.setAmount(amount*-1);
                 userAccount.setAccountRef(wallet.getAccountRef());
                 walletService.transact(userAccount);
-                logger.info(("updating savingsAccount..."));
-                userAccount.setAccountRef("SHA"+user);
+
+                logger.info(("updating user savingsAccount..."));
+                userAccount.setAccountRef("SAV"+user);
                 userAccount.setAmount(amount);
                 savingsAccountService.transact(userAccount);
+
                 logger.info(("updating sacco saving account..."));
                 savingService.updateSaving(amount);
             }
@@ -103,6 +106,48 @@ public class SavingTServiceImpl implements SavingTService {
         }
 
     }
+
+
+    @Override
+    public SavingsTransactionsDto myAll() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return allByWallet(wallet);
+
+    }
+
+    @Override
+    public SavingsTransactionsDto myRecent() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return last5ByWallet(wallet);
+    }
+
+    @Override
+    public SavingsTransactionsDto allByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/saving/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, SavingsTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public SavingsTransactionsDto last5ByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/saving/recentByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, SavingsTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+
+
+
 
     @Transactional
     @Override

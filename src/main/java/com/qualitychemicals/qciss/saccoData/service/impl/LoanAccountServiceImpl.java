@@ -6,6 +6,7 @@ import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
 import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.ResourceAccessException;
 
 @Service
@@ -13,6 +14,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
 
     @Autowired LoanAccountDao loanAccountDao;
     @Autowired SaccoAccountService saccoAccountService;
+
     @Override
     public LoanAccount addLoanAccount(LoanAccount loanAccount) {
         boolean bool =saccoAccountService.existsByName("LOAN-ACCOUNT");
@@ -24,6 +26,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
     }
 
     @Override
+    @Transactional
     public LoanAccount updateLoanAccount(LoanAccount update) {
         LoanAccount loanAccount =getLoanAccount();
         loanAccount.setEarlyTopUpCharge(update.getEarlyTopUpCharge()+loanAccount.getEarlyTopUpCharge());
@@ -33,7 +36,9 @@ public class LoanAccountServiceImpl implements LoanAccountService {
         loanAccount.setInterestReceivable(update.getInterestReceivable()+loanAccount.getInterestReceivable());
         loanAccount.setTransferCharge(update.getTransferCharge()+loanAccount.getTransferCharge());
         loanAccount.setAmount(update.getAmount()+loanAccount.getAmount());
-        loanAccount.setAmountIn(update.getAmountIn()+loanAccount.getAmountIn());
+        loanAccount.setPrincipalIn(update.getPrincipalIn()+loanAccount.getPrincipalIn());
+        loanAccount.setPrincipalOut(update.getPrincipalOut()+loanAccount.getPrincipalOut());
+        loanAccount.setInterestIn(update.getInterestIn()+loanAccount.getInterestIn());
         return loanAccountDao.save(loanAccount);
     }
 

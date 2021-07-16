@@ -6,9 +6,16 @@ import com.qualitychemicals.qciss.transaction.dto.*;
 import java.util.List;
 
 public interface TransactionService {
+    AllTransactions myAll();
+    AllTransactions myRecent();
+    AllTransactions allByWallet(String wallet);
+    AllTransactions last5ByWallet(String wallet);
+
+    UserTransactionsDto userTransactions(String userName);
+
+
 
     LoanTransactionsDto loanTransactions(int loanId);
-    UserTransactionsDto userTransactions(String userName);
     UserTransactionsDto myTransactions();
     LoanTransactionsDto myLoanTransactions(int loanId);
     LoanTransactionsDto loanTransactions();

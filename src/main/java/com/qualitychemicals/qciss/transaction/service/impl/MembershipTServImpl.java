@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -52,7 +53,7 @@ public class MembershipTServImpl implements MembershipTService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public MembershipTDto payMembership(double amount) {
         String user =myUserDetailsService.currentUser();
         Wallet wallet =walletService.getWallet("WAL"+user);
@@ -83,6 +84,7 @@ public class MembershipTServImpl implements MembershipTService {
                 userAccount.setAccountRef("MEM"+user);
                 userAccount.setAmount(amount);
                 membershipAccountService.transact(userAccount);
+
                 logger.info(("updating sacco membership account..."));
                 membershipService.updateMembership(amount);
 
@@ -91,6 +93,42 @@ public class MembershipTServImpl implements MembershipTService {
 
         }
 
+    }
+
+    @Override
+    public MembershipTransactionsDto myRecent() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return last5ByWallet(wallet);
+    }
+
+    @Override
+    public MembershipTransactionsDto myAll() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return allByWallet(wallet);
+    }
+
+    @Override
+    public MembershipTransactionsDto allByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/membership/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, MembershipTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public MembershipTransactionsDto last5ByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/membership/recentByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, MembershipTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
     }
 
     private ResponseEntity<MembershipTDto> saveMembershipT(MembershipTDto membershipTDto) {
@@ -106,6 +144,10 @@ public class MembershipTServImpl implements MembershipTService {
         }
 
     }
+
+
+
+
 
     /*public void initialMembership(double amount, String userName) {
         if(amount>0) {

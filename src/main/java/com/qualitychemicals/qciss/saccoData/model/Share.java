@@ -23,4 +23,8 @@ public class Share extends SaccoAccount{
     private double shareValue;
     private Date recordDate;
     private double dividendsPerShare;
+
+    /************reset daily*****************/
+    private double dayShares;
+    private double dayShareAmount;
 }

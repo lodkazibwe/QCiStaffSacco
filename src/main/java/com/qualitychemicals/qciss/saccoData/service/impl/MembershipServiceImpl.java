@@ -30,6 +30,7 @@ public class MembershipServiceImpl implements MembershipService {
     public Membership updateMembership(double amount) {
         Membership membership =getMembership();
         membership.setAmount(amount+membership.getAmount());
+        membership.setDayMembership(amount+membership.getDayMembership());
         return membershipDao.save(membership);
     }
 

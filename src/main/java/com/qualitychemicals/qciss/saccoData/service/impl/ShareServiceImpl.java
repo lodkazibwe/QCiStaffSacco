@@ -29,6 +29,8 @@ public class ShareServiceImpl implements ShareService {
         share.setSharesAvailable(update.getSharesAvailable()+share.getSharesAvailable());
         share.setSharesSold(update.getSharesSold()+share.getSharesSold());
         share.setAmount(update.getAmount()+share.getAmount());
+        share.setDayShares(update.getDayShares()+share.getDayShares());
+        share.setDayShareAmount(update.getDayShareAmount()+share.getDayShareAmount());
         return shareDao.save(share);
     }
 

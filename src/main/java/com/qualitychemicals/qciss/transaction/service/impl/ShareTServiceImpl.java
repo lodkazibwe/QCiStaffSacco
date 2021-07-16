@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -42,6 +43,8 @@ public class ShareTServiceImpl implements ShareTService {
     @Autowired SharesAccountService sharesAccountService;
 
     private final Logger logger = LoggerFactory.getLogger(ShareTServiceImpl.class);
+
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     @Override
     public ShareTDto buyShares(double amount) {
         String user =myUserDetailsService.currentUser();
@@ -73,15 +76,20 @@ public class ShareTServiceImpl implements ShareTService {
                 userAccount.setAmount(amount*-1);
                 userAccount.setAccountRef(wallet.getAccountRef());
                 walletService.transact(userAccount);
+
                 logger.info(("updating shareAccount..."));
                 userAccount.setAccountRef("SHA"+user);
                 userAccount.setAmount(amount);
                 sharesAccountService.transact(userAccount);
+
                 logger.info(("updating sacco share account..."));
                 Share update =new Share();
                 update.setAmount(amount);
                 update.setSharesSold(shares);
+                update.setDayShares(shares);
+                update.setDayShareAmount(amount);
                 update.setSharesAvailable(shares*-1);
+                update.setSharesSold(shares);
                 shareService.updateShare(update);
 
             }
@@ -103,6 +111,42 @@ public class ShareTServiceImpl implements ShareTService {
             throw new ResourceNotFoundException("Transaction Service down " );
         }
 
+    }
+
+    @Override
+    public SharesTransactionsDto myAll() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return allByWallet(wallet);
+    }
+
+    @Override
+    public SharesTransactionsDto myRecent() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return last5ByWallet(wallet);
+    }
+
+    @Override
+    public SharesTransactionsDto allByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/shares/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, SharesTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public SharesTransactionsDto last5ByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/shares/recentByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, SharesTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
     }
 
     @Transactional

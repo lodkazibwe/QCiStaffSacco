@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @Entity
 public class Saving extends SaccoAccount{
-
     private double yearlyInterest;
+
+    /************reset daily*****************/
+    private double daySaving;
 }

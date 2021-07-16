@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -48,8 +49,12 @@ public class LoanTServiceImpl implements LoanTService {
     private final Logger logger = LoggerFactory.getLogger(LoanTServiceImpl.class);
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public LoanTDto release(LoanPayDto loanPayDto) {
+        LoanAccount acct=loanAccountService.getLoanAccount();
+        if(acct.getAmount()<loanPayDto.getAmount()){
+            throw new InvalidValuesException("low loan account bal");
+        }
 
         logger.info("getting loan...");
         Loan loan=loanService.getLoan(loanPayDto.getLoanId());
@@ -81,13 +86,14 @@ public class LoanTServiceImpl implements LoanTService {
                 saveLoanT(loanTDto);
                 logger.info("updating sacco loan account...");
                 LoanAccount loanAccount =new LoanAccount();
-                loanAccount.setAmount(0.0);
-                loanAccount.setTransferCharge(0.0);
-                loanAccount.setInterestReceivable(0.0);
-                loanAccount.setInsuranceFee(0.0);
-                loanAccount.setHandlingCharge(0.0);
-                loanAccount.setEarlyTopUpCharge(0.0);
-                loanAccount.setAmountIn(loanTDto.getAmount());
+                loanAccount.setAmount(topUpLoan.getTotalDue());
+                double rate =topUpLoan.getPrincipal()/topUpLoan.getInterest();
+                double interestIn=topUpLoan.getTotalDue()/rate;
+                double principalIn=topUpLoan.getTotalDue()-interestIn;
+                loanAccount.setInterestReceivable(interestIn*-1);
+                loanAccount.setInterestIn(interestIn);
+                loanAccount.setPrincipalIn(principalIn);
+                loanAccount.setPrincipalOutstanding(principalIn*-1);
                 loanAccountService.updateLoanAccount(loanAccount);
             }
             logger.info("setting transaction...");
@@ -96,7 +102,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setDate(new Date());
             loanTDto.setCreationDateTime(new Date());
             loanTDto.setStatus(TransactionStatus.PENDING);
-            loanTDto.setWallet("user-WALLET");// user wallet
+            loanTDto.setWallet(wallet.getAccountRef());
             loanTDto.setNarrative("loan charges");
             loanTDto.setAccount(loan.getLoanNumber());
             loanTDto.setUserName(userName);
@@ -108,8 +114,8 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setAmount(totalCharge);
             saveLoanT(loanTDto);
             logger.info("setting loan amount and saving...");
-            loanTDto.setNarrative("loan Received");
-            loanTDto.setAmount(loan.getPrincipal());
+            loanTDto.setNarrative("loan Release");
+            loanTDto.setAmount(loan.getPrincipal()*-1);
 
         double amount=loan.getPrincipal()-totalCharge-loan.getTopUpLoanBalance();
 
@@ -128,13 +134,15 @@ public class LoanTServiceImpl implements LoanTService {
                 walletService.transact(userAccount);
                 logger.info("updating sacco loan account...");
                 LoanAccount loanAccount =new LoanAccount();
-                loanAccount.setAmount(loan.getPrincipal());
+                loanAccount.setAmount(loan.getPrincipal()*-1);
                 loanAccount.setTransferCharge(loan.getTransferCharge());
-                loanAccount.setInterestReceivable(loan.getInterest());
                 loanAccount.setInsuranceFee(loan.getInsuranceFee());
-                loanAccount.setAmountIn(0.0);
                 loanAccount.setHandlingCharge(loan.getHandlingCharge());
                 loanAccount.setEarlyTopUpCharge(loan.getEarlyTopUpCharge());
+                loanAccount.setExpressHandling(loan.getExpressHandling());
+                loanAccount.setInterestReceivable(loan.getInterest());
+                loanAccount.setPrincipalOutstanding(loan.getPrincipal());
+                loanAccount.setPrincipalOut(loan.getPrincipal());
                 loanAccountService.updateLoanAccount(loanAccount);
                 String message="You have received your loan money, "+response.getAmount();
                 notificationService.sendNotification(loan.getBorrower(),message,Subject.loanRelease);
@@ -156,7 +164,7 @@ public class LoanTServiceImpl implements LoanTService {
 
         try {
             logger.info("connecting to payment service...");
-            final String uri="http://localhost:8082/transaction/loan/release";
+            final String uri="http://localhost:8082/transaction/loan/saveLoanT";
             HttpEntity<LoanTDto> request = new HttpEntity<>(loanTDto);
             return restTemplate.exchange(uri, HttpMethod.POST,request,LoanTDto.class);
         }catch (RestClientException e) {
@@ -173,8 +181,9 @@ public class LoanTServiceImpl implements LoanTService {
 
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public LoanTDto walletRepay(LoanPayDto loanPayDto) {
+
         logger.info("getting user...");
         String userName =myUserDetailsService.currentUser();
         Wallet wallet =walletService.getWallet("WAL"+userName);
@@ -219,13 +228,14 @@ public class LoanTServiceImpl implements LoanTService {
                 walletService.transact(userAccount);
                 logger.info("updating sacco loan account...");
                 LoanAccount loanAccount =new LoanAccount();
-                loanAccount.setAmount(0.0);
-                loanAccount.setTransferCharge(0.0);
-                loanAccount.setInterestReceivable(0.0);
-                loanAccount.setInsuranceFee(0.0);
-                loanAccount.setAmountIn(loanPayDto.getAmount());
-                loanAccount.setHandlingCharge(0.0);
-                loanAccount.setEarlyTopUpCharge(0.0);
+                loanAccount.setAmount(loanPayDto.getAmount());
+                double rate =loan.getPrincipal()/loan.getInterest();
+                double interestIn=loan.getTotalDue()/rate;
+                double principalIn=loan.getTotalDue()-interestIn;
+                loanAccount.setInterestReceivable(interestIn*-1);
+                loanAccount.setPrincipalOutstanding(principalIn*-1);
+                loanAccount.setInterestIn(interestIn);
+                loanAccount.setPrincipalIn(principalIn);
                 loanAccountService.updateLoanAccount(loanAccount);
             }
             return response;
@@ -238,8 +248,33 @@ public class LoanTServiceImpl implements LoanTService {
         throw new InvalidValuesException(" cant repay Loan ..."+ loan.getId());
     }
 
+    @Override
+    public LoanTransactionsDto myAll(String loanRef) {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
 
-   /* @Transactional
+        String url ="http://localhost:8082/transaction/loan/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet+"/"+ loanRef, LoanTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public LoanTransactionsDto adminAll(String loanRef) {
+        String url ="http://localhost:8082/transaction/loan/allByLoanRef/";
+        try {
+            return restTemplate.getForObject(
+                    url + loanRef, LoanTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+
+    /* @Transactional
     public LoanTDto repay(LoanTDto loanTDto, String owner) {
         logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

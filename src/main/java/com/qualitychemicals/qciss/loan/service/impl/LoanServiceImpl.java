@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -39,7 +40,7 @@ public class LoanServiceImpl  implements LoanService {
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public Loan request(LoanRequestDto requestDto) {
         LoanDto loanDto=requestToLoanDto(requestDto);
         logger.info("Checking Eligibility...");
@@ -222,7 +223,7 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     public Loan verify(LoanVerifyDto loanVerifyDto) {
         Date date = new Date();
         logger.info("getting admin user...");
@@ -351,7 +352,7 @@ public class LoanServiceImpl  implements LoanService {
         loanDao.save(loan);
     }
 
-    @Transactional
+    @Transactional(isolation= Isolation.SERIALIZABLE)
     @Override
     public Loan topUpRequest(LoanRequestDto loanRequestDto, int loanId) {
         logger.info("converting...");

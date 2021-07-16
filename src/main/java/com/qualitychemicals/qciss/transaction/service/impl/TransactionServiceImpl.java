@@ -5,10 +5,10 @@ import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.saccoData.dto.ScheduleLoanDto;
 import com.qualitychemicals.qciss.saccoData.service.DeductionScheduleService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.*;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
@@ -42,10 +42,51 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired ShareTService shareTService;
     @Autowired DeductionScheduleService deductionScheduleService;
     @Autowired
-    AppConfigReader appConfigReader;
+    MyUserDetailsService myUserDetailsService;
 
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
+
+    @Override
+    public AllTransactions myAll() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return allByWallet(wallet);
+    }
+
+    @Override
+    public AllTransactions myRecent() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+        return last5ByWallet(wallet);
+    }
+
+    @Override
+    public AllTransactions allByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/transaction/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, AllTransactions.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public AllTransactions last5ByWallet(String wallet) {
+        String url ="http://localhost:8082/transaction/transaction/recentByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, AllTransactions.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+
+
+
+    /*****-------------------------------------------****/
     @Override
     @Transactional
     public LoanTransactionsDto loanTransactions(int loanId) {

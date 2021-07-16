@@ -28,6 +28,7 @@ public class SavingServiceImpl implements SavingService {
     public Saving updateSaving(double amount) {
         Saving saving =getSavingInfo();
         saving.setAmount(amount+saving.getAmount());
+        saving.setDaySaving(amount+saving.getDaySaving());
         return savingDao.save(saving);
     }
 
