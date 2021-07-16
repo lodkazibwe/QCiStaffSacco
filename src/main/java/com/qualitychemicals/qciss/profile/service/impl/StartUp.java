@@ -47,16 +47,6 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
 
         int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
-            ExternalAccount externalAccount =new ExternalAccount();
-            externalAccount.setName("YO_ACCOUNT");
-            externalAccount.setDescription("total sacco amount in yo-wallet");
-            externalAccountService.addAccount(externalAccount);
-
-            ExternalAccount externalAccount1 =new ExternalAccount();
-            externalAccount1.setName("BANK_ACCOUNT");
-            externalAccount1.setDescription("total sacco amount in bank-account");
-            externalAccountService.addAccount(externalAccount1);
-            logger.info("sacco data added...");
             logger.info("system already initialized...");
             return;
         }
