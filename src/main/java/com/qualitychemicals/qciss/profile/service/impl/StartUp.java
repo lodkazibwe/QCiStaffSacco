@@ -9,7 +9,7 @@ import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.saccoData.appConfig.AppConfigReader;
 import com.qualitychemicals.qciss.saccoData.model.*;
 import com.qualitychemicals.qciss.saccoData.service.*;
-import com.qualitychemicals.qciss.saccoData.service.impl.LoanAccountService;
+import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

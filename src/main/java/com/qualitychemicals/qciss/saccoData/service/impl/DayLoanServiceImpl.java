@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.saccoData.dao.DayLoanDao;
 import com.qualitychemicals.qciss.saccoData.model.DayLoan;
 import com.qualitychemicals.qciss.saccoData.model.LoanAccount;
 import com.qualitychemicals.qciss.saccoData.service.DayLoanService;
+import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
