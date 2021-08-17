@@ -45,6 +45,7 @@ public class LoanTServiceImpl implements LoanTService {
     @Autowired
     WalletService walletService;
     @Autowired LoanAccountService loanAccountService;
+
     @Autowired MyUserDetailsService myUserDetailsService;
     private final Logger logger = LoggerFactory.getLogger(LoanTServiceImpl.class);
 
@@ -159,7 +160,14 @@ public class LoanTServiceImpl implements LoanTService {
 
     }
 
-    private ResponseEntity<LoanTDto> saveLoanT(LoanTDto loanTDto) {
+    @Override
+    @Transactional
+    public LoanTDto saveLoanTransaction(LoanTDto loanTDto) {
+        return saveLoanT(loanTDto).getBody();
+    }
+
+    @Transactional
+    public ResponseEntity<LoanTDto> saveLoanT(LoanTDto loanTDto) {
         logger.info("transacting...");
 
         try {

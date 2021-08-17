@@ -2,7 +2,6 @@ package com.qualitychemicals.qciss.transaction.service;
 
 
 import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
-import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
 import com.qualitychemicals.qciss.transaction.dto.SharesTransactionsDto;
 
@@ -14,6 +13,7 @@ public interface ShareTService {
     SharesTransactionsDto myRecent();
     SharesTransactionsDto allByWallet(String wallet);
     SharesTransactionsDto last5ByWallet(String wallet);
+    ShareTDto saveShareTransaction(ShareTDto shareTDto);
 
 
     ShareTDto systemShares(ShareTDto shareTDto);

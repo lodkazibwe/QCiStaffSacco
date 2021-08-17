@@ -1,6 +1,5 @@
 package com.qualitychemicals.qciss.profile.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ public class PersonDto {
     @NotBlank(message = "last name cannot be blank")
     @Size(min=2, message = "Last name at least two Characters")
     private String lastName;
-    @NotNull(message = "nin cannot be null")
+    //@NotNull(message = "nin cannot be null")
     //@Size(min=14, max=14,message = "NIN must have 14 Characters")
     //@Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
@@ -30,13 +29,12 @@ public class PersonDto {
     @NotBlank(message="email cannot be blank")
     @Email(message="invalid Email")
     private String email;
-    @NotNull(message="invalid date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    //@NotNull(message="invalid date")
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date dob;
-    @NotBlank(message ="Gender cannot be Blank")
+    //@NotBlank(message ="Gender cannot be Blank")
     private String gender;
-    @NotBlank(message ="residence cannot be Blank")
+    //@NotBlank(message ="residence cannot be Blank")
     private String residence;
-
 
 }

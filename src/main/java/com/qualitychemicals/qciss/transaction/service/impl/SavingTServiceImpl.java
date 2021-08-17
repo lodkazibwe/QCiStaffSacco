@@ -92,7 +92,10 @@ public class SavingTServiceImpl implements SavingTService {
 
     }
 
-
+    @Override
+    public SavingTDto saveSavingTransaction(SavingTDto savingTDto) {
+        return saveSavingT(savingTDto).getBody();
+    }
 
     private ResponseEntity<SavingTDto> saveSavingT(SavingTDto savingTDto) {
         logger.info("transacting...");

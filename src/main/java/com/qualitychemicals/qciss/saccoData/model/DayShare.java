@@ -13,6 +13,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 public class DayShare extends DayAccount{
+    private double sharesSold;
+    private double sharesAvailable;
+    private double shareValue;
     private double dayShares;
     private double dayShareAmount;
 }

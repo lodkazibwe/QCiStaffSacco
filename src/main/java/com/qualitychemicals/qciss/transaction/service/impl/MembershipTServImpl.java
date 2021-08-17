@@ -131,8 +131,12 @@ public class MembershipTServImpl implements MembershipTService {
         }
     }
 
+    public MembershipTDto saveMembershipTransaction(MembershipTDto membershipTDto){
+        return saveMembershipT(membershipTDto).getBody();
+    }
+
     private ResponseEntity<MembershipTDto> saveMembershipT(MembershipTDto membershipTDto) {
-        logger.info("transacting Membershipfee...");
+        logger.info("transacting Membership...");
 
         try {
             logger.info("connecting to payment service...");

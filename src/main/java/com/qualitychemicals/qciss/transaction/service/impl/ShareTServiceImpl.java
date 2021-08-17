@@ -99,6 +99,11 @@ public class ShareTServiceImpl implements ShareTService {
 
     }
 
+    @Override
+    public ShareTDto saveShareTransaction(ShareTDto shareTDto) {
+        return saveShareT(shareTDto).getBody();
+    }
+
     private ResponseEntity<ShareTDto> saveShareT(ShareTDto shareTDto) {
         logger.info("transacting...");
 

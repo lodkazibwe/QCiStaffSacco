@@ -2,9 +2,14 @@ package com.qualitychemicals.qciss.saccoData.service.impl;
 
 import com.qualitychemicals.qciss.saccoData.dao.DayLoanDao;
 import com.qualitychemicals.qciss.saccoData.model.DayLoan;
+import com.qualitychemicals.qciss.saccoData.model.LoanAccount;
 import com.qualitychemicals.qciss.saccoData.service.DayLoanService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -12,19 +17,34 @@ import java.util.List;
 @Service
 public class DayLoanServiceImpl implements DayLoanService {
     @Autowired DayLoanDao dayLoanDao;
-    @Override
-    public DayLoan addDayLoan(DayLoan dayLoan) {
-        boolean bool =existsByDate(dayLoan.getDate());
-        if(bool){
-            return null;
-        }
+    @Autowired
+    LoanAccountService loanAccountService;
 
-        return dayLoanDao.save(dayLoan);
-    }
+    private final Logger logger = LoggerFactory.getLogger(DayLoanServiceImpl.class);
 
-    @Override
-    public DayLoan updateDayLoan(DayLoan dayLoan) {
-    return null;
+    @Transactional
+    @Scheduled(cron = "30 59 23 * * *",zone = "EAT")
+    public void addDayLoan() {
+        logger.info("getting sacco loan-account...");
+        LoanAccount loanAccount= loanAccountService.getLoanAccount();
+        DayLoan dayLoan =new DayLoan();
+        dayLoan.setBalCf(loanAccount.getAmount());
+        dayLoan.setDate(new Date());
+        dayLoan.setName(loanAccount.getName());
+        dayLoan.setInterestReceivable(loanAccount.getInterestReceivable());
+        dayLoan.setPrincipalOutstanding(loanAccount.getPrincipalOutstanding());
+        dayLoan.setTransferCharge(loanAccount.getTransferCharge());
+        dayLoan.setPrincipalOut(loanAccount.getPrincipalOut());
+        dayLoan.setPrincipalIn(loanAccount.getPrincipalIn());
+        dayLoan.setInterestIn(loanAccount.getInterestIn());
+        dayLoan.setInsuranceFee(loanAccount.getInsuranceFee());
+        dayLoan.setHandlingCharge(loanAccount.getHandlingCharge());
+        dayLoan.setExpressHandling(loanAccount.getExpressHandling());
+        dayLoan.setEarlyTopUpCharge(loanAccount.getEarlyTopUpCharge());
+        logger.info("resetting sacco loan-account...");
+        loanAccountService.resetLoanAccount(loanAccount);
+        logger.info("saving sacco loan-account...");
+         dayLoanDao.save(dayLoan);
     }
 
     @Override

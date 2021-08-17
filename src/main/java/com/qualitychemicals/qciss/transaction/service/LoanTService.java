@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.LoanPayDto;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
 import com.qualitychemicals.qciss.transaction.dto.LoanTransactionsDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ public interface LoanTService {
     LoanTDto walletRepay(LoanPayDto loanPayDto);
     LoanTransactionsDto myAll(String loanRef);
     LoanTransactionsDto adminAll(String loanRef);
+    LoanTDto saveLoanTransaction(LoanTDto loanTDto);
 
 
 

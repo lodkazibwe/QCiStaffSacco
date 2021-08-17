@@ -13,7 +13,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Data
 public class DayLoan extends DayAccount{
-
+    private double interestReceivable;
+    private double principalOutstanding;
     private double interestIn;
     private double principalOut;
     private double principalIn;

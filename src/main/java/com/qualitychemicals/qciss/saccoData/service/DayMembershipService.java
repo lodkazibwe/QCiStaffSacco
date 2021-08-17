@@ -6,8 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface DayMembershipService {
-    DayMembership addDayMembership(DayMembership dayMembership);
-    DayMembership updateDayMembership(DayMembership dayMembership);
+
     DayMembership getDayMembership(Date date);
     List<DayMembership> getDayMemberships(Date dateFrom, Date dateTo);
 }

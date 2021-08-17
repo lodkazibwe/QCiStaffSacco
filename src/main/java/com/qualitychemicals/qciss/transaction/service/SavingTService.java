@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.MembershipTransactionsDto;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
 import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ public interface SavingTService {
     SavingsTransactionsDto myRecent();
     SavingsTransactionsDto allByWallet(String wallet);
     SavingsTransactionsDto last5ByWallet(String wallet);
+    SavingTDto saveSavingTransaction(SavingTDto savingTDto);
 
 
     SavingTDto systemSaving(SavingTDto savingTDto);

@@ -14,7 +14,7 @@ import com.qualitychemicals.qciss.profile.dto.UserDto;
 import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
-import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
+import com.qualitychemicals.qciss.saccoData.service.impl.LoanAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

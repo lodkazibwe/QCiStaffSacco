@@ -13,6 +13,7 @@ public interface MembershipTService {
     MembershipTransactionsDto myAll();
     MembershipTransactionsDto allByWallet(String wallet);
     MembershipTransactionsDto last5ByWallet(String wallet);
+    MembershipTDto saveMembershipTransaction(MembershipTDto membershipTDto);
 
 
 

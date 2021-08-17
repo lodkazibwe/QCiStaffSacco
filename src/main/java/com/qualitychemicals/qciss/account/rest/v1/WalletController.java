@@ -24,12 +24,12 @@ public class WalletController {
          }
 
     @PostMapping("/initiate/{amount}")
-    public ResponseEntity<String> InitiateDeposit(@PathVariable double amount) {
+    public ResponseEntity<String> initiateDeposit(@PathVariable double amount) {
         return new ResponseEntity<>(walletService.deposit(amount), HttpStatus.OK);
     }
 
     @PutMapping("/refresh")
-    public ResponseEntity<Wallet> InitiateDeposit() {
+    public ResponseEntity<Wallet> refreshAccount() {
         return new ResponseEntity<>(walletService.refresh(), HttpStatus.OK);
     }
 
