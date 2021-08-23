@@ -40,6 +40,8 @@ public class MembershipServiceImpl implements MembershipService {
     MembershipDao membershipDao;
     private final Logger logger = LoggerFactory.getLogger(MembershipServiceImpl.class);
 
+
+
     @Override
     public Membership addMembership(Membership membership) {
         boolean bool =saccoAccountService.existsByName("MEMBERSHIP");

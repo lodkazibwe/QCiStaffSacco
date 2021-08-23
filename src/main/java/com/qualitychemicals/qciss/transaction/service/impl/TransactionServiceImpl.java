@@ -63,7 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public AllTransactions allByWallet(String wallet) {
-        String url ="http://localhost:8082/transaction/transaction/allByWallet/";
+        String url ="http://localhost:8082/transaction/allByWallet/";
         try {
             return restTemplate.getForObject(
                     url + wallet, AllTransactions.class);
@@ -74,7 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public AllTransactions last5ByWallet(String wallet) {
-        String url ="http://localhost:8082/transaction/transaction/recentByWallet/";
+        String url ="http://localhost:8082/transaction/recentByWallet/";
         try {
             return restTemplate.getForObject(
                     url + wallet, AllTransactions.class);

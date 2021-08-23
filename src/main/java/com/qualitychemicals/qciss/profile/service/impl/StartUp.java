@@ -50,6 +50,7 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         int  val=personService.userExists(email,contact );
         if((val==1)||(val==2)){
             logger.info("system already initialized...");
+
             return;
         }
         logger.info("adding root...");
