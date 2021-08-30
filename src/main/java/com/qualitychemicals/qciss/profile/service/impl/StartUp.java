@@ -129,8 +129,6 @@ public class StartUp implements ApplicationListener<ApplicationReadyEvent> {
         userService.addRole(contact,"ADMIN");
 
 
-
-
     }
 
     /*public Profile signUp(PersonDto personDto) {

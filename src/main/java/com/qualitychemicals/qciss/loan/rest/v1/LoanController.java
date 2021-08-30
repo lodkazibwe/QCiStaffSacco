@@ -1,6 +1,7 @@
 package com.qualitychemicals.qciss.loan.rest.v1;
 
 import com.qualitychemicals.qciss.loan.converter.LoanConverter;
+import com.qualitychemicals.qciss.loan.converter.RepaymentConverter;
 import com.qualitychemicals.qciss.loan.dto.*;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
@@ -27,6 +28,7 @@ import java.util.List;
 public class LoanController {
     @Autowired LoanConverter loanConverter;
     @Autowired LoanService loanService;
+    @Autowired RepaymentConverter repaymentConverter;
     private final Logger logger= LoggerFactory.getLogger(UserController.class);
 
     @ApiOperation(value="Request for a loan")
@@ -167,6 +169,17 @@ public class LoanController {
 
     }
 
+    @GetMapping("/myLoan/{loanId}")
+    public ResponseEntity<LoanDto> myLoan(@PathVariable int loanId){
+        return new ResponseEntity<>(loanConverter.entityToDto(loanService.myLoan(loanId)), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/myLoanRepayments/{loanId}")
+    public ResponseEntity<List<RepaymentDto>> myLoanRepayments(@PathVariable int loanId){
+        return new ResponseEntity<>(repaymentConverter.entityToDto(loanService.myLoanRepayments(loanId)), HttpStatus.OK);
+
+    }
 
     @GetMapping("/myDueLoans/{date}")
     public ResponseEntity<List<DueLoanDto>> myDueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){

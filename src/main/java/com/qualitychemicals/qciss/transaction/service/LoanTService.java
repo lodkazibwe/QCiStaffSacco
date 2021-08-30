@@ -17,7 +17,6 @@ public interface LoanTService {
     LoanTDto saveLoanTransaction(LoanTDto loanTDto);
 
 
-
     //LoanTDto repay(LoanTDto loanTDto);
     LoanTDto payPenalty(LoanTDto loanTDto);
     double totalRepay(Date date);

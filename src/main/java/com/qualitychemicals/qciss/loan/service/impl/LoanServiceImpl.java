@@ -439,6 +439,21 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    public Loan myLoan(int id) {
+        logger.info("getting user ...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting loan ...");
+        return loanDao.findByBorrowerAndId(userName, id);
+    }
+
+    @Override
+    public List<Repayment> myLoanRepayments(int loanId) {
+        Loan loan=myLoan(loanId);
+        return loan.getRepayments();
+    }
+
+    @Override
     public List<Loan> getAll() {
         return loanDao.findAll();
     }

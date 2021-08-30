@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.loan.service;
 import com.qualitychemicals.qciss.loan.dto.*;
 import com.qualitychemicals.qciss.loan.model.Loan;
 import com.qualitychemicals.qciss.loan.model.LoanStatus;
+import com.qualitychemicals.qciss.loan.model.Repayment;
 
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ public interface LoanService {
     Loan verify(LoanVerifyDto loanVerifyDto);
     Loan approve(int id);
     Loan getLoan(int id);
+    Loan myLoan(int id);
     void updateStatus(int id, LoanStatus loanStatus);
     void repay(int loanId, double amount);
     List<Loan> getAll();
@@ -34,5 +36,8 @@ public interface LoanService {
     List<Loan> getLoan(String userName, LoanStatus status);
     AppraisalSheetDto getLoanAppraisal(int loanId);
     Loan reject(LoanRejectDto loanRejectDto);
+
+
+    List<Repayment> myLoanRepayments(int loanId);
 
 }
