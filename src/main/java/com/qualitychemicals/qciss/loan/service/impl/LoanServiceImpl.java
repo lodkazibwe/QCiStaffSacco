@@ -444,7 +444,11 @@ public class LoanServiceImpl  implements LoanService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         logger.info("getting loan ...");
-        return loanDao.findByBorrowerAndId(userName, id);
+        Loan loan =loanDao.findByBorrowerAndId(userName, id);
+        if(loan!=null){
+            return loan;
+        }
+        throw new ResourceNotFoundException("No such loan ID: "+id);
     }
 
     @Override
