@@ -271,6 +271,34 @@ public class LoanTServiceImpl implements LoanTService {
     }
 
     @Override
+    public LoanTransactionsDto myAll() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+
+        String url ="http://localhost:8082/transaction/loan/allByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, LoanTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
+    public LoanTransactionsDto myRecent() {
+        String user =myUserDetailsService.currentUser();
+        String wallet ="WAL"+user;
+
+        String url ="http://localhost:8082/transaction/loan/recentByWallet/";
+        try {
+            return restTemplate.getForObject(
+                    url + wallet, LoanTransactionsDto.class);
+        }catch (RestClientException e) {
+            throw new ResourceNotFoundException("Transaction Service down " );
+        }
+    }
+
+    @Override
     public LoanTransactionsDto adminAll(String loanRef) {
         String url ="http://localhost:8082/transaction/loan/allByLoanRef/";
         try {

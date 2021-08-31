@@ -454,7 +454,12 @@ public class LoanServiceImpl  implements LoanService {
     @Override
     public List<Repayment> myLoanRepayments(int loanId) {
         Loan loan=myLoan(loanId);
-        return loan.getRepayments();
+        List<Repayment> repayments =loan.getRepayments();
+        if(repayments!=null){
+            return repayments;
+        }
+        throw new ResourceNotFoundException("No details yet");
+
     }
 
     @Override

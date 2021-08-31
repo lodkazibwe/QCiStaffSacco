@@ -36,6 +36,18 @@ public class LoanTController {
 
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<LoanTransactionsDto> allMyLoanTransactions(){
+        return new ResponseEntity<>(loanTService.myAll(), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<LoanTransactionsDto> myRecentLoanTransactions(){
+        return new ResponseEntity<>(loanTService.myRecent(), HttpStatus.OK);
+
+    }
+
     @GetMapping("/admin/all/{loanRef}")
     public ResponseEntity<LoanTransactionsDto> adminAll(@PathVariable String loanRef){
         return new ResponseEntity<>(loanTService.adminAll(loanRef), HttpStatus.OK);

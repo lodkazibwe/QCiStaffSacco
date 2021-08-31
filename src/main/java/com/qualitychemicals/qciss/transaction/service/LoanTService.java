@@ -13,6 +13,8 @@ public interface LoanTService {
     LoanTDto release(LoanPayDto loanPayDto);
     LoanTDto walletRepay(LoanPayDto loanPayDto);
     LoanTransactionsDto myAll(String loanRef);
+    LoanTransactionsDto myAll();
+    LoanTransactionsDto myRecent();
     LoanTransactionsDto adminAll(String loanRef);
     LoanTDto saveLoanTransaction(LoanTDto loanTDto);
 
