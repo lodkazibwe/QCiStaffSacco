@@ -84,7 +84,7 @@ public class LoanServiceImpl  implements LoanService {
         loanDto.setHandlingMode(requestDto.getHandlingMode());
         loanDto.setTopUpMode(requestDto.getTopUpMode());
         loanDto.setProductId(requestDto.getProductId());
-        loanDto.setSecurityDto(requestDto.getSecurityDto());
+        loanDto.setSecurityDto(new SecurityDto());
         return loanDto;
     }
     private boolean isEligible(LoanDto loanDto){

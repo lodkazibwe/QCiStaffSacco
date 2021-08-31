@@ -27,7 +27,7 @@ public class LoanRequestDto {
     @ApiModelProperty(notes = "Cycle of repayment (weakly,biWeakly,monthly),")
     private Cycle repaymentCycle;
     @NotNull(message = "repayment mode cannot be blank")
-    @ApiModelProperty(notes = "mode of repayment (SALARY, SO, SYSTEM)")
+    @ApiModelProperty(notes = "mode of repayment (SALARY, WALLET, SYSTEM)")
     private RepaymentMode repaymentMode;
     @NotNull(message = "disbursedBy cannot be blank")
     @ApiModelProperty(notes = "how the cash is received (cash, mobile,bank)")
@@ -40,8 +40,8 @@ public class LoanRequestDto {
     private HandlingMode handlingMode;
     @NotNull(message = "topUpMode cannot be null")
     private HandlingMode topUpMode;
-    @Valid
-    @NotNull(message = "securityDto cannot be null")
+    //@Valid
+    //@NotNull(message = "securityDto cannot be null")
     private SecurityDto securityDto;
 
 }
