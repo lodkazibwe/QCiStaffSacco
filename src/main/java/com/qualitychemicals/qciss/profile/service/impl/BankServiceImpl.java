@@ -54,7 +54,8 @@ public class BankServiceImpl implements BankService {
         bank.setAccountName(bankDto.getAccountName());
         profile.setBank(bank);
         logger.info("updating profile...");
-        return bankDao.save(bank);
+        userDao.save(profile);
+        return bank;
 
     }
 }

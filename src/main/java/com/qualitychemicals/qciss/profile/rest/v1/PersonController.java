@@ -1,6 +1,5 @@
 package com.qualitychemicals.qciss.profile.rest.v1;
 
-import com.qualitychemicals.qciss.firebase.message.ChatService;
 import com.qualitychemicals.qciss.profile.converter.PersonConverter;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.model.Person;
@@ -47,8 +46,11 @@ public class PersonController {
 
     }
 
-
-
+    @PutMapping("/update")
+    public ResponseEntity<PersonDto> updatePerson(@RequestBody PersonDto personDto){
+        Person person =personService.updatePerson(personDto);
+        return  new ResponseEntity<>(personConverter.entityToDto(person), HttpStatus.OK);
+    }
 
 
 }

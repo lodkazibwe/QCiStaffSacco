@@ -32,7 +32,7 @@ public class BankController {
     @PutMapping("/update")
     public ResponseEntity<BankDto> updateBank(@Valid @RequestBody BankDto bankDto){
         logger.info("adding bank...");
-        Bank bank=bankService.addBank(bankDto);
+        Bank bank=bankService.updateBank(bankDto);
         return new ResponseEntity<>(bankConverter.entityToDto(bank), HttpStatus.OK);
 
     }

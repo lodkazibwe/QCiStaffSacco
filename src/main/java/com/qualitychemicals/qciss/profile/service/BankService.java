@@ -7,6 +7,5 @@ public interface BankService {
 
     Bank addBank(BankDto bankDto);
     Bank updateBank(BankDto bankDto);
-
-
+    
 }

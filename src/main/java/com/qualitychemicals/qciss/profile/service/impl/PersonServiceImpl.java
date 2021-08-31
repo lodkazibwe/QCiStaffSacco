@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.profile.service.impl;
 import com.google.firebase.cloud.StorageClient;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.profile.dao.PersonDao;
+import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.model.Person;
 import com.qualitychemicals.qciss.profile.model.Profile;
@@ -32,24 +33,25 @@ public class PersonServiceImpl implements PersonService {
     @Autowired
     PersonDao personDao;
     @Autowired UserService userService;
+    @Autowired UserDao userDao;
 
     private final Logger logger= LoggerFactory.getLogger(PersonServiceImpl.class);
     @Override
     @Transactional
-    public Person updatePerson(PersonDto personDto, int id) {
-        logger.info("getting current details...");
-        Person person=personDao.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("No such person with ID: "+id));
-        logger.info("updating...");
-        person.setMobile(personDto.getMobile());
+    public Person updatePerson(PersonDto personDto) {
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Profile profile =userService.getProfile(userName);
+        logger.info("updating person...");
+        Person person=profile.getPerson();
         person.setDob(personDto.getDob());
-        person.setEmail(personDto.getEmail());
-        person.setFirstName(personDto.getFirstName());
         person.setGender(personDto.getGender());
-        person.setLastName(personDto.getLastName());
         person.setResidence(personDto.getResidence());
         person.setNin(personDto.getNin());
-        return personDao.save(person);
+        logger.info("updating profile...");
+        userDao.save(profile);
+        return person;
     }
 
     @Override

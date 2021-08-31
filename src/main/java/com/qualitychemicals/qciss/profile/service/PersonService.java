@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PersonService {
-     Person updatePerson(PersonDto personDto, int id);
+     Person updatePerson(PersonDto personDto);
      Person getPerson(int id);
      List<Person> getAll();
      List<Person> getByGender(String gender);
