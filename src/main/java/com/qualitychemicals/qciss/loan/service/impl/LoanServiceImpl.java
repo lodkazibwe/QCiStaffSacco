@@ -1,5 +1,7 @@
 package com.qualitychemicals.qciss.loan.service.impl;
 
+import com.qualitychemicals.qciss.account.model.SavingsAccount;
+import com.qualitychemicals.qciss.account.service.SavingsAccountService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.firebase.notification.NotificationService;
@@ -36,6 +38,7 @@ public class LoanServiceImpl  implements LoanService {
     @Autowired UserService userService;
     @Autowired
     NotificationService notificationService;
+    @Autowired SavingsAccountService savingsAccountService;
     @Autowired LoanAccountService loanAccountService;
     private final Logger logger = LoggerFactory.getLogger(LoanServiceImpl.class);
 
@@ -180,8 +183,9 @@ public class LoanServiceImpl  implements LoanService {
 
     private boolean checkCredits(Loan loan) {
         logger.info("getting account...");
-        Account account=userService.getAccount(loan.getBorrower());
-        double saving=account.getSavings();
+        String ref ="SAV"+loan.getBorrower();
+        SavingsAccount savingsAccount=savingsAccountService.getSavingsAccount(ref);
+        double saving=savingsAccount.getAmount();
         double maximum=loan.getProduct().getMaximum();
         double principal=loan.getPrincipal();
         if(principal<=(maximum*saving)){

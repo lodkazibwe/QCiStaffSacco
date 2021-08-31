@@ -25,6 +25,7 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
     @Override
     public SavingsAccount getMyAccount() {
+
         return getSavingsAccount("SAV"+myUserDetailsService.currentUser());
     }
 
