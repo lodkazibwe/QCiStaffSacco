@@ -182,7 +182,7 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     private boolean checkCredits(Loan loan) {
-        logger.info("getting account...");
+        /*logger.info("getting account...");
         String ref ="SAV"+loan.getBorrower();
         SavingsAccount savingsAccount=savingsAccountService.getSavingsAccount(ref);
         double saving=savingsAccount.getAmount();
@@ -194,7 +194,8 @@ public class LoanServiceImpl  implements LoanService {
         }else{
             logger.error("Less credits...");
             throw new InvalidValuesException(
-                    "you qualify for a maximum of: "+(maximum*saving)); }
+                    "you qualify for a maximum of: "+(maximum*saving)); }*/
+        return true;
     }
 
     @Override
