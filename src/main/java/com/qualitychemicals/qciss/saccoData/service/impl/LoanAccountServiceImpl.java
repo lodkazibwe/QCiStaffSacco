@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.saccoData.service.impl;
 
+import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.saccoData.dao.LoanAccountDao;
 import com.qualitychemicals.qciss.saccoData.model.LoanAccount;
 import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
@@ -29,17 +30,21 @@ public class LoanAccountServiceImpl implements LoanAccountService {
     @Transactional
     public LoanAccount updateLoanAccount(LoanAccount update) {
         LoanAccount loanAccount =getLoanAccount();
+        double amount =update.getAmount()+loanAccount.getAmount();
+
+        loanAccount.setAmount(amount);
         loanAccount.setEarlyTopUpCharge(update.getEarlyTopUpCharge()+loanAccount.getEarlyTopUpCharge());
         loanAccount.setExpressHandling(update.getExpressHandling()+loanAccount.getExpressHandling());
         loanAccount.setHandlingCharge(update.getHandlingCharge()+loanAccount.getHandlingCharge());
         loanAccount.setInsuranceFee(update.getInsuranceFee()+loanAccount.getInsuranceFee());
         loanAccount.setInterestReceivable(update.getInterestReceivable()+loanAccount.getInterestReceivable());
         loanAccount.setPrincipalOutstanding(update.getPrincipalOutstanding()+loanAccount.getPrincipalOutstanding());
-        loanAccount.setAmount(update.getAmount()+loanAccount.getAmount());
+
         loanAccount.setTransferCharge(update.getTransferCharge()+loanAccount.getTransferCharge());
         loanAccount.setPrincipalIn(update.getPrincipalIn()+loanAccount.getPrincipalIn());
         loanAccount.setPrincipalOut(update.getPrincipalOut()+loanAccount.getPrincipalOut());
         loanAccount.setInterestIn(update.getInterestIn()+loanAccount.getInterestIn());
+
 
         return loanAccountDao.save(loanAccount);
     }

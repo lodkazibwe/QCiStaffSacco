@@ -53,12 +53,12 @@ public class LoanTServiceImpl implements LoanTService {
     @Transactional(isolation= Isolation.SERIALIZABLE)
     public LoanTDto release(LoanPayDto loanPayDto) {
         LoanAccount acct=loanAccountService.getLoanAccount();
-        if(acct.getAmount()<loanPayDto.getAmount()){
-            throw new InvalidValuesException("low loan account bal");
-        }
-
         logger.info("getting loan...");
         Loan loan=loanService.getLoan(loanPayDto.getLoanId());
+        if(acct.getAmount()<loan.getPrincipal()){
+            throw new InvalidValuesException("low loan account bal");
+        }
+        
         Wallet wallet =walletService.getWallet("WAL"+loan.getBorrower());
         logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
