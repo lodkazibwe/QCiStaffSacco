@@ -72,7 +72,7 @@ public class LoanTServiceImpl implements LoanTService {
                 loan.setTopUpLoanBalance(topUpLoan.getTotalDue());
                 LoanTDto loanTDto=new LoanTDto();
                 loanTDto.setLoanId(topUpLoan.getId());
-                loanTDto.setLoanRef(topUpLoan.getLoanNumber());
+                //loanTDto.setLoanRef(topUpLoan.getLoanNumber());
                 loanTDto.setAmount(topUpLoan.getTotalDue());
                 loanTDto.setUserName(userName);
                 loanTDto.setDate(new Date());
@@ -107,7 +107,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setNarrative("loan charges");
             loanTDto.setAccount(loan.getLoanNumber());
             loanTDto.setUserName(userName);
-            loanTDto.setLoanRef(loan.getLoanNumber());
+            //loanTDto.setLoanRef(loan.getLoanNumber());
             loanTDto.setTransactionType("loan");
             loanTDto.setLoanId(loan.getId());
             logger.info("setting transaction charges and adding transaction...");
