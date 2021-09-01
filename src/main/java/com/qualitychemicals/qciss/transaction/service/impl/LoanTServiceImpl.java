@@ -200,7 +200,7 @@ public class LoanTServiceImpl implements LoanTService {
         logger.info("checking loan...");
         if(loan.getStatus()==LoanStatus.OPEN || loan.getStatus()==LoanStatus.PASSED_MATURITY ){
             logger.info("checking user...");
-        if(loan.getBorrower().equals(userName)){//*************************
+        if(loan.getBorrower().equals(userName)){//***********************
             logger.info("comparing amounts...");
             if(loan.getTotalDue()<loanPayDto.getAmount() || loanPayDto.getAmount()>wallet.getAmount()){
                 logger.error("invalid amount...");
