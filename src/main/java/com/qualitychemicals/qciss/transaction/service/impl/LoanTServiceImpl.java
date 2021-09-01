@@ -210,7 +210,7 @@ public class LoanTServiceImpl implements LoanTService {
             logger.info("preparing transaction...");
             LoanTDto loanTDto=new LoanTDto();
             loanTDto.setLoanId(loan.getId());
-            loanTDto.setLoanRef(loan.getLoanNumber());
+            //loanTDto.setLoanRef(loan.getLoanNumber());
             loanTDto.setAmount(loanPayDto.getAmount());
             loanTDto.setUserName(userName);
             loanTDto.setDate(new Date());
