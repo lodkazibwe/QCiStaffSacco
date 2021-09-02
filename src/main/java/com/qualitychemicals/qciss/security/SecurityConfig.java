@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/transaction/loan/release").hasRole("ADMIN")
                 .antMatchers("/transaction/loan/repay").hasRole("ADMIN")
                 .antMatchers("/transaction/saving/admin/**").hasRole("ADMIN")
+                .antMatchers("/data/**").hasRole("ADMIN")
                 .antMatchers(
                         HttpMethod.GET,
                         "/",

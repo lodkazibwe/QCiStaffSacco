@@ -7,14 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
-@RestController
-@RequestMapping("/schedule")
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
+//@RestController
+//@RequestMapping("/schedule")
+@Component
 public class DeductionScheduleController {
     @Autowired DeductionScheduleConverter deductionScheduleConverter;
     @Autowired DeductionScheduleService deductionScheduleService;

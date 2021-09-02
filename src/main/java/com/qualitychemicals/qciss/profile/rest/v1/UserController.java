@@ -130,12 +130,12 @@ public class UserController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
 
     }
-    @GetMapping("/admin/deductionSchedule/{company}")
+    /*@GetMapping("/admin/deductionSchedule/{company}")
     public ResponseEntity<List<DeductionScheduleDTO>> deductionSchedule(@PathVariable String company){
         List<DeductionScheduleDTO> deductionSchedules= userService.deductionSchedule(company);
         return new ResponseEntity<>(deductionSchedules, HttpStatus.OK);
 
-    }
+    }*/
 
     @PutMapping("/admin/verify/{userId}")
     public ResponseEntity<UserDto> verifyUser(@PathVariable int userId){

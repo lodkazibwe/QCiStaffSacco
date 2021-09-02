@@ -58,7 +58,7 @@ public class LoanTServiceImpl implements LoanTService {
         if(acct.getAmount()<loan.getPrincipal()){
             throw new InvalidValuesException("low loan account bal");
         }
-        
+
         Wallet wallet =walletService.getWallet("WAL"+loan.getBorrower());
         logger.info("getting admin user...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
