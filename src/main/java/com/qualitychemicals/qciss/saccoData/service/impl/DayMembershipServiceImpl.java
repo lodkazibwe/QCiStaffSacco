@@ -24,7 +24,7 @@ public class DayMembershipServiceImpl implements DayMembershipService {
     private final Logger logger = LoggerFactory.getLogger(DayMembershipServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron = "0 0 1 * * ?",zone = "EAT")
+    @Scheduled(cron="0 10 1 * * *",zone = "EAT")
     public void addDayMembership() {
         logger.info("getting membership account...");
         Membership membership =membershipService.getMembership();
