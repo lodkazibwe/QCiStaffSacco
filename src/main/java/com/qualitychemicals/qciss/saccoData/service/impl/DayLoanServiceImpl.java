@@ -24,7 +24,7 @@ public class DayLoanServiceImpl implements DayLoanService {
     private final Logger logger = LoggerFactory.getLogger(DayLoanServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron = "30 59 23 * * *",zone = "EAT")
+    @Scheduled(cron = "0 0 1 * * ?",zone = "EAT")//cron="30 59 23 * * *"
     public void addDayLoan() {
         logger.info("getting sacco loan-account...");
         LoanAccount loanAccount= loanAccountService.getLoanAccount();
