@@ -106,6 +106,6 @@ public class SaccoDataController {
         return new ResponseEntity<> (dayAccountService.getDayAccount(date), HttpStatus.OK);
     }
 
-    
+
 
 }

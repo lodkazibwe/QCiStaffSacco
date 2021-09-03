@@ -24,7 +24,7 @@ public class DaySavingServiceImpl implements DaySavingService {
      private final Logger logger = LoggerFactory.getLogger(DaySavingServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 50 7 * * *",zone = "EAT")
+    @Scheduled(cron="0 05 0 * * *",zone = "EAT")
     public void addDaySaving() {
         logger.info("getting sacco saving account...");
         Saving saving= savingService.getSavingInfo();

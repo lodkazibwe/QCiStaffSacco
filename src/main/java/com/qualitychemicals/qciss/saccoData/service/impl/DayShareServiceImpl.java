@@ -24,7 +24,7 @@ public class DayShareServiceImpl implements DayShareService {
     private final Logger logger = LoggerFactory.getLogger(DayShareServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 50 7 * * *",zone = "EAT")
+    @Scheduled(cron="0 05 0 * * *",zone = "EAT")
     public void addDayShare() {
         logger.info("getting sacco share account...");
         Share share =shareService.getShareInfo();
