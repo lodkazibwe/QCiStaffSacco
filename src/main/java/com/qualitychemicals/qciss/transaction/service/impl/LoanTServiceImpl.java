@@ -237,9 +237,9 @@ public class LoanTServiceImpl implements LoanTService {
                 logger.info("updating sacco loan account...");
                 LoanAccount loanAccount =new LoanAccount();
                 loanAccount.setAmount(loanPayDto.getAmount());
-                double rate =loan.getPrincipal()/loan.getInterest();
-                double interestIn=loan.getTotalDue()/rate;
-                double principalIn=loan.getTotalDue()-interestIn;
+                double rate =loan.getInterest()/(loan.getPrincipal()+loan.getInterest());
+                double interestIn=loanPayDto.getAmount()*rate;
+                double principalIn=loanPayDto.getAmount()-interestIn;
                 loanAccount.setInterestReceivable(interestIn*-1);
                 loanAccount.setPrincipalOutstanding(principalIn*-1);
                 loanAccount.setInterestIn(interestIn);
