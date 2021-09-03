@@ -106,10 +106,6 @@ public class SaccoDataController {
         return new ResponseEntity<> (dayAccountService.getDayAccount(date), HttpStatus.OK);
     }
 
-
-    @PostMapping("/membershipAccount")
-    public ResponseEntity<DayMembership> getDayMembershipData() {
-        return new ResponseEntity<> (dayMembershipService.addDayMembership(), HttpStatus.OK);
-    }
+    
 
 }
