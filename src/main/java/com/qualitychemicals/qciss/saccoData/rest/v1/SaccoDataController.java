@@ -26,6 +26,7 @@ public class SaccoDataController {
     @Autowired SaccoAccountService saccoAccountService;
     @Autowired DayAccountService dayAccountService;
 
+
     @GetMapping("/loanAccount")
     public ResponseEntity<LoanAccount> saccoLoanAccount(){
         return new ResponseEntity<> (loanAccountService.getLoanAccount(), HttpStatus.OK);
@@ -106,5 +107,9 @@ public class SaccoDataController {
     }
 
 
+    @PostMapping("/membershipAccount")
+    public ResponseEntity<DayMembership> getDayMembershipData() {
+        return new ResponseEntity<> (dayMembershipService.addDayMembership(), HttpStatus.OK);
+    }
 
 }

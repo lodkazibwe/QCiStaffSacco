@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,19 +25,22 @@ public class DayMembershipServiceImpl implements DayMembershipService {
     private final Logger logger = LoggerFactory.getLogger(DayMembershipServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 10 1 * * *",zone = "EAT")
-    public void addDayMembership() {
+    //@Scheduled(cron="0 10 1 * * *",zone = "EAT")
+    public DayMembership addDayMembership() {
         logger.info("getting membership account...");
         Membership membership =membershipService.getMembership();
         DayMembership dayMembership =new DayMembership();
         dayMembership.setDayMembership(membership.getDayMembership());
         dayMembership.setBalCf(membership.getAmount());
-        dayMembership.setDate(new Date());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date date= cal.getTime();
+        dayMembership.setDate(date);
         dayMembership.setName(membership.getName());
         logger.info("resetting membership account...");
         membershipService.resetMembership(membership.getDayMembership());
         logger.info("saving membership history...");
-        dayMembershipDao.save(dayMembership);
+        return dayMembershipDao.save(dayMembership);
     }
 
     @Override
