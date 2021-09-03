@@ -48,9 +48,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/loan/admin/**").hasRole("ADMIN")
                 .antMatchers("/schedule/admin/**").hasRole("ADMIN")
                 .antMatchers("/schedule/root/**").hasRole("ROOT")
-                .antMatchers("/loan/product/admin/**").hasRole("ADMIN")///transaction/loan
-                .antMatchers("/transaction/loan/admin").hasRole("ADMIN")
+                .antMatchers("/loan/product/admin/**").hasRole("ADMIN")///transaction/
+                .antMatchers("/transaction/loan/admin/**").hasRole("ADMIN")
                 .antMatchers("/transaction/saving/admin/**").hasRole("ADMIN")
+                .antMatchers("/transaction/membership/admin/**").hasRole("ADMIN")
+                .antMatchers("/transaction/shares/admin/**").hasRole("ADMIN")
+                .antMatchers("/transaction/admin/**").hasRole("ADMIN")
                 .antMatchers("/data/**").hasRole("ADMIN")
                 .antMatchers(
                         HttpMethod.GET,
