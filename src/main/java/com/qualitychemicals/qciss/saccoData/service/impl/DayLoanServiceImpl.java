@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,13 +25,17 @@ public class DayLoanServiceImpl implements DayLoanService {
     private final Logger logger = LoggerFactory.getLogger(DayLoanServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 10 1 * * *",zone = "EAT")//cron="30 30 23 * * *"
+    @Scheduled(cron="0 50 7 * * *",zone = "EAT")//cron="30 30 23 * * *"
     public void addDayLoan() {
         logger.info("getting sacco loan-account...");
         LoanAccount loanAccount= loanAccountService.getLoanAccount();
         DayLoan dayLoan =new DayLoan();
         dayLoan.setBalCf(loanAccount.getAmount());
-        dayLoan.setDate(new Date());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date date= cal.getTime();
+        dayLoan.setDate(date);
+        dayLoan.setDate(date);
         dayLoan.setName(loanAccount.getName());
         dayLoan.setInterestReceivable(loanAccount.getInterestReceivable());
         dayLoan.setPrincipalOutstanding(loanAccount.getPrincipalOutstanding());

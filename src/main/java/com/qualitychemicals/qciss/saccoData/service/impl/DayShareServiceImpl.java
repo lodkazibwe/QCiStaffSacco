@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class DayShareServiceImpl implements DayShareService {
     private final Logger logger = LoggerFactory.getLogger(DayShareServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 10 1 * * *",zone = "EAT")
+    @Scheduled(cron="0 50 7 * * *",zone = "EAT")
     public void addDayShare() {
         logger.info("getting sacco share account...");
         Share share =shareService.getShareInfo();
@@ -31,7 +32,11 @@ public class DayShareServiceImpl implements DayShareService {
         dayShare.setDayShareAmount(share.getDayShareAmount());
         dayShare.setDayShares(share.getDayShares());
         dayShare.setBalCf(share.getAmount());
-        dayShare.setDate(new Date());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date date= cal.getTime();
+        dayShare.setDate(date);
+        dayShare.setDate(date);
         dayShare.setName(share.getName());
         dayShare.setSharesSold(share.getSharesSold());
         dayShare.setSharesAvailable(share.getSharesAvailable());

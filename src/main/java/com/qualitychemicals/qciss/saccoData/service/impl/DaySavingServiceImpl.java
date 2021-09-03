@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,14 +24,18 @@ public class DaySavingServiceImpl implements DaySavingService {
      private final Logger logger = LoggerFactory.getLogger(DaySavingServiceImpl.class);
 
     @Transactional
-    @Scheduled(cron="0 10 1 * * *",zone = "EAT")
+    @Scheduled(cron="0 50 7 * * *",zone = "EAT")
     public void addDaySaving() {
         logger.info("getting sacco saving account...");
         Saving saving= savingService.getSavingInfo();
         DaySaving daySaving =new DaySaving();
         daySaving.setDaySaving(saving.getDaySaving());
         daySaving.setBalCf(saving.getAmount());
-        daySaving.setDate(new Date());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date date= cal.getTime();
+        daySaving.setDate(date);
+        daySaving.setDate(date);
         daySaving.setName(saving.getName());
         logger.info("resetting sacco saving account...");
         savingService.resetSaving(saving.getDaySaving());

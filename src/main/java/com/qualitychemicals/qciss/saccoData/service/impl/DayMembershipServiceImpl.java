@@ -25,8 +25,8 @@ public class DayMembershipServiceImpl implements DayMembershipService {
     private final Logger logger = LoggerFactory.getLogger(DayMembershipServiceImpl.class);
 
     @Transactional
-    //@Scheduled(cron="0 10 1 * * *",zone = "EAT")
-    public DayMembership addDayMembership() {
+    @Scheduled(cron="0 05 0 * * *",zone = "EAT")
+    public void addDayMembership() {
         logger.info("getting membership account...");
         Membership membership =membershipService.getMembership();
         DayMembership dayMembership =new DayMembership();
@@ -40,7 +40,7 @@ public class DayMembershipServiceImpl implements DayMembershipService {
         logger.info("resetting membership account...");
         membershipService.resetMembership(membership.getDayMembership());
         logger.info("saving membership history...");
-        return dayMembershipDao.save(dayMembership);
+        dayMembershipDao.save(dayMembership);
     }
 
     @Override
