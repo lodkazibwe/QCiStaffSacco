@@ -1,5 +1,10 @@
 package com.qualitychemicals.qciss.profile.rest.v1;
 
+import com.qualitychemicals.qciss.account.model.MembershipAccount;
+import com.qualitychemicals.qciss.account.model.SavingsAccount;
+import com.qualitychemicals.qciss.account.model.SharesAccount;
+import com.qualitychemicals.qciss.account.model.Wallet;
+import com.qualitychemicals.qciss.account.service.*;
 import com.qualitychemicals.qciss.profile.dto.*;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
 import com.qualitychemicals.qciss.profile.converter.AccountConverter;
@@ -35,6 +40,12 @@ public class UserController {
     AccountConverter accountConverter;
     @Autowired WorkConverter workConverter;
     @Autowired EmailService emailService;
+    @Autowired
+    SharesAccountService sharesAccountService;
+    @Autowired SavingsAccountService savingsAccountService;
+    @Autowired MembershipAccountService membershipAccountService;
+    @Autowired WalletService walletService;
+
 
     private final Logger logger= LoggerFactory.getLogger(UserController.class);
 
@@ -69,8 +80,21 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         logger.info(userName);
-        return new ResponseEntity<>(userConverter.entityToDto
-                (userService.getProfile(userName)), HttpStatus.OK);
+        UserDto userDto =userConverter.entityToDto(userService.getProfile(userName));
+        SharesAccount sharesAccount =sharesAccountService.getMyAccount();
+        SavingsAccount savingsAccount =savingsAccountService.getMyAccount();
+        MembershipAccount membershipAccount =membershipAccountService.getMyAccount();
+        Wallet wallet =walletService.getMyWallet();
+        if(membershipAccount.getBalance()>=0){
+            userDto.getAccountDto().setPendingFee(membershipAccount.getBalance());
+        }else{
+            userDto.getAccountDto().setPendingFee(membershipAccount.getSurplus()*-1);
+        }
+        userDto.getAccountDto().setTotalShares(sharesAccount.getShares());
+        userDto.getAccountDto().setTotalSavings(savingsAccount.getAmount());
+        userDto.getAccountDto().setWalletAmount(wallet.getAmount());
+
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
     @GetMapping("/admin/getAdmins")

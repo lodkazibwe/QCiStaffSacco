@@ -17,8 +17,10 @@ public class AccountDto {
     private double totalShares;
     @NotNull(message = "pendingFee can not be null")
     private double pendingFee;
+    private double walletAmount;
     @NotNull(message = "memberNo can not be null")
     private String memberNo;
     @NotNull(message = "position can not be null")
     private String position;
+
 }
