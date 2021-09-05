@@ -60,9 +60,16 @@ public class AuthController {
     }
 
     @PutMapping("/createPass")//authenticated
-    public ResponseEntity<?> createPass(@Valid @RequestBody AuthRequest authRequest){
-        userService.createPass(authRequest.getPassword());
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    public ResponseEntity<?> createPass(@Valid @RequestBody ChangePassRequest changePassRequest){
+        AuthRequest authRequest =new AuthRequest();
+        authRequest.setPassword(changePassRequest.getOldPassword());
+        authRequest.setUserName(changePassRequest.getUserName());
+        ResponseEntity<?> response =createAuthToken(authRequest);
+        if(response.getStatusCode()==HttpStatus.OK){
+            userService.createPass(authRequest.getPassword());
+            return new ResponseEntity<>("success", HttpStatus.OK);
+        }
+        throw new InvalidValuesException("password change failed");        
 
     }
 }
