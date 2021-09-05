@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.profile.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class PersonDto {
     @Email(message="invalid Email")
     private String email;
     //@NotNull(message="invalid date")
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date dob;
     //@NotBlank(message ="Gender cannot be Blank")
     private String gender;

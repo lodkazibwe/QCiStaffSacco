@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 //@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
@@ -47,7 +48,7 @@ public class PersonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<PersonDto> updatePerson(@RequestBody PersonDto personDto){
+    public ResponseEntity<PersonDto> updatePerson(@Valid @RequestBody PersonDto personDto){
         Person person =personService.updatePerson(personDto);
         return  new ResponseEntity<>(personConverter.entityToDto(person), HttpStatus.OK);
     }
