@@ -7,6 +7,7 @@ import com.qualitychemicals.qciss.account.model.SharesAccount;
 import com.qualitychemicals.qciss.account.model.UserAccount;
 import com.qualitychemicals.qciss.account.service.SharesAccountService;
 import com.qualitychemicals.qciss.account.service.UserAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.saccoData.model.Share;
@@ -14,6 +15,7 @@ import com.qualitychemicals.qciss.saccoData.service.ShareService;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,9 +26,13 @@ public class SharesAccountServiceImpl implements SharesAccountService {
     @Autowired SharesAccountDao sharesAccountDao;
     @Autowired ShareService shareService;
     @Autowired MyUserDetailsService myUserDetailsService;
+    @Autowired
+    WalletService walletService;
 
+    @Transactional
     @Override
     public SharesAccount getMyAccount() {
+        walletService.refresh();
         return getSharesAccount("SHA"+myUserDetailsService.currentUser());
     }
 

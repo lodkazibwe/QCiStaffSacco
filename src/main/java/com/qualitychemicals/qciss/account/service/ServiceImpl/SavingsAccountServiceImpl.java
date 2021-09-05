@@ -7,11 +7,13 @@ import com.qualitychemicals.qciss.account.model.SavingsAccount;
 import com.qualitychemicals.qciss.account.model.UserAccount;
 import com.qualitychemicals.qciss.account.service.SavingsAccountService;
 import com.qualitychemicals.qciss.account.service.UserAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,10 +24,12 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
     @Autowired SavingsAccountConverter savingsAccountConverter;
     @Autowired SavingsAccountDao savingsAccountDao;
     @Autowired MyUserDetailsService myUserDetailsService;
+    @Autowired WalletService walletService;
 
+    @Transactional
     @Override
     public SavingsAccount getMyAccount() {
-
+        walletService.refresh();
         return getSavingsAccount("SAV"+myUserDetailsService.currentUser());
     }
 

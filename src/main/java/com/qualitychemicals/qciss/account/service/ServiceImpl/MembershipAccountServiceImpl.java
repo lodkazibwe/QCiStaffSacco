@@ -7,6 +7,7 @@ import com.qualitychemicals.qciss.account.model.MembershipAccount;
 import com.qualitychemicals.qciss.account.model.UserAccount;
 import com.qualitychemicals.qciss.account.service.MembershipAccountService;
 import com.qualitychemicals.qciss.account.service.UserAccountService;
+import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.InvalidValuesException;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.saccoData.model.Membership;
@@ -14,6 +15,7 @@ import com.qualitychemicals.qciss.saccoData.service.MembershipService;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
     @Autowired MembershipAccountDao membershipAccountDao;
     @Autowired MembershipAccountConverter membershipAccountConverter;
     @Autowired MembershipService membershipService;
+    @Autowired
+    WalletService walletService;
     @Autowired
     MyUserDetailsService myUserDetailsService;
 
@@ -36,8 +40,10 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
         return membershipAccountDao.save(membershipAccountConverter.dtoToEntity(membershipAccountDto));
     }
 
+    @Transactional
     @Override
     public MembershipAccount getMyAccount() {
+        walletService.refresh();
         return getMembershipAccount("MEM"+myUserDetailsService.currentUser());
 
     }
@@ -67,6 +73,7 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
 
     @Override
     public MembershipAccount getMembershipAccount(String accountRef) {
+
         MembershipAccount membershipAccount =membershipAccountDao.findByAccountRef(accountRef);
         if (membershipAccount == null) {
             throw new ResourceNotFoundException("No such account: ");
