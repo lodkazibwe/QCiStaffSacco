@@ -13,8 +13,10 @@ import java.util.Date;
 @AllArgsConstructor
 public class DueLoanDto {
     private int loanId;
+    private String loanNumber;
     private String product;
     private String borrower;
+
     private double principal;
     private double interest;
     private double penalty;
