@@ -24,8 +24,8 @@ public class WorkDto {
     private double basicSalary;
     @NotNull(message = "job cannot be null...")
     private String job;
-    @NotNull(message = "payrollSaving cannot be null...")
+    //@NotNull(message = "payrollSaving cannot be null...")
     private double payrollSaving;
-    @NotNull(message = "payrollShares cannot be null...")
+    //@NotNull(message = "payrollShares cannot be null...")
     private double payrollShares;
 }
