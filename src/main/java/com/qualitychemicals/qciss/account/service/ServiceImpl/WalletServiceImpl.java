@@ -53,8 +53,10 @@ public class WalletServiceImpl implements WalletService {
         return walletDao.save(wallet);
     }
 
+    @Transactional
     @Override
     public Wallet getMyWallet() {
+        refresh();
         return getWallet("WAL"+myUserDetailsService.currentUser());
     }
 
