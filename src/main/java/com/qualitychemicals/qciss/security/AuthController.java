@@ -65,9 +65,10 @@ public class AuthController {
         authRequest.setPassword(changePassRequest.getOldPassword());
         authRequest.setUserName(changePassRequest.getUserName());
         ResponseEntity<?> response =createAuthToken(authRequest);
-        if(response.getStatusCode()==HttpStatus.OK){
-            userService.createPass(changePassRequest.getNewPassword());
+        String userName =myUserDetailsService.currentUser();
 
+        if(response.getStatusCode()==HttpStatus.OK && userName.equals(changePassRequest.getUserName())){
+            userService.createPass(changePassRequest.getNewPassword());
             return new ResponseEntity<>("success", HttpStatus.OK);
         }
         throw new InvalidValuesException("password change failed");
