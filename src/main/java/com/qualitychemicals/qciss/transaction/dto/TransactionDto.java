@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class TransactionDto {
     private int id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT")
     private Date date;
     @NotNull(message = "amount cannot be Blank")
     private double amount;
@@ -27,7 +27,7 @@ public class TransactionDto {
     private String userName;
     private String wallet;
     private TransactionStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING )//locale = "pt-BR", timezone = "EAT"
+    @JsonFormat(shape = JsonFormat.Shape.STRING,  locale = "pt-BR", timezone = "EAT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDateTime;
     private String transactionType;
