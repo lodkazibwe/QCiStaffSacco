@@ -24,12 +24,11 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
     @Autowired SavingsAccountConverter savingsAccountConverter;
     @Autowired SavingsAccountDao savingsAccountDao;
     @Autowired MyUserDetailsService myUserDetailsService;
-    @Autowired WalletService walletService;
+
 
     @Transactional
     @Override
     public SavingsAccount getMyAccount() {
-        walletService.refresh();
         return getSavingsAccount("SAV"+myUserDetailsService.currentUser());
     }
 

@@ -85,11 +85,7 @@ public class UserController {
         SavingsAccount savingsAccount =savingsAccountService.getMyAccount();
         MembershipAccount membershipAccount =membershipAccountService.getMyAccount();
         Wallet wallet =walletService.getMyWallet();
-        if(membershipAccount.getBalance()>=0){
-            userDto.getAccountDto().setPendingFee(membershipAccount.getBalance());
-        }else{
-            userDto.getAccountDto().setPendingFee(membershipAccount.getSurplus()*-1);
-        }
+        userDto.getAccountDto().setPendingFee(membershipAccount.getBalance());
         userDto.getAccountDto().setTotalShares(sharesAccount.getShares());
         userDto.getAccountDto().setTotalSavings(savingsAccount.getAmount());
         userDto.getAccountDto().setWalletAmount(wallet.getAmount());

@@ -7,10 +7,7 @@ import com.qualitychemicals.qciss.account.dto.MembershipAccountDto;
 import com.qualitychemicals.qciss.account.dto.SavingsAccountDto;
 import com.qualitychemicals.qciss.account.dto.SharesAccountDto;
 import com.qualitychemicals.qciss.account.model.UserAccount;
-import com.qualitychemicals.qciss.account.service.MembershipAccountService;
-import com.qualitychemicals.qciss.account.service.SavingsAccountService;
-import com.qualitychemicals.qciss.account.service.SharesAccountService;
-import com.qualitychemicals.qciss.account.service.UserAccountService;
+import com.qualitychemicals.qciss.account.service.*;
 import com.qualitychemicals.qciss.saccoData.model.SaccoAccount;
 import com.qualitychemicals.qciss.saccoData.service.SaccoAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +30,18 @@ public class UserAccountController {
     @Autowired SharesAccountService sharesAccountService;
     @Autowired SharesAccountConverter sharesAccountConverter;
     @Autowired SaccoAccountService saccoAccountService;
+    @Autowired
+    WalletService walletService;
 
     @GetMapping("/membership")
     public ResponseEntity<MembershipAccountDto> myMembershipAccount(){
+        walletService.refresh();
         return  new ResponseEntity<>(membershipAccountConverter.entityToDto(membershipAccountService.getMyAccount()), HttpStatus.OK);
 
     }
     @GetMapping("/savings")
     public ResponseEntity<SavingsAccountDto> mySavingsAccount(){
+        walletService.refresh();
         return  new ResponseEntity<>(savingsAccountConverter.entityToDto(savingsAccountService.getMyAccount()), HttpStatus.OK);
 
     }

@@ -23,7 +23,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Transactional
     @Override
     public List<UserAccount> getMyAll() {
-        walletService.refresh();
+        //walletService.refresh();
         String userName =myUserDetailsService.currentUser();
         return userAccountDao.findByUserName(userName);
     }

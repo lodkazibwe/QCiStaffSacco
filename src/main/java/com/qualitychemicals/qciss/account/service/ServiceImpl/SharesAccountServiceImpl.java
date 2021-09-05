@@ -32,7 +32,7 @@ public class SharesAccountServiceImpl implements SharesAccountService {
     @Transactional
     @Override
     public SharesAccount getMyAccount() {
-        walletService.refresh();
+       // walletService.refresh();
         return getSharesAccount("SHA"+myUserDetailsService.currentUser());
     }
 

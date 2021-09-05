@@ -43,7 +43,7 @@ public class MembershipAccountServiceImpl implements MembershipAccountService {
     @Transactional
     @Override
     public MembershipAccount getMyAccount() {
-        walletService.refresh();
+        //walletService.refresh();
         return getMembershipAccount("MEM"+myUserDetailsService.currentUser());
 
     }
