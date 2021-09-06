@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 @Component
 public class BankConverter {
     public BankDto entityToDto(Bank bank){
+        if(bank==null){
+            return new BankDto();
+        }
         BankDto bankDto=new BankDto();
         bankDto.setAccountName(bank.getAccountName());
         bankDto.setAccountNumber(bank.getAccountNumber());
