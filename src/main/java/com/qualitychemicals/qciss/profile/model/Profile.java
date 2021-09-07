@@ -31,6 +31,9 @@ public class Profile {
     @OneToOne(targetEntity = Bank.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
     @JoinColumn()
     private Bank bank;
+    @OneToOne(targetEntity = NextOfKin.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+    @JoinColumn()
+    private NextOfKin nextOfKin;
     @Enumerated(EnumType.STRING)
     private Status status;
     @OneToMany(targetEntity = Role.class,cascade= CascadeType.ALL, fetch= FetchType.EAGER)

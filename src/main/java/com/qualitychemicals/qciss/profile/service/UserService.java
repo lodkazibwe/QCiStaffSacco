@@ -1,13 +1,7 @@
 package com.qualitychemicals.qciss.profile.service;
 
-import com.qualitychemicals.qciss.profile.dto.DeductionScheduleDTO;
-import com.qualitychemicals.qciss.profile.dto.EmployeeDto;
-import com.qualitychemicals.qciss.profile.dto.PersonDto;
-import com.qualitychemicals.qciss.profile.dto.UserDto;
-import com.qualitychemicals.qciss.profile.model.Profile;
-import com.qualitychemicals.qciss.profile.model.Status;
-import com.qualitychemicals.qciss.profile.model.Account;
-import com.qualitychemicals.qciss.profile.model.Work;
+import com.qualitychemicals.qciss.profile.dto.*;
+import com.qualitychemicals.qciss.profile.model.*;
 
 import java.util.List;
 
@@ -20,6 +14,7 @@ public interface UserService {
     String requestPin(String contact);
     Profile getProfile(int id);
     Profile getProfile(String userName);
+    NextOfKin addNextOfKin(NextOfKinDto nextOfKinDto);
 
     String verifyAccount(String accountNumber, String userName);
     Account getSummary(int id);

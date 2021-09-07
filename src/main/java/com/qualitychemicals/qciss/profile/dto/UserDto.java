@@ -27,5 +27,7 @@ public class UserDto {
     @Valid
     private WorkDto workDto;
     private BankDto bankDto;
+    private NextOfKinDto nextOfKinDto;
+
 
 }

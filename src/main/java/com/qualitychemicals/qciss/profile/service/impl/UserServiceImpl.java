@@ -17,6 +17,7 @@ import com.qualitychemicals.qciss.firebase.notification.Subject;
 import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.model.RepaymentMode;
 import com.qualitychemicals.qciss.loan.service.LoanService;
+import com.qualitychemicals.qciss.profile.converter.NextOfKinConverter;
 import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dto.*;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
@@ -59,6 +60,7 @@ public class UserServiceImpl implements UserService {
     @Autowired SharesAccountService sharesAccountService;
     @Autowired WalletService walletService;
     @Autowired MembershipService membershipService;
+    @Autowired NextOfKinConverter nextOfKinConverter;
 
 
 
@@ -223,7 +225,17 @@ public class UserServiceImpl implements UserService {
 
     }
 
-
+    @Override
+    @Transactional
+    public NextOfKin addNextOfKin(NextOfKinDto nextOfKinDto) {
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Profile profile =getProfile(userName);
+        profile.setNextOfKin(nextOfKinConverter.dtoToEntity(nextOfKinDto));
+        logger.info("updating profile...");
+        return userDAO.save(profile).getNextOfKin();
+    }
 
     @Override
     public Profile updateProfile(Profile profile) {

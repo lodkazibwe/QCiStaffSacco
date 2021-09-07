@@ -1,7 +1,7 @@
 package com.qualitychemicals.qciss.profile.service.impl;
 
-import com.google.firebase.cloud.StorageClient;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
+import com.qualitychemicals.qciss.firebase.file.FileService;
 import com.qualitychemicals.qciss.profile.dao.PersonDao;
 import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
@@ -9,6 +9,7 @@ import com.qualitychemicals.qciss.profile.model.Person;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
+import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -34,6 +32,8 @@ public class PersonServiceImpl implements PersonService {
     PersonDao personDao;
     @Autowired UserService userService;
     @Autowired UserDao userDao;
+    @Autowired MyUserDetailsService myUserDetailsService;
+    @Autowired FileService fileService;
 
     private final Logger logger= LoggerFactory.getLogger(PersonServiceImpl.class);
     @Override
@@ -106,26 +106,21 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
-    public String uploadImage(MultipartFile myFile) throws IOException {
+    @Transactional
+    public URL uploadImage(MultipartFile myFile) throws IOException {
         logger.info("getting user....");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
-        logger.info("converting image....");
-        InputStream file =  new BufferedInputStream(myFile.getInputStream());
-        logger.info("getting image name....");
-        String fileName=generateFileName(myFile);
-        String name="profile/"+userName+"/"+ fileName;
-        logger.info("uploading image....");
-        StorageClient.getInstance().bucket()
-                .create(name, file);
-        logger.info("getting user profile....");
-        Profile profile=userService.getProfile(userName);
+        String userName=myUserDetailsService.currentUser();
+        logger.info("uploading image ....");
+        String fileName =fileService.uploadImage(myFile, userName);
+        logger.info("setting image name....");
+        Profile profile =userService.getProfile(userName);
         profile.getPerson().setImage(fileName);
-        logger.info("updating profile....");
-        userService.updateProfile(profile);
-        return name;
+        userDao.save(profile);
+        logger.info("getting image url....");
+        return fileService.signedUrl(fileName);
 
     }
+
     private String generateFileName(MultipartFile multiPart) {
 
         return new Date().getTime() + "-" + Objects.requireNonNull(multiPart.getOriginalFilename())
@@ -133,54 +128,24 @@ public class PersonServiceImpl implements PersonService {
     }
 
     public String downloadImage() {
-        /*logger.info("getting user....");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
-        logger.info("getting user profile....");
-        Profile profile=userService.getProfile(userName);
-        String fileName=profile.getPerson().getImage();
-        logger.info("getting image name....");
-        String name="profile/"+userName+"/"+ fileName;
 
-        //Storage storage=storageOptions.getService();
-        logger.info("getting blob....");
-       // Blob blob = storage.get(BlobId.of("qc-sacco.appspot.com", name));
-        Blob blob=StorageClient.getInstance().bucket().get(name);
-                //.getInstance().bucket().get(name, Storage.BlobGetOption.generationMatch());
-        ReadChannel reader = blob.reader();
-        InputStream inputStream = Channels.newInputStream(reader);
-        byte[] content = null;
-        logger.info("success....");
-        //Blob blob=StorageClient.
-        return blob.getContentType();*/
         return null;
     }
 
-    public String downloadUrl() {
+    public URL downloadUrl() {
+        logger.info("setting image name....");
         logger.info("getting user....");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
-        logger.info("getting user profile....");
-        Profile profile=userService.getProfile(userName);
-        String fileName=profile.getPerson().getImage();
-        logger.info("getting image name....");
-        String name="profile/"+userName+"/"+ fileName;
-        //return StorageClient.getInstance().bucket().get(name).signUrl(14, TimeUnit.DAYS);
-        //Blob.signUrl().
-        return StorageClient.getInstance().bucket().get(name).getSelfLink();
+        String userName=myUserDetailsService.currentUser();
+        Profile profile =userService.getProfile(userName);
+        return fileService.signedUrl(profile.getPerson().getImage());
     }
 
     public URL signedUrl() {
+        logger.info("setting image name....");
         logger.info("getting user....");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName=auth.getName();
-        logger.info("getting user profile....");
-        Profile profile=userService.getProfile(userName);
-        String fileName=profile.getPerson().getImage();
-        logger.info("getting image name....");
-        String name="profile/"+userName+"/"+ fileName;
-        return StorageClient.getInstance().bucket().get(name).signUrl(14, TimeUnit.DAYS);
-
+        String userName=myUserDetailsService.currentUser();
+        Profile profile =userService.getProfile(userName);
+        return fileService.signedUrl(profile.getPerson().getImage());
     }
 
 }

@@ -20,6 +20,7 @@ public class UserConverter {
     AccountConverter accountConverter;
     @Autowired BankConverter bankConverter;
     @Autowired BCryptPasswordEncoder passwordEncoder;
+    @Autowired NextOfKinConverter nextOfKinConverter;
     private final Logger logger = LoggerFactory.getLogger(UserConverter.class);
     public UserDto entityToDto(Profile profile){
         UserDto userDto =new UserDto();
@@ -30,6 +31,7 @@ public class UserConverter {
         userDto.setAccountDto(accountConverter.entityToDto(profile.getAccount()));
         userDto.setWorkDto(workConverter.entityToDto(profile.getWork()));
         userDto.setBankDto(bankConverter.entityToDto(profile.getBank()));
+        userDto.setNextOfKinDto(nextOfKinConverter.entityToDto(profile.getNextOfKin()));
         return userDto;
     }
 
