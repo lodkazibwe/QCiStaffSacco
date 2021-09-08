@@ -35,6 +35,7 @@ public class PersonController {
 
     @PostMapping("/uploadImage")
     public ResponseEntity<URL> updateImage(@RequestParam("file")MultipartFile file)
+            //updateImage(@RequestParam("file") MultipartFile file)
             throws IOException {
         logger.info("processing image...");
         URL signedUrl= personService.uploadImage(file);

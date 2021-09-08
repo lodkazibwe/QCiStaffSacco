@@ -23,6 +23,7 @@ public class PersonDto {
     //@Size(min=14, max=14,message = "NIN must have 14 Characters")
     //@Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
+    private String passport;
     @NotNull(message = "mobile cannot be null")
     @Size(min=9, max=9, message = "invalid Contact length")
     @Pattern(regexp="(^[0-9]{9})", message = "invalid Contact")

@@ -19,6 +19,7 @@ public class PersonConverter {
         personDto.setGender(person.getGender());
         personDto.setEmail(person.getEmail());
         personDto.setDob(person.getDob());
+        personDto.setPassport(person.getPassport());
         personDto.setMobile(person.getMobile());
         return personDto;
     }
@@ -32,6 +33,7 @@ public class PersonConverter {
         person.setFirstName(personDto.getFirstName());
         person.setEmail(personDto.getEmail());
         person.setDob(personDto.getDob());
+        person.setPassport(personDto.getPassport());
         person.setMobile(personDto.getMobile());
         return person;
     }

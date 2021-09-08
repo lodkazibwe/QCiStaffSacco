@@ -13,7 +13,6 @@ import com.qualitychemicals.qciss.loan.model.*;
 import com.qualitychemicals.qciss.loan.service.LoanService;
 import com.qualitychemicals.qciss.profile.converter.UserConverter;
 import com.qualitychemicals.qciss.profile.dto.UserDto;
-import com.qualitychemicals.qciss.profile.model.Account;
 import com.qualitychemicals.qciss.profile.model.Profile;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.saccoData.service.LoanAccountService;
@@ -52,14 +51,20 @@ public class LoanServiceImpl  implements LoanService {
             logger.info("Eligible...");
             logger.info("checking current loans...");
             List<Loan> loans=loanDao.findByBorrowerAndStatus(loanDto.getBorrower(), LoanStatus.OPEN);
+            int topUpLoan = 1;
             List<Integer> productIds=new ArrayList<>();
             for (Loan loan:loans){
                 productIds.add(loan.getProduct().getId());
+                if(loanDto.getProductId()==loan.getProduct().getId()){
+                    logger.info("getting top up loan...");
+                    topUpLoan=loan.getId();
+                }
             }
             if(loans.size()<3){
                 if(productIds.contains(loanDto.getProductId())){
                     logger.info("have a running loan of this type...");
-                    throw new InvalidValuesException("you have an outstanding loan for the product");
+                    return topUpRequest(requestDto, topUpLoan);
+                    //throw new InvalidValuesException("you have an outstanding loan for the product");
                 }
                 logger.info("processing loan...");
                 logger.info("sending notification loan...");
@@ -110,7 +115,7 @@ public class LoanServiceImpl  implements LoanService {
                 return true;
             }else{
                 logger.error("pending request exists...");
-                throw new ResourceNotFoundException("Profile Does not qualify for a loan(pending request) " + userName);
+                throw new ResourceNotFoundException("user has a pending loan request " + userName);
             }
 
         }else {

@@ -19,6 +19,7 @@ public class Person {
     private String firstName;
     private String lastName;
     private String nin;
+    private String passport;
     @Column(unique = true)
     private String mobile;
     @Column(unique = true)
