@@ -9,8 +9,8 @@ import javax.validation.constraints.*;
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class PersonDto {
     private int id;
     @NotBlank(message = "first name cannot be blank")
@@ -23,7 +23,6 @@ public class PersonDto {
     //@Size(min=14, max=14,message = "NIN must have 14 Characters")
     //@Pattern(regexp="^[a-zA-Z0-9]+$", message = "invalid NIN")
     private String nin;
-    private String passport;
     @NotNull(message = "mobile cannot be null")
     @Size(min=9, max=9, message = "invalid Contact length")
     @Pattern(regexp="(^[0-9]{9})", message = "invalid Contact")
@@ -38,5 +37,6 @@ public class PersonDto {
     private String gender;
     //@NotBlank(message ="residence cannot be Blank")
     private String residence;
+    private String passport;
 
 }

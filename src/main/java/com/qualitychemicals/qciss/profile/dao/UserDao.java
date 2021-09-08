@@ -25,7 +25,8 @@ public interface UserDao extends JpaRepository<Profile, Integer> {
     List<Profile> findByStatus(Status status);
 
     @Query("SELECT new com.qualitychemicals.qciss.profile.dto.PersonDto(" +
-            "p.id,p.person.firstName,p.person.lastName,p.person.nin,p.person.mobile,p.person.email,p.person.dob,p.person.gender,p.person.residence)"+
+            "p.id,p.person.firstName,p.person.lastName,p.person.nin,p.person.mobile,p.person.email,p.person.dob,p.person.gender,p.person.residence,p.person.passport)"+
             "FROM Profile p JOIN p.role r WHERE r.role=?1")
     List<PersonDto> getRoleUser(String role);
+
 }
