@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
 import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import org.slf4j.Logger;
@@ -88,7 +89,7 @@ public class ShareServiceImpl implements ShareService {
 
         logger.info("Transactions loanT and shareT...");
         LoanTDto loanTDto=new LoanTDto();
-        loanTDto.setTransactionType("loan");
+        loanTDto.setTransactionType(TransactionType.INTERNAL);
         loanTDto.setAccount(loanAccount.getName());
         loanTDto.setCreationDateTime(new Date());
         loanTDto.setWallet(share.getName());
@@ -102,7 +103,7 @@ public class ShareServiceImpl implements ShareService {
         logger.info("saving share transaction...");
         ShareTDto shareTDto =new ShareTDto();
         shareTDto.setWallet(loanAccount.getName());
-        shareTDto.setTransactionType("share");
+        shareTDto.setTransactionType(TransactionType.INTERNAL);
         shareTDto.setNarrative("transfer shareAccount to loanAccount");
         shareTDto.setAccount(share.getName());
         shareTDto.setShareValue(share.getShareValue());

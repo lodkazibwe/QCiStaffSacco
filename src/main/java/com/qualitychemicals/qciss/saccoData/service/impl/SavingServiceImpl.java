@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
 import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import org.slf4j.Logger;
@@ -84,7 +85,7 @@ public class SavingServiceImpl implements SavingService {
         loanAccountService.updateLoanAccount(loanAccount);
         logger.info("Transactions loanT and savingT...");
         LoanTDto loanTDto=new LoanTDto();
-        loanTDto.setTransactionType("loan");
+        loanTDto.setTransactionType(TransactionType.INTERNAL);
         loanTDto.setAccount(loanAccount.getName());
         loanTDto.setCreationDateTime(new Date());
         loanTDto.setWallet(saving.getName());
@@ -97,7 +98,7 @@ public class SavingServiceImpl implements SavingService {
         logger.info("saving saving transaction...");
         SavingTDto savingTDto =new SavingTDto();
         savingTDto.setWallet(loanAccount.getName());
-        savingTDto.setTransactionType("saving");
+        savingTDto.setTransactionType(TransactionType.INTERNAL);
         savingTDto.setAccount(saving.getName());
         savingTDto.setNarrative("transfer saving to loanAccount");
         savingTDto.setCreationDateTime(new Date());
