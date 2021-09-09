@@ -58,11 +58,11 @@ public class ShareTServiceImpl implements ShareTService {
             ShareTDto shareTDto =new ShareTDto();
             shareTDto.setShares(shares);
             shareTDto.setUserName(user);
-            shareTDto.setStatus(TransactionStatus.PENDING);
+            shareTDto.setStatus(TransactionStatus.SUCCESS);
             shareTDto.setDate(new Date());
             shareTDto.setCreationDateTime(new Date());
             shareTDto.setAmount(amount);
-            shareTDto.setTransactionType("share");
+            shareTDto.setTransactionType(TransactionType.INTERNAL);
             shareTDto.setShareValue(share.getShareValue());
             shareTDto.setAccount("SHA"+user);
             shareTDto.setNarrative("Bought shares");

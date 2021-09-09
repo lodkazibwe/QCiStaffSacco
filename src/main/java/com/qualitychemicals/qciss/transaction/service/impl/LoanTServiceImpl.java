@@ -77,8 +77,8 @@ public class LoanTServiceImpl implements LoanTService {
                 loanTDto.setUserName(userName);
                 loanTDto.setDate(new Date());
                 loanTDto.setAccount(topUpLoan.getLoanNumber());
-                loanTDto.setTransactionType("loan");
-                loanTDto.setStatus(TransactionStatus.PENDING);
+                loanTDto.setTransactionType(TransactionType.INTERNAL);
+                loanTDto.setStatus(TransactionStatus.SUCCESS);
                 loanTDto.setNarrative("loan topped Up");
                 loanTDto.setWallet(wallet.getAccountRef());
                 loanTDto.setCreationDateTime(new Date());
@@ -102,13 +102,13 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setLoanId(loanPayDto.getLoanId());
             loanTDto.setDate(new Date());
             loanTDto.setCreationDateTime(new Date());
-            loanTDto.setStatus(TransactionStatus.PENDING);
+            loanTDto.setStatus(TransactionStatus.SUCCESS);
             loanTDto.setWallet(wallet.getAccountRef());
             loanTDto.setNarrative("loan charges");
             loanTDto.setAccount(loan.getLoanNumber());
             loanTDto.setUserName(userName);
             //loanTDto.setLoanRef(loan.getLoanNumber());
-            loanTDto.setTransactionType("loan");
+            loanTDto.setTransactionType(TransactionType.INTERNAL);
             loanTDto.setLoanId(loan.getId());
             logger.info("setting transaction charges and adding transaction...");
             double totalCharge=getTotalCharge(loan);
@@ -215,7 +215,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setUserName(userName);
             loanTDto.setDate(new Date());
             loanTDto.setAccount(loan.getLoanNumber());
-            loanTDto.setTransactionType("loan");
+            loanTDto.setTransactionType(TransactionType.INTERNAL);
             loanTDto.setStatus(TransactionStatus.PENDING);
             loanTDto.setNarrative("loan Repayment");
             loanTDto.setWallet(wallet.getAccountRef());

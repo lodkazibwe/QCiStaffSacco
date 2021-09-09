@@ -11,6 +11,7 @@ import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.LoanTDto;
 import com.qualitychemicals.qciss.transaction.dto.MembershipTDto;
 import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import com.qualitychemicals.qciss.transaction.service.LoanTService;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class MembershipServiceImpl implements MembershipService {
 
         logger.info("Transactions loanT and MembershipT...");
         LoanTDto loanTDto=new LoanTDto();
-        loanTDto.setTransactionType("loan");
+        loanTDto.setTransactionType(TransactionType.INTERNAL);
         loanTDto.setAccount(loanAccount.getName());
         loanTDto.setCreationDateTime(new Date());
         loanTDto.setWallet(membership.getName());
@@ -105,7 +106,7 @@ public class MembershipServiceImpl implements MembershipService {
 
         logger.info("saving MembershipT...");
         MembershipTDto membershipTDto =new MembershipTDto();
-        membershipTDto.setTransactionType("membership");
+        membershipTDto.setTransactionType(TransactionType.INTERNAL);
         membershipTDto.setWallet(loanAccount.getName());
         membershipTDto.setUserName(userName);
         membershipTDto.setStatus(TransactionStatus.PENDING);

@@ -15,6 +15,7 @@ import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import com.qualitychemicals.qciss.transaction.dto.AllTransactions;
 import com.qualitychemicals.qciss.transaction.dto.TransactionDto;
 import com.qualitychemicals.qciss.transaction.dto.TransactionStatus;
+import com.qualitychemicals.qciss.transaction.dto.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class WalletServiceImpl implements WalletService {
         transactionDto.setNarrative("deposit from "+wallet.getContact());
         transactionDto.setUserName(userName);
         transactionDto.setWallet(wallet.getAccountRef());
-        transactionDto.setTransactionType("deposit");
+        transactionDto.setTransactionType(TransactionType.MOBILE);
         logger.info("transacting deposit...");
         try {
                    logger.info("connecting to payment service...");
