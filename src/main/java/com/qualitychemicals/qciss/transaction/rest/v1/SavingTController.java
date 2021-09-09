@@ -22,6 +22,11 @@ public class SavingTController {
         return new ResponseEntity<>(savingTService.mobileSaving(amount), HttpStatus.OK);
 
     }
+    @PutMapping("/withdraw/{amount}")
+    public ResponseEntity<SavingTDto> requestWithdraw(@PathVariable double amount){
+        return new ResponseEntity<>(savingTService.withdrawRequest(amount), HttpStatus.OK);
+
+    }
 
     @GetMapping("/myRecent")
     public ResponseEntity<SavingsTransactionsDto> myRecent(){

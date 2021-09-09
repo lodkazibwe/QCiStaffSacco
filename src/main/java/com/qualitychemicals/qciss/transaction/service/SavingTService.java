@@ -10,6 +10,7 @@ import java.util.Date;
 
 public interface SavingTService {
     SavingTDto mobileSaving(double amount);
+    SavingTDto withdrawRequest(double amount);
     SavingsTransactionsDto myAll();
     SavingsTransactionsDto myRecent();
     SavingsTransactionsDto allByWallet(String wallet);

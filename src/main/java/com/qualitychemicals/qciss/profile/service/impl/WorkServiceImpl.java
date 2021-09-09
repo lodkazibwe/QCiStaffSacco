@@ -37,18 +37,29 @@ public class WorkServiceImpl implements WorkService {
         String userName=auth.getName();
         logger.info("getting current work details...");
         Profile profile =userService.getProfile(userName);
-        Work work= profile.getWork();
-        work.setCompanyName(workDto.getCompanyName());
-        work.setEmployeeId(workDto.getEmployeeId());
-        work.setToe(workDto.getToe());
-        work.setWorkStation(workDto.getWorkStation());
-        work.setBasicSalary(workDto.getBasicSalary());
-        work.setJob(workDto.getJob());
-        profile.setWork(work);
-        profile.setStatus(Status.PENDING);
-        logger.info("saving...");
-        userDao.save(profile);
-        return work;
+        if(profile.getStatus()== Status.PENDING) {
+            Work work = profile.getWork();
+            work.setCompanyName(workDto.getCompanyName());
+            work.setEmployeeId(workDto.getEmployeeId());
+            work.setToe(workDto.getToe());
+            work.setWorkStation(workDto.getWorkStation());
+            work.setBasicSalary(workDto.getBasicSalary());
+            work.setJob(workDto.getJob());
+            profile.setWork(work);
+            logger.info("saving...");
+            return userDao.save(profile).getWork();
+        }
+        return profile.getWork();
+    }
+
+    @Override
+    public Work getWork() {
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        logger.info("getting current work details...");
+        Profile profile =userService.getProfile(userName);
+        return profile.getWork();
     }
 
     @Override

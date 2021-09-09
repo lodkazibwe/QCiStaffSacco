@@ -30,6 +30,6 @@ public class TransactionDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", locale = "pt-BR", timezone = "EAT")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDateTime;
-    private String transactionType;
+    private TransactionType transactionType;
 
 }

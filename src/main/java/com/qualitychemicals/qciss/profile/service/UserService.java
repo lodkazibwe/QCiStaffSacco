@@ -15,6 +15,7 @@ public interface UserService {
     Profile getProfile(int id);
     Profile getProfile(String userName);
     NextOfKin addNextOfKin(NextOfKinDto nextOfKinDto);
+    NextOfKin myNok();
 
     String verifyAccount(String accountNumber, String userName);
     Account getSummary(int id);

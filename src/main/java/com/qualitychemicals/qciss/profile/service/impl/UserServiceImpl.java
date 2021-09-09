@@ -10,10 +10,7 @@ import com.qualitychemicals.qciss.account.service.SharesAccountService;
 import com.qualitychemicals.qciss.account.service.WalletService;
 import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.firebase.message.ChatService;
-import com.qualitychemicals.qciss.firebase.notification.Notification;
-import com.qualitychemicals.qciss.firebase.notification.NotificationService;
-import com.qualitychemicals.qciss.firebase.notification.NotificationStatus;
-import com.qualitychemicals.qciss.firebase.notification.Subject;
+import com.qualitychemicals.qciss.firebase.notification.*;
 import com.qualitychemicals.qciss.loan.dto.DueLoanDto;
 import com.qualitychemicals.qciss.loan.model.RepaymentMode;
 import com.qualitychemicals.qciss.loan.service.LoanService;
@@ -61,6 +58,7 @@ public class UserServiceImpl implements UserService {
     @Autowired WalletService walletService;
     @Autowired MembershipService membershipService;
     @Autowired NextOfKinConverter nextOfKinConverter;
+    @Autowired SmsService smsService;
 
 
 
@@ -88,6 +86,7 @@ public class UserServiceImpl implements UserService {
             Profile profile = userConverter.dtoToEntity(userDTO);
             logger.info("profile validated...");
             String email=userDTO.getPersonDto().getEmail();
+            String contact = userDTO.getUserName();
 
             logger.info("updating...");
             Set<Role> roles=getRoles(rol);
@@ -100,7 +99,7 @@ public class UserServiceImpl implements UserService {
             profile.setPassword(passwordEncoder.encode(pin));
             logger.info("use this pin to login "+pin);
 
-            String message="use this pin to login "+pin;
+            String message="login pin "+pin;
             profile.getPerson().setImage("default.png");
             //generate profile/accountNumber********************************************************
             //logger.info("generating member number...");
@@ -128,7 +127,8 @@ public class UserServiceImpl implements UserService {
             chatService.createChat(userName);
 
             logger.info("sending email...");
-            emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
+            //emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
+            smsService.sendSms(contact,message);
             logger.info(message+" for  "+ userName);
 
             logger.info("profile created...");
@@ -235,6 +235,15 @@ public class UserServiceImpl implements UserService {
         profile.setNextOfKin(nextOfKinConverter.dtoToEntity(nextOfKinDto));
         logger.info("updating profile...");
         return userDAO.save(profile).getNextOfKin();
+    }
+
+    @Override
+    public NextOfKin myNok() {
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Profile profile =getProfile(userName);
+        return  profile.getNextOfKin();
     }
 
     @Override

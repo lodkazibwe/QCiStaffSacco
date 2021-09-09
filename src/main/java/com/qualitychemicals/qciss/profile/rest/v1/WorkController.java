@@ -32,7 +32,8 @@ public class WorkController {
 
     }
 
-    @PutMapping("/updatePayrollSaving/{amount}")
+
+    @PutMapping("/saving/{amount}")
     public ResponseEntity<WorkDto> updatePayrollSaving(@PathVariable double amount){
 
         Work work=workService.updatePayrollSaving(amount);
@@ -41,7 +42,14 @@ public class WorkController {
 
     }
 
-    @PutMapping("/updatePayrollShares/{amount}")
+    @GetMapping("/get")
+    public ResponseEntity<WorkDto> getWork(){
+        Work work =workService.getWork();
+        return new ResponseEntity<>(workConverter.entityToDto(work),HttpStatus.OK);
+
+    }
+
+    @PutMapping("/shares/{amount}")
     public ResponseEntity<WorkDto> updatePayrollShares(@PathVariable double amount){
 
         Work work=workService.updatePayrollShares(amount);

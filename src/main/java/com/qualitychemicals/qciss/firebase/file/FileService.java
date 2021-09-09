@@ -1,7 +1,6 @@
 package com.qualitychemicals.qciss.firebase.file;
 
 import com.google.firebase.cloud.StorageClient;
-import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class FileService {
     @Autowired
     MyUserDetailsService myUserDetailsService;
-    @Autowired
-    UserService userService;
+
     private final Logger logger = LoggerFactory.getLogger(FileService.class);
 
     public String uploadImage(MultipartFile myFile, String userName) throws IOException {
@@ -31,7 +29,7 @@ public class FileService {
         InputStream file =  new BufferedInputStream(myFile.getInputStream());
         logger.info("getting image name....");
         String fileName=generateFileName(myFile);
-        String name="iatProfile/"+userName+"/"+ fileName;
+        String name="qcProfile/"+userName+"/"+ fileName;
         logger.info("uploading image....");
         StorageClient.getInstance().bucket()
                 .create(name, file);
@@ -39,6 +37,21 @@ public class FileService {
         return name;
 
    }
+
+    public String uploadFile(MultipartFile myFile, String userName) throws IOException {
+
+        logger.info("converting image....");
+        InputStream file =  new BufferedInputStream(myFile.getInputStream());
+        logger.info("getting image name....");
+        String fileName=generateFileName(myFile);
+        String name="qcFiles/"+userName+"/"+ fileName;
+        logger.info("uploading image....");
+        StorageClient.getInstance().bucket()
+                .create(name, file);
+        logger.info("updating profile....");
+        return name;
+
+    }
 
     private String generateFileName(MultipartFile multiPart) {
 

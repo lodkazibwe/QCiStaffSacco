@@ -60,12 +60,12 @@ public class SavingTServiceImpl implements SavingTService {
             SavingTDto savingTDto=new SavingTDto();
             savingTDto.setDate(new Date());
             savingTDto.setAmount(amount);
-            savingTDto.setStatus(TransactionStatus.PENDING);
-            savingTDto.setTransactionType("saving");
+            savingTDto.setStatus(TransactionStatus.SUCCESS);
+            savingTDto.setTransactionType(TransactionType.INTERNAL);
             savingTDto.setUserName(user);
             savingTDto.setAccountId(savingsAccount.getId());
             savingTDto.setCreationDateTime(new Date());
-            savingTDto.setNarrative("Wallet savings");
+            savingTDto.setNarrative("savings withdraw");
             savingTDto.setAccount(savingsAccount.getAccountRef());
             savingTDto.setWallet(wallet.getAccountRef());
             SavingTDto response =saveSavingT(savingTDto).getBody();
@@ -88,6 +88,42 @@ public class SavingTServiceImpl implements SavingTService {
             }
             return response;
 
+        }
+
+    }
+
+    @Override
+    public SavingTDto withdrawRequest(double amount) {
+        String user =myUserDetailsService.currentUser();
+        Wallet wallet =walletService.getWallet("WAL"+user);
+        SavingsAccount savingsAccount =savingsAccountService.getSavingsAccount("SAV"+user);
+        if(amount>savingsAccount.getAmount()){
+            throw new InvalidValuesException("low savings bal");
+        }else{
+            logger.info("preparing transaction...");
+            SavingTDto savingTDto=new SavingTDto();
+            savingTDto.setDate(new Date());
+            savingTDto.setAmount(amount*-1);
+            savingTDto.setStatus(TransactionStatus.PENDING);
+            savingTDto.setTransactionType(TransactionType.INTERNAL);
+            savingTDto.setUserName(user);
+            savingTDto.setAccountId(savingsAccount.getId());
+            savingTDto.setCreationDateTime(new Date());
+            savingTDto.setNarrative("withdraw request");
+            savingTDto.setAccount(savingsAccount.getAccountRef());
+            savingTDto.setWallet(wallet.getAccountRef());
+            SavingTDto response =saveSavingT(savingTDto).getBody();
+            assert response != null;
+            if(response.getStatus().equals(TransactionStatus.PENDING)){
+                UserAccount userAccount =new UserAccount();
+                userAccount.setLastTransaction(response.getId());
+                logger.info(("updating user savingsAccount..."));
+                userAccount.setAccountRef("SAV"+user);
+                userAccount.setAmount(amount*-1);
+                savingsAccountService.transact(userAccount);
+
+            }
+            return response;
         }
 
     }

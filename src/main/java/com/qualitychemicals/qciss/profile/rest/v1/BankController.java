@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-//@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
 @CrossOrigin
 @RestController
 @RequestMapping("/bank")
@@ -30,11 +29,11 @@ public class BankController {
 
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<BankDto> updateBank(@Valid @RequestBody BankDto bankDto){
-        logger.info("adding bank...");
-        Bank bank=bankService.updateBank(bankDto);
+    @PutMapping("/get")
+    public ResponseEntity<BankDto> myBank(){
+        Bank bank=bankService.myBank();
         return new ResponseEntity<>(bankConverter.entityToDto(bank), HttpStatus.OK);
-
     }
+
+
 }

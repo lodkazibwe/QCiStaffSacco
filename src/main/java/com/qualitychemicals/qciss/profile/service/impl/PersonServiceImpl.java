@@ -4,12 +4,16 @@ import com.qualitychemicals.qciss.exceptions.ResourceNotFoundException;
 import com.qualitychemicals.qciss.firebase.file.FileService;
 import com.qualitychemicals.qciss.profile.dao.PersonDao;
 import com.qualitychemicals.qciss.profile.dao.UserDao;
+import com.qualitychemicals.qciss.profile.dao.UserFileDao;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.model.Person;
 import com.qualitychemicals.qciss.profile.model.Profile;
+import com.qualitychemicals.qciss.profile.model.Status;
+import com.qualitychemicals.qciss.profile.model.UserFile;
 import com.qualitychemicals.qciss.profile.service.PersonService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import com.qualitychemicals.qciss.security.MyUserDetailsService;
+import com.sun.org.apache.bcel.internal.generic.ATHROW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,7 @@ public class PersonServiceImpl implements PersonService {
     @Autowired UserDao userDao;
     @Autowired MyUserDetailsService myUserDetailsService;
     @Autowired FileService fileService;
+    @Autowired UserFileDao userFileDao;
 
     private final Logger logger= LoggerFactory.getLogger(PersonServiceImpl.class);
     @Override
@@ -43,20 +48,31 @@ public class PersonServiceImpl implements PersonService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         Profile profile =userService.getProfile(userName);
+        if(profile.getStatus()== Status.PENDING){
+
         logger.info("updating person...");
         Person person=profile.getPerson();
         person.setDob(personDto.getDob());
         person.setGender(personDto.getGender());
         person.setResidence(personDto.getResidence());
         person.setNin(personDto.getNin());
+        person.setPassport(personDto.getPassport());
+        person.setLastName(personDto.getLastName());
+        person.setFirstName(personDto.getFirstName());
         logger.info("updating profile...");
         userDao.save(profile);
         return person;
+        }
+        return profile.getPerson();
     }
 
     @Override
-    public Person getPerson(int id) {
-        return personDao.findById(id).orElseThrow(()->new ResourceNotFoundException("No such info ID: "+id));
+    public Person getPerson() {
+        logger.info("getting profile...");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Profile profile =userService.getProfile(userName);
+        return profile.getPerson();
     }
 
     @Override
@@ -121,24 +137,19 @@ public class PersonServiceImpl implements PersonService {
 
     }
 
-    private String generateFileName(MultipartFile multiPart) {
-
-        return new Date().getTime() + "-" + Objects.requireNonNull(multiPart.getOriginalFilename())
-                .replace(" ", "_");
-    }
-
     public String downloadImage() {
 
         return null;
     }
 
     public URL downloadUrl() {
-        logger.info("setting image name....");
         logger.info("getting user....");
         String userName=myUserDetailsService.currentUser();
         Profile profile =userService.getProfile(userName);
         return fileService.signedUrl(profile.getPerson().getImage());
     }
+
+
 
     public URL signedUrl() {
         logger.info("setting image name....");

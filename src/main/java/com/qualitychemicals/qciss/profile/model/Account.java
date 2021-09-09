@@ -21,6 +21,5 @@ public class Account {
     private double savings;
     private double shares;
     private double pendingFee;
-    //private double monthlySaving;
 
 }

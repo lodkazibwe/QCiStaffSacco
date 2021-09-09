@@ -9,6 +9,7 @@ import java.util.List;
 public interface WorkService {
     Work updateWork(WorkDto workDto);
     Work updateCompanyName(CompanyUpdateDto companyUpdateDto);
+    Work getWork();
     Work getWork(int id);
     List<Work> getAll();
     List<Work> getByCompany(String company);

@@ -5,6 +5,7 @@ import com.qualitychemicals.qciss.profile.dao.UserDao;
 import com.qualitychemicals.qciss.profile.dto.BankDto;
 import com.qualitychemicals.qciss.profile.model.Bank;
 import com.qualitychemicals.qciss.profile.model.Profile;
+import com.qualitychemicals.qciss.profile.model.Status;
 import com.qualitychemicals.qciss.profile.service.BankService;
 import com.qualitychemicals.qciss.profile.service.UserService;
 import org.slf4j.Logger;
@@ -30,20 +31,42 @@ public class BankServiceImpl implements BankService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         Profile profile =userService.getProfile(userName);
-        Bank bank=new Bank();
-        bank.setName(bankDto.getName());
-        bank.setBranch(bankDto.getBranch());
-        bank.setAccountNumber(bankDto.getAccountNumber());
-        bank.setAccountName(bankDto.getAccountName());
-        profile.setBank(bank);
+        if(profile.getStatus()== Status.PENDING){
+
+        if(profile.getBank()==null){
+        Bank newBank=new Bank();
+            newBank.setName(bankDto.getName());
+            newBank.setBranch(bankDto.getBranch());
+            newBank.setAccountNumber(bankDto.getAccountNumber());
+            newBank.setAccountName(bankDto.getAccountName());
+            profile.setBank(newBank);
+        }else{
+            Bank bank= profile.getBank();
+            bank.setName(bankDto.getName());
+            bank.setBranch(bankDto.getBranch());
+            bank.setAccountNumber(bankDto.getAccountNumber());
+            bank.setAccountName(bankDto.getAccountName());
+            profile.setBank(bank);
+        }
+
         logger.info("updating profile...");
-        userDao.save(profile);
-        return bank;
+        return userDao.save(profile).getBank();
+        }
+        return profile.getBank();
+
+    }
+
+    @Override
+    public Bank myBank() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName=auth.getName();
+        Profile profile =userService.getProfile(userName);
+        return profile.getBank();
     }
 
     @Transactional
     public Bank updateBank(BankDto bankDto) {
-        logger.info("getting profile...");
+        /*logger.info("getting profile...");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName=auth.getName();
         Profile profile =userService.getProfile(userName);
@@ -54,8 +77,8 @@ public class BankServiceImpl implements BankService {
         bank.setAccountName(bankDto.getAccountName());
         profile.setBank(bank);
         logger.info("updating profile...");
-        userDao.save(profile);
-        return bank;
+        userDao.save(profile);*/
+        return null;
 
     }
 }
