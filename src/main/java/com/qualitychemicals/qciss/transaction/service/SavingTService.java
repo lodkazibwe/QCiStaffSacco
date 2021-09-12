@@ -1,12 +1,11 @@
 package com.qualitychemicals.qciss.transaction.service;
 
-import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
-import com.qualitychemicals.qciss.transaction.dto.MembershipTransactionsDto;
-import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
-import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
+import com.qualitychemicals.qciss.transaction.dto.*;
 import org.springframework.http.ResponseEntity;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.Date;
+import java.util.List;
 
 public interface SavingTService {
     SavingTDto mobileSaving(double amount);
@@ -16,7 +15,7 @@ public interface SavingTService {
     SavingsTransactionsDto allByWallet(String wallet);
     SavingsTransactionsDto last5ByWallet(String wallet);
     SavingTDto saveSavingTransaction(SavingTDto savingTDto);
-    SavingsTransactionsDto myAllCumulative();
+    List<CumulativeSavingT> myAllCumulative();
 
 
 

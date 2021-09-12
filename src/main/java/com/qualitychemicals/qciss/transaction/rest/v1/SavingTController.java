@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
+import com.qualitychemicals.qciss.transaction.dto.CumulativeSavingT;
 import com.qualitychemicals.qciss.transaction.dto.SavingTDto;
 import com.qualitychemicals.qciss.transaction.dto.SavingsTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 //@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
@@ -40,7 +43,7 @@ public class SavingTController {
     }
 
     @GetMapping("/cumulative")
-    public ResponseEntity<SavingsTransactionsDto> myAllCumulative(){
+    public ResponseEntity<List<CumulativeSavingT>> myAllCumulative(){
         return new ResponseEntity<>(savingTService.myAllCumulative(), HttpStatus.OK);
 
     }

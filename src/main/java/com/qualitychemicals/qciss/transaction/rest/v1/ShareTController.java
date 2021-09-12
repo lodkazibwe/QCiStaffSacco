@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
+import com.qualitychemicals.qciss.transaction.dto.CumulativeShareT;
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
 import com.qualitychemicals.qciss.transaction.dto.SharesTransactionsDto;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 //@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
@@ -33,7 +36,7 @@ public class ShareTController {
 
     }
     @GetMapping("/cumulative")
-    public ResponseEntity<SharesTransactionsDto> myAllCumulative(){
+    public ResponseEntity<List<CumulativeShareT>> myAllCumulative(){
         return new ResponseEntity<>(shareTService.myAllCumulative(), HttpStatus.OK);
 
     }

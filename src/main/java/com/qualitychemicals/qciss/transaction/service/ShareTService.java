@@ -1,11 +1,13 @@
 package com.qualitychemicals.qciss.transaction.service;
 
 
+import com.qualitychemicals.qciss.transaction.dto.CumulativeShareT;
 import com.qualitychemicals.qciss.transaction.dto.DateTransactions;
 import com.qualitychemicals.qciss.transaction.dto.ShareTDto;
 import com.qualitychemicals.qciss.transaction.dto.SharesTransactionsDto;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ShareTService {
     ShareTDto buyShares(double amount);
@@ -14,7 +16,7 @@ public interface ShareTService {
     SharesTransactionsDto allByWallet(String wallet);
     SharesTransactionsDto last5ByWallet(String wallet);
     ShareTDto saveShareTransaction(ShareTDto shareTDto);
-    SharesTransactionsDto myAllCumulative();
+    List<CumulativeShareT> myAllCumulative();
 
 
     ShareTDto systemShares(ShareTDto shareTDto);

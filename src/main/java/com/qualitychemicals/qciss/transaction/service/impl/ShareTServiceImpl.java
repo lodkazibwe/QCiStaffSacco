@@ -128,23 +128,29 @@ public class ShareTServiceImpl implements ShareTService {
         return allByWallet(wallet);
     }
 
+    @Transactional
     @Override
-    public SharesTransactionsDto myAllCumulative() {
-        SharesTransactionsDto sharesTransactionsDto =new SharesTransactionsDto();
+    public List<CumulativeShareT> myAllCumulative() {
         List<ShareTDto> shareTDtoList =myAll().getSharesTransactions();
         shareTDtoList.sort(Comparator.comparing(ShareTDto::getId));
-        List<ShareTDto> newList =new ArrayList<>();
+        List<CumulativeShareT> myList =new ArrayList<>();
         double amount =0;
         double shares =0;
         for(ShareTDto shareTDto:shareTDtoList){
             amount+=shareTDto.getAmount();
             shares+=shareTDto.getShares();
-            shareTDto.setShares(shares);
-            shareTDto.setAmount(amount);
-            newList.add(shareTDto);
+            CumulativeShareT cumulativeShareT =new CumulativeShareT();
+            cumulativeShareT.setAccount(shareTDto.getAccount());
+            cumulativeShareT.setAmount(shareTDto.getAmount());
+            cumulativeShareT.setCreationDateTime(shareTDto.getCreationDateTime());
+            cumulativeShareT.setNarrative(shareTDto.getNarrative());
+            cumulativeShareT.setShares(shareTDto.getShares());
+            cumulativeShareT.setShareValue(shareTDto.getShareValue());
+            cumulativeShareT.setCumulativeAmount(amount);
+            cumulativeShareT.setCumulativeShares(shares);
+            myList.add(cumulativeShareT);
         }
-        sharesTransactionsDto.setSharesTransactions(newList);
-        return sharesTransactionsDto;
+       return  myList;
     }
 
     @Override

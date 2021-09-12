@@ -160,21 +160,24 @@ public class SavingTServiceImpl implements SavingTService {
 
     @Override
     @Transactional
-    public SavingsTransactionsDto myAllCumulative() {
-        SavingsTransactionsDto savingsTransactionsDto =new SavingsTransactionsDto();
+    public List<CumulativeSavingT> myAllCumulative() {
+        //SavingsTransactionsDto savingsTransactionsDto =new SavingsTransactionsDto();
         List<SavingTDto> savingTDtoList=myAll().getSavingTransactions();
         savingTDtoList.sort(Comparator.comparing(SavingTDto::getId));
-        List<SavingTDto> newList =new ArrayList<>();
+        List<CumulativeSavingT> myList =new ArrayList<>();
         double amount =0;
         for(SavingTDto savingTDto: savingTDtoList){
             amount+=savingTDto.getAmount();
-            savingTDto.setAmount(amount);
-            newList.add(savingTDto);
-
+            CumulativeSavingT cumulativeSavingT =new CumulativeSavingT();
+            cumulativeSavingT.setAccount(savingTDto.getAccount());
+            cumulativeSavingT.setAmount(savingTDto.getAmount());
+            cumulativeSavingT.setCreationDateTime(savingTDto.getCreationDateTime());
+            cumulativeSavingT.setNarrative(savingTDto.getNarrative());
+            cumulativeSavingT.setCumulativeAmount(amount);
+            myList.add(cumulativeSavingT);
         }
 
-         savingsTransactionsDto.setSavingTransactions(newList);
-        return savingsTransactionsDto;
+       return myList;
     }
 
     @Override
