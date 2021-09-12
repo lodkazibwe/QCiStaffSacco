@@ -29,7 +29,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -153,6 +156,25 @@ public class SavingTServiceImpl implements SavingTService {
         String wallet ="WAL"+user;
         return allByWallet(wallet);
 
+    }
+
+    @Override
+    @Transactional
+    public SavingsTransactionsDto myAllCumulative() {
+        SavingsTransactionsDto savingsTransactionsDto =new SavingsTransactionsDto();
+        List<SavingTDto> savingTDtoList=myAll().getSavingTransactions();
+        savingTDtoList.sort(Comparator.comparing(SavingTDto::getId));
+        List<SavingTDto> newList =new ArrayList<>();
+        double amount =0;
+        for(SavingTDto savingTDto: savingTDtoList){
+            amount+=savingTDto.getAmount();
+            savingTDto.setAmount(amount);
+            newList.add(savingTDto);
+
+        }
+
+         savingsTransactionsDto.setSavingTransactions(newList);
+        return savingsTransactionsDto;
     }
 
     @Override

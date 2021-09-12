@@ -16,6 +16,8 @@ public interface SavingTService {
     SavingsTransactionsDto allByWallet(String wallet);
     SavingsTransactionsDto last5ByWallet(String wallet);
     SavingTDto saveSavingTransaction(SavingTDto savingTDto);
+    SavingsTransactionsDto myAllCumulative();
+
 
 
     SavingTDto systemSaving(SavingTDto savingTDto);

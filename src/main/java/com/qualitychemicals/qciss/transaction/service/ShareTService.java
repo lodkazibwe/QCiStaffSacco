@@ -14,6 +14,7 @@ public interface ShareTService {
     SharesTransactionsDto allByWallet(String wallet);
     SharesTransactionsDto last5ByWallet(String wallet);
     ShareTDto saveShareTransaction(ShareTDto shareTDto);
+    SharesTransactionsDto myAllCumulative();
 
 
     ShareTDto systemShares(ShareTDto shareTDto);

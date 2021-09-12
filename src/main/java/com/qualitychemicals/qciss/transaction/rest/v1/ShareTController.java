@@ -32,6 +32,12 @@ public class ShareTController {
         return new ResponseEntity<>(shareTService.myAll(), HttpStatus.OK);
 
     }
+    @GetMapping("/cumulative")
+    public ResponseEntity<SharesTransactionsDto> myAllCumulative(){
+        return new ResponseEntity<>(shareTService.myAllCumulative(), HttpStatus.OK);
+
+    }
+
     @GetMapping("/admin/all/{walletRef}")
     public ResponseEntity<SharesTransactionsDto> allByWallet(@PathVariable String walletRef){
         return new ResponseEntity<>(shareTService.allByWallet(walletRef), HttpStatus.OK);

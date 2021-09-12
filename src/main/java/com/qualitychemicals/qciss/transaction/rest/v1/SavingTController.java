@@ -38,6 +38,12 @@ public class SavingTController {
         return new ResponseEntity<>(savingTService.myAll(), HttpStatus.OK);
 
     }
+
+    @GetMapping("/cumulative")
+    public ResponseEntity<SavingsTransactionsDto> myAllCumulative(){
+        return new ResponseEntity<>(savingTService.myAllCumulative(), HttpStatus.OK);
+
+    }
     @GetMapping("/admin/all/{walletRef}")
     public ResponseEntity<SavingsTransactionsDto> allByWallet(@PathVariable String walletRef){
         return new ResponseEntity<>(savingTService.allByWallet(walletRef), HttpStatus.OK);

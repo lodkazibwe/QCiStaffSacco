@@ -28,7 +28,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ShareTServiceImpl implements ShareTService {
@@ -123,6 +126,25 @@ public class ShareTServiceImpl implements ShareTService {
         String user =myUserDetailsService.currentUser();
         String wallet ="WAL"+user;
         return allByWallet(wallet);
+    }
+
+    @Override
+    public SharesTransactionsDto myAllCumulative() {
+        SharesTransactionsDto sharesTransactionsDto =new SharesTransactionsDto();
+        List<ShareTDto> shareTDtoList =myAll().getSharesTransactions();
+        shareTDtoList.sort(Comparator.comparing(ShareTDto::getId));
+        List<ShareTDto> newList =new ArrayList<>();
+        double amount =0;
+        double shares =0;
+        for(ShareTDto shareTDto:shareTDtoList){
+            amount+=shareTDto.getAmount();
+            shares+=shareTDto.getShares();
+            shareTDto.setShares(shares);
+            shareTDto.setAmount(amount);
+            newList.add(shareTDto);
+        }
+        sharesTransactionsDto.setSharesTransactions(newList);
+        return sharesTransactionsDto;
     }
 
     @Override
