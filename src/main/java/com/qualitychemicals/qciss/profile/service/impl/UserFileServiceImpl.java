@@ -38,9 +38,10 @@ public class UserFileServiceImpl implements UserFileService {
         String file =fileService.uploadFile(myFile, userName);
         logger.info("setting file name....");
         UserFile userFile =new UserFile();
-        userFile.setUser(userName);
-        userFile.setFile(file);
-        userFile.setFileName(generateFileName(myFile));
+        userFile.setUserName(userName);
+        userFile.setFilePath(file);
+        userFile.setFileName(generateFileName(myFile));//
+        logger.info("saving file ....");
         return userFileDao.save(userFile);
 
     }
@@ -53,12 +54,12 @@ public class UserFileServiceImpl implements UserFileService {
     @Override
     public URL fileUrl(int id) {
         UserFile userFile =userFileDao.findById(id).orElseThrow(()->new ResourceNotFoundException("file Not Found: "+id));
-        return fileService.signedUrl(userFile.getFile());
+        return fileService.signedUrl(userFile.getFilePath());
     }
 
     @Override
     public List<UserFile> userFiles(String userName) {
-        return userFileDao.findByUser(userName);
+        return userFileDao.findByUserName(userName);
     }
 
 }

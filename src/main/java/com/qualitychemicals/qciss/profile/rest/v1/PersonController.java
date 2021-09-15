@@ -49,7 +49,7 @@ public class PersonController {
     @PostMapping("/uploadFile")
     public ResponseEntity<UserFile> uploadUserFile(@RequestParam("file")MultipartFile file)
             throws IOException {
-        logger.info("processing image...");
+        logger.info("processing file...");
         UserFile userFile= userFileService.uploadFile(file);
         return new ResponseEntity<>(userFile, HttpStatus.OK);
     }

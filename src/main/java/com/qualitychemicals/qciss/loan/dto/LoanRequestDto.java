@@ -29,8 +29,8 @@ public class LoanRequestDto {
     @NotNull(message = "repayment mode cannot be blank")
     @ApiModelProperty(notes = "mode of repayment (SALARY, WALLET, SYSTEM)")
     private RepaymentMode repaymentMode;
-    @NotNull(message = "disbursedBy cannot be blank")
-    @ApiModelProperty(notes = "how the cash is received (cash, mobile,bank)")
+    //@NotNull(message = "disbursedBy cannot be blank")
+    //@ApiModelProperty(notes = "how the cash is received (cash, mobile,bank)")
     private TransactionType disbursedBy;
     @NotNull(message = "missing first repayment date ")
     @ApiModelProperty(notes = "first Date of Repayment")

@@ -16,8 +16,8 @@ public class UserFile {
     @Id
     @GeneratedValue
     private int id;
-    private String user;
+    private String userName;
     private String fileName;
-    private String file;
+    private String filePath;
 
 }

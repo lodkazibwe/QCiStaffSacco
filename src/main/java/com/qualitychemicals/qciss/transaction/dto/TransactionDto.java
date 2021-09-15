@@ -32,4 +32,6 @@ public class TransactionDto {
     private Date creationDateTime;
     private TransactionType transactionType;
 
+
+
 }

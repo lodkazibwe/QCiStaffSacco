@@ -44,7 +44,7 @@ public class FileService {
         InputStream file =  new BufferedInputStream(myFile.getInputStream());
         logger.info("getting image name....");
         String fileName=generateFileName(myFile);
-        String name="qcFiles/"+userName+"/"+ fileName;
+        String name="qcFile/"+userName+"/"+ fileName;
         logger.info("uploading image....");
         StorageClient.getInstance().bucket()
                 .create(name, file);
