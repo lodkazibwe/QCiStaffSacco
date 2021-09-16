@@ -69,6 +69,7 @@ public class SavingTServiceImpl implements SavingTService {
             savingTDto.setAccountId(savingsAccount.getId());
             savingTDto.setCreationDateTime(new Date());
             savingTDto.setNarrative("savings withdraw");
+            savingTDto.setClassification("saving");
             savingTDto.setAccount(savingsAccount.getAccountRef());
             savingTDto.setWallet(wallet.getAccountRef());
             SavingTDto response =saveSavingT(savingTDto).getBody();
@@ -116,6 +117,7 @@ public class SavingTServiceImpl implements SavingTService {
             savingTDto.setAccount(savingsAccount.getAccountRef());
             savingTDto.setWallet(wallet.getAccountRef());
             SavingTDto response =saveSavingT(savingTDto).getBody();
+            savingTDto.setClassification("saving");
             assert response != null;
             if(response.getStatus().equals(TransactionStatus.PENDING)){
                 UserAccount userAccount =new UserAccount();

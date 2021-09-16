@@ -31,6 +31,7 @@ public class TransactionDto {
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDateTime;
     private TransactionType transactionType;
+    private String classification;
 
 
 

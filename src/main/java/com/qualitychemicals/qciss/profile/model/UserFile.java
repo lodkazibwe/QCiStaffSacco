@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +17,8 @@ public class UserFile {
     private String userName;
     private String fileName;
     private String filePath;
+    @OneToOne(targetEntity = FileCat.class, fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+    @JoinColumn()
+    private FileCat category;
 
 }

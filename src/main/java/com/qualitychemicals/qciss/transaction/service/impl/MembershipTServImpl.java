@@ -69,6 +69,7 @@ public class MembershipTServImpl implements MembershipTService {
             membershipTDto.setNarrative("paid membership fee");
             membershipTDto.setTransactionType(TransactionType.INTERNAL);
             membershipTDto.setStatus(TransactionStatus.SUCCESS);
+            membershipTDto.setClassification("membership");
             membershipTDto.setUserName(user);
             membershipTDto.setWallet(wallet.getAccountRef());
             MembershipTDto response =saveMembershipT(membershipTDto).getBody();

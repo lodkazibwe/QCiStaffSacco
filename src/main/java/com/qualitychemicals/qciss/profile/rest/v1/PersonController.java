@@ -4,6 +4,7 @@ import com.qualitychemicals.qciss.profile.converter.NextOfKinConverter;
 import com.qualitychemicals.qciss.profile.converter.PersonConverter;
 import com.qualitychemicals.qciss.profile.dto.NextOfKinDto;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
+import com.qualitychemicals.qciss.profile.model.FileCat;
 import com.qualitychemicals.qciss.profile.model.NextOfKin;
 import com.qualitychemicals.qciss.profile.model.Person;
 import com.qualitychemicals.qciss.profile.model.UserFile;
@@ -46,12 +47,23 @@ public class PersonController {
         return new ResponseEntity<>(signedUrl, HttpStatus.OK);
     }
 
-    @PostMapping("/uploadFile")
-    public ResponseEntity<UserFile> uploadUserFile(@RequestParam("file")MultipartFile file)
+    @PostMapping("/uploadFile/{category}")
+    public ResponseEntity<UserFile> uploadUserFile(@RequestParam("file")MultipartFile file,
+                                                   @PathVariable String category )
             throws IOException {
         logger.info("processing file...");
-        UserFile userFile= userFileService.uploadFile(file);
+        UserFile userFile= userFileService.uploadFile(file, category);
         return new ResponseEntity<>(userFile, HttpStatus.OK);
+    }
+
+    @PostMapping("/admin/addFCategory")
+    public ResponseEntity<FileCat> addFileCat(@RequestBody FileCat fileCat){
+        return  new ResponseEntity<>(userFileService.addFileCat(fileCat), HttpStatus.OK);
+    }
+
+    @GetMapping("/fileCats")
+    public ResponseEntity<List<FileCat>> getFileCategories(){
+        return  new ResponseEntity<>(userFileService.getCategories(), HttpStatus.OK);
     }
 
     @GetMapping("/imageUrl")

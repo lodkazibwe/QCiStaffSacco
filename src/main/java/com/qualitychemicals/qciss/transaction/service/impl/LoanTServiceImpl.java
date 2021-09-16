@@ -82,6 +82,7 @@ public class LoanTServiceImpl implements LoanTService {
                 loanTDto.setNarrative("loan topped Up");
                 loanTDto.setWallet(wallet.getAccountRef());
                 loanTDto.setCreationDateTime(new Date());
+                loanTDto.setClassification("loan");
                 logger.info("closing top up loan...");
                 loanService.repay(topUpLoan.getId(), topUpLoan.getTotalDue());
                 saveLoanT(loanTDto);
@@ -107,6 +108,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setNarrative("loan charges");
             loanTDto.setAccount(loan.getLoanNumber());
             loanTDto.setUserName(userName);
+            loanTDto.setClassification("loan");
             //loanTDto.setLoanRef(loan.getLoanNumber());
             loanTDto.setTransactionType(TransactionType.INTERNAL);
             loanTDto.setLoanId(loan.getId());
@@ -220,6 +222,7 @@ public class LoanTServiceImpl implements LoanTService {
             loanTDto.setNarrative("loan Repayment");
             loanTDto.setWallet(wallet.getAccountRef());
             loanTDto.setCreationDateTime(new Date());
+            loanTDto.setClassification("loan");
 
             logger.info("updating loan...");
             loanService.repay(loanPayDto.getLoanId(), loanPayDto.getAmount());

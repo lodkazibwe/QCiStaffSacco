@@ -69,6 +69,7 @@ public class ShareTServiceImpl implements ShareTService {
             shareTDto.setShareValue(share.getShareValue());
             shareTDto.setAccount("SHA"+user);
             shareTDto.setNarrative("Bought shares");
+            shareTDto.setClassification("share");
             shareTDto.setWallet(wallet.getAccountRef());
             ShareTDto response =saveShareT(shareTDto).getBody();
             assert response != null;
