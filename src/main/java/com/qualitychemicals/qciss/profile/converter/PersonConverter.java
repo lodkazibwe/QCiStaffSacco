@@ -21,6 +21,7 @@ public class PersonConverter {
         personDto.setDob(person.getDob());
         personDto.setPassport(person.getPassport());
         personDto.setMobile(person.getMobile());
+        //personDto.setImage(person.getImage());
         return personDto;
     }
 

@@ -173,4 +173,37 @@ public class WalletServiceImpl implements WalletService {
         return null;
     }
 
+    @Override
+    public Wallet mobileWithdraw() {
+        //check balance
+        //prepare transaction
+        //reduce wallet and yoAccount
+
+        return null;
+    }
+
+    @Override
+    public Wallet bankWithdraw() {
+        //check balance
+        //prepare transaction
+        //reduce wallet and bankAccount
+        return null;
+    }
+
+    @Override
+    public Wallet eftWithdraw() {
+        //check balance
+        //prepare transaction
+        //reduce wallet and bankAccount
+        return null;
+    }
+
+    @Override
+    public Wallet chequeWithdraw() {
+        //check balance
+        //prepare transaction
+        //reduce wallet and bankAccount
+        return null;
+    }
+
 }

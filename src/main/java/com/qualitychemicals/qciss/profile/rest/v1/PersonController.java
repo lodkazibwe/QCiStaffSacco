@@ -72,6 +72,12 @@ public class PersonController {
 
     }
 
+    @GetMapping("/bucket")
+    public ResponseEntity<String> getImg(){
+        return  new ResponseEntity<>(personService.bucket(), HttpStatus.OK);
+
+    }
+
     @GetMapping("/fileUrl/{id}")
     public ResponseEntity<URL> getFile(@PathVariable int id){
         return  new ResponseEntity<>(userFileService.fileUrl(id), HttpStatus.OK);

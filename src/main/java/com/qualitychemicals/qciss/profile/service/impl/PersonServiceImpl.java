@@ -149,6 +149,13 @@ public class PersonServiceImpl implements PersonService {
         return fileService.signedUrl(profile.getPerson().getImage());
     }
 
+    @Override
+    public String bucket() {
+        logger.info("getting user....");
+        String userName=myUserDetailsService.currentUser();
+        Profile profile =userService.getProfile(userName);
+        return fileService.bucket(profile.getPerson().getImage());
+    }
 
 
     public URL signedUrl() {
