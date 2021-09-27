@@ -22,8 +22,8 @@ public class PersonConverter {
         personDto.setEmail(person.getEmail());
         personDto.setDob(person.getDob());
         personDto.setPassport(person.getPassport());
-        personDto.setMobile(personService.bucket());
-        personDto.setImageUrl(person.getImage());
+        personDto.setMobile(person.getMobile());
+        personDto.setImageUrl(personService.bucket());
         return personDto;
     }
 

@@ -14,6 +14,6 @@ public class WalletDto {
     private String accountRef;
     private double amount;
     private int lastTransaction;
-
+    private String imageUrl;
     private String contact;
 }
