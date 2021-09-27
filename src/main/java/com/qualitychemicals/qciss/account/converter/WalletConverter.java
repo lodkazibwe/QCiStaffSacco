@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.account.converter;
 import com.qualitychemicals.qciss.account.dto.WalletDto;
 import com.qualitychemicals.qciss.account.model.Wallet;
 import com.qualitychemicals.qciss.profile.service.PersonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class WalletConverter {
-    PersonService personService;
+    @Autowired PersonService personService;
     public WalletDto entityToDto(Wallet wallet){
          WalletDto walletDto= new WalletDto();
         walletDto.setId(wallet.getId());
@@ -20,11 +21,7 @@ public class WalletConverter {
         walletDto.setLastTransaction(wallet.getLastTransaction());
         walletDto.setAccountRef(wallet.getAccountRef());
         walletDto.setName(wallet.getName());
-        String url =personService.bucket();
-        if(url.equals(null)){
-            walletDto.setImageUrl("none");
-        }
-        walletDto.setImageUrl(url);
+        walletDto.setImageUrl(personService.bucket());
         return walletDto;
 
     }

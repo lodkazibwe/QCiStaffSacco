@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PersonConverter {
-    PersonService personService;
+
     public PersonDto entityToDto(Person person){
         PersonDto personDto =new PersonDto();
         personDto.setId(person.getId());
