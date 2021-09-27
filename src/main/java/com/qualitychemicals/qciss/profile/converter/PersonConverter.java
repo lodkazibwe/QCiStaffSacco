@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.profile.converter;
 import com.qualitychemicals.qciss.profile.dto.PersonDto;
 import com.qualitychemicals.qciss.profile.model.Person;
 import com.qualitychemicals.qciss.profile.service.PersonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class PersonConverter {
-
+    @Autowired PersonService personService;
     public PersonDto entityToDto(Person person){
         PersonDto personDto =new PersonDto();
         personDto.setId(person.getId());
@@ -23,7 +24,7 @@ public class PersonConverter {
         personDto.setDob(person.getDob());
         personDto.setPassport(person.getPassport());
         personDto.setMobile(person.getMobile());
-        personDto.setImageUrl(person.getImage());
+        personDto.setImageUrl(personService.bucket());
         return personDto;
     }
 
