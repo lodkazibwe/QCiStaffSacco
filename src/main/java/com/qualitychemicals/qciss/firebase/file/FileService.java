@@ -68,8 +68,7 @@ public class FileService {
 
     public String bucket(String imageName) {
         logger.info("getting image....");
-        return StorageClient.getInstance().bucket().get(imageName).getBucket();
-       // return StorageClient.getInstance().bucket().get(imageName).signUrl(14, TimeUnit.DAYS);
+        return StorageClient.getInstance().bucket().get(imageName).getMediaLink();
 
     }
 
