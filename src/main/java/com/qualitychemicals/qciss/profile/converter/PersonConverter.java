@@ -23,7 +23,7 @@ public class PersonConverter {
         personDto.setDob(person.getDob());
         personDto.setPassport(person.getPassport());
         personDto.setMobile(person.getMobile());
-        personDto.setImageUrl(personService.bucket());
+        personDto.setImageUrl(person.getImage());
         return personDto;
     }
 

@@ -34,7 +34,8 @@ public class FileService {
         StorageClient.getInstance().bucket()
                 .create(name, file);
         logger.info("updating profile....");
-        return name;
+        return bucket(name);
+        //return name;
 
    }
 
@@ -49,7 +50,7 @@ public class FileService {
         StorageClient.getInstance().bucket()
                 .create(name, file);
         logger.info("updating profile....");
-        return name;
+        return bucket(name);
 
     }
 

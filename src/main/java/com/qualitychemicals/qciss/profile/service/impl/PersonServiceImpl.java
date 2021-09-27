@@ -154,7 +154,7 @@ public class PersonServiceImpl implements PersonService {
         logger.info("getting user....");
         String userName=myUserDetailsService.currentUser();
         Profile profile =userService.getProfile(userName);
-        return fileService.bucket(profile.getPerson().getImage());
+        return profile.getPerson().getImage();
     }
 
 
