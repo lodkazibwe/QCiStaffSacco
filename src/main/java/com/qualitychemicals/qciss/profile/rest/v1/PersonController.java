@@ -73,7 +73,7 @@ public class PersonController {
     }
 
     @GetMapping("/bucket")
-    public ResponseEntity<String> getImg(){
+    public ResponseEntity<String> stringImageUrl(){
         return  new ResponseEntity<>(personService.bucket(), HttpStatus.OK);
 
     }

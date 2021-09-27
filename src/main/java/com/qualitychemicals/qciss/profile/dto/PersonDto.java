@@ -38,6 +38,6 @@ public class PersonDto {
     //@NotBlank(message ="residence cannot be Blank")
     private String residence;
     private String passport;
-   // private String image;
+    private String imageUrl;
 
 }
