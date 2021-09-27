@@ -20,7 +20,11 @@ public class WalletConverter {
         walletDto.setLastTransaction(wallet.getLastTransaction());
         walletDto.setAccountRef(wallet.getAccountRef());
         walletDto.setName(wallet.getName());
-        walletDto.setImageUrl(personService.bucket());
+        String url =personService.bucket();
+        if(url.equals(null)){
+            walletDto.setImageUrl("none");
+        }
+        walletDto.setImageUrl(url);
         return walletDto;
 
     }
