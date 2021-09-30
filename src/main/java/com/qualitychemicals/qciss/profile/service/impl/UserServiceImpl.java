@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService {
 
 
 
+
     @Transactional
     @Override
     public Profile addProfile(UserDto userDTO, String rol, Status status) {
@@ -127,8 +128,8 @@ public class UserServiceImpl implements UserService {
             chatService.createChat(userName);
 
             logger.info("sending email...");
-            //emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
-            smsService.sendSms(contact,message);
+            emailService.sendSimpleMessage(email,"PRIVATE-QCi-CODE",message);
+            //smsService.sendSms(contact,message);
             logger.info(message+" for  "+ userName);
 
             logger.info("profile created...");
