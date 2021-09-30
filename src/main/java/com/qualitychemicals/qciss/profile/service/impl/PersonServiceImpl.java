@@ -153,6 +153,10 @@ public class PersonServiceImpl implements PersonService {
     public String bucket() {
         logger.info("getting user....");
         String userName=myUserDetailsService.currentUser();
+        //anonymousUser
+        if(userName.equals("anonymousUser")){
+            return"no Image";
+        }
         Profile profile =userService.getProfile(userName);
         return fileService.bucket(profile.getPerson().getImage());
     }
