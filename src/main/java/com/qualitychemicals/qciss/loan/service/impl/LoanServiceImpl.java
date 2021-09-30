@@ -245,7 +245,7 @@ public class LoanServiceImpl  implements LoanService {
         if(loan.getStatus()== LoanStatus.PENDING){
             logger.info("updating loan...");
         loan.setReleaseDate(date);
-        loan.setTransferCharge(loanVerifyDto.getTransferCharge());
+        loan.setFirstRepaymentDate(loanVerifyDto.getFirstRepayDate());
         loan.setStatus(LoanStatus.CHECKED);
         loan.setTotalDue(loan.getPrincipal()+loan.getInterest());
         loan.setTotalPaid(0);
