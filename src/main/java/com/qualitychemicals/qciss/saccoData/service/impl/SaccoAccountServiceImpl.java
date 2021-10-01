@@ -43,8 +43,8 @@ public class SaccoAccountServiceImpl implements SaccoAccountService {
     public List<SaccoAccount> getAllAccounts() {
 
         List<SaccoAccount> saccoAccounts = saccoAccountDao.findAll();
-        saccoAccounts.remove(getSaccoAccount("BANK-ACCOUNT"));
-        saccoAccounts.remove(getSaccoAccount("YO-ACCOUNT"));
+        //saccoAccounts.remove(getSaccoAccount("BANK-ACCOUNT"));
+        //saccoAccounts.remove(getSaccoAccount("YO-ACCOUNT"));
         return saccoAccounts;
     }
 
