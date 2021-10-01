@@ -2,6 +2,8 @@ package com.qualitychemicals.qciss.transaction.service;
 
 import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.transaction.dto.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,8 @@ public interface TransactionService {
     AllTransactions last5ByWallet(String wallet);
 
     UserTransactionsDto userTransactions(String userName);
-    AllTransactions allTransactions(Date date1, Date date2);
+    AllTransactions allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
+                                    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")Date date2);
 
 
 

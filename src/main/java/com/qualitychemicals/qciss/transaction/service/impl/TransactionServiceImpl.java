@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -64,8 +65,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public AllTransactions allTransactions(@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date date1,
-                                           @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date date2) {
+    public AllTransactions allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
+                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date2) {
         String url ="http://localhost:8082/transaction/getAll/"+date1+"/"+date2;
         //try {
             return restTemplate.getForObject(
