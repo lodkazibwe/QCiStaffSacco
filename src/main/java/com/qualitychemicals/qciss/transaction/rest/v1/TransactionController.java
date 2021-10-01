@@ -1,5 +1,6 @@
 package com.qualitychemicals.qciss.transaction.rest.v1;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qualitychemicals.qciss.transaction.dto.AllTransactions;
 import com.qualitychemicals.qciss.transaction.service.MembershipTService;
 import com.qualitychemicals.qciss.transaction.service.SavingTService;
@@ -48,8 +49,8 @@ public class TransactionController {
     }
 
     @GetMapping("/admin/all/{dateFrom}/{dateTo}")
-    public ResponseEntity<AllTransactions> allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
-                                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")Date dateTo){
+    public ResponseEntity<AllTransactions> allTransactions(@PathVariable @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date dateFrom,
+                                                           @PathVariable @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT")Date dateTo){
         return new ResponseEntity<>(transactionService.allTransactions(dateFrom, dateTo), HttpStatus.OK);
 
     }
