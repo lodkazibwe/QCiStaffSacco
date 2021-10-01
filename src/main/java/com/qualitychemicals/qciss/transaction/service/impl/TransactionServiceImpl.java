@@ -17,6 +17,7 @@ import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,14 +63,15 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public AllTransactions allTransactions(Date date1, Date date2) {
+    public AllTransactions allTransactions(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
+                                           @DateTimeFormat(pattern = "yyyy-MM-dd") Date date2) {
         String url ="http://localhost:8082/transaction/getAll/"+date1+"/"+date2;
-
+        try {
             return restTemplate.getForObject(
                     url, AllTransactions.class);
-       /* }catch (RestClientException e) {
+        }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
-        }*/
+        }
     }
 
     @Override
