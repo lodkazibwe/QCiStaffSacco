@@ -409,33 +409,33 @@ public class LoanServiceImpl  implements LoanService {
         int i = 0;
         logger.info("updating Repayments...");
            for(Repayment repayment:repayments){
-                if(amt>0 && repayment.getBalance()>0){
-                    double value=amt-repayment.getBalance();
-                    if(value>=0){
-                        repayment.setPaid(repayment.getPaid()+repayment.getBalance());
-                        repayment.setInterestPaid(repayment.getInterest());
-                        repayment.setPrincipalPaid(repayment.getPrincipal());
-                        amt=value;
-                        repayment.setBalance(0);
-                        repayment.setStatus(RepaymentStatus.SETTLED);
-                    }else{
-                        repayment.setPaid(repayment.getPaid()+amt);
-                        repayment.setBalance(repayment.getBalance()-amt);
-                        if((repayment.getPaid()-repayment.getPrincipal())>=0){
-                            repayment.setPrincipalPaid(repayment.getPrincipal());
-                        }else{
-                            repayment.setPrincipalPaid(repayment.getPaid());
-                        }
-                        repayment.setInterestPaid(repayment.getPaid()-repayment.getPrincipalPaid());
-                        amt=0;
+               if(amt>0 && repayment.getBalance()>0){
+                   double value=amt-repayment.getBalance();
+                   if(value>=0){
+                       repayment.setPaid(repayment.getPaid()+repayment.getBalance());
+                       repayment.setInterestPaid(repayment.getInterest());
+                       repayment.setPrincipalPaid(repayment.getPrincipal());
+                       amt=value;
+                       repayment.setBalance(0);
+                       repayment.setStatus(RepaymentStatus.SETTLED);
+                   }else{
+                       repayment.setPaid(repayment.getPaid()+amt);
+                       repayment.setBalance(repayment.getBalance()-amt);
+                       if((repayment.getPaid()-repayment.getPrincipal())>=0){
+                           repayment.setPrincipalPaid(repayment.getPrincipal());
+                       }else{
+                           repayment.setPrincipalPaid(repayment.getPaid());
+                       }
+                       repayment.setInterestPaid(repayment.getPaid()-repayment.getPrincipalPaid());
+                       amt=0;
 
-                    }
+                   }
 
-                }
-                repayments.set(i,repayment);
-                i++;
+               }
+               repayments.set(i,repayment);
+               i++;
 
-            }
+           }
            loan.setRepayments(repayments);
         logger.info("saving Loan ...");
         loanDao.save(loan);
