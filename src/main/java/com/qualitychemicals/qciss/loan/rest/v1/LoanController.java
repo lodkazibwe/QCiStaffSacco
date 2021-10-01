@@ -187,6 +187,12 @@ public class LoanController {
 
     }
 
+    @GetMapping("/admin/loanRepayments/{loanId}")
+    public ResponseEntity<List<RepaymentDto>> loanRepayments(@PathVariable int loanId){
+        return new ResponseEntity<>(repaymentConverter.entityToDto(loanService.loanRepayments(loanId)), HttpStatus.OK);
+
+    }
+
     @GetMapping("/myDueLoans/{date}")
     public ResponseEntity<List<DueLoanDto>> myDueLoans(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         //List<Loan> loan =loanService.myDueLoans(date);

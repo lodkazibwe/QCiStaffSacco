@@ -37,7 +37,7 @@ public interface LoanService {
     AppraisalSheetDto getLoanAppraisal(int loanId);
     Loan reject(LoanRejectDto loanRejectDto);
 
-
+    List<Repayment> loanRepayments(int loanId);
     List<Repayment> myLoanRepayments(int loanId);
 
 }

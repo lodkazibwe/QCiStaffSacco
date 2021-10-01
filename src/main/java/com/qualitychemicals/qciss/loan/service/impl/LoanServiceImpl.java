@@ -473,6 +473,16 @@ public class LoanServiceImpl  implements LoanService {
     }
 
     @Override
+    public List<Repayment> loanRepayments(int loanId) {
+        Loan loan=getLoan(loanId);
+        List<Repayment> repayments =loan.getRepayments();
+        if(repayments!=null){
+            return repayments;
+        }
+        throw new ResourceNotFoundException("No details yet");
+    }
+
+    @Override
     public List<Loan> getAll() {
         return loanDao.findAll();
     }
