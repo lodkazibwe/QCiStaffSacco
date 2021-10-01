@@ -67,12 +67,12 @@ public class TransactionServiceImpl implements TransactionService {
     public AllTransactions allTransactions(@JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date date1,
                                            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date date2) {
         String url ="http://localhost:8082/transaction/getAll/"+date1+"/"+date2;
-        try {
+        //try {
             return restTemplate.getForObject(
                     url, AllTransactions.class);
-        }catch (RestClientException e) {
+        /*}catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
-        }
+        }*/
     }
 
     @Override
