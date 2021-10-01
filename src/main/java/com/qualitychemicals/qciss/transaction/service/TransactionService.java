@@ -15,8 +15,8 @@ public interface TransactionService {
     AllTransactions last5ByWallet(String wallet);
 
     UserTransactionsDto userTransactions(String userName);
-    AllTransactions allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
-                                    @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")Date date2);
+    AllTransactions allTransactions(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
+                                    @DateTimeFormat(pattern = "yyyy-MM-dd")Date date2);
 
 
 

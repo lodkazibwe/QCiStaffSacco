@@ -65,9 +65,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public AllTransactions allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
-                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date date2) {
-        String url ="http://localhost:8082/transaction/getAll/"+date1.toString()+"/"+date2.toString();
+    public AllTransactions allTransactions(@DateTimeFormat(pattern = "yyyy-MM-dd") Date date1,
+                                          @DateTimeFormat(pattern = "yyyy-MM-dd") Date date2) {
+        String url ="http://localhost:8082/transaction/getAll/"+date1+"/"+date2;
         //try {
             return restTemplate.getForObject(
                     url, AllTransactions.class);
