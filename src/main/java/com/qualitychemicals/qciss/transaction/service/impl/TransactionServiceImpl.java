@@ -64,12 +64,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public AllTransactions allTransactions(Date date1, Date date2) {
         String url ="http://localhost:8082/transaction/getAll/"+date1+"/"+date2;
-        try {
+
             return restTemplate.getForObject(
                     url, AllTransactions.class);
-        }catch (RestClientException e) {
+       /* }catch (RestClientException e) {
             throw new ResourceNotFoundException("Transaction Service down " );
-        }
+        }*/
     }
 
     @Override
