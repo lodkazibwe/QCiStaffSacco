@@ -6,9 +6,12 @@ import com.qualitychemicals.qciss.transaction.service.SavingTService;
 import com.qualitychemicals.qciss.transaction.service.ShareTService;
 import com.qualitychemicals.qciss.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 
 //@CrossOrigin(origins = {"https://qcstaffsacco.com", "https://qcstaffsacco.com/admin"}, allowedHeaders = "*")
@@ -41,6 +44,13 @@ public class TransactionController {
     @GetMapping("/admin/recent/{walletRef}")
     public ResponseEntity<AllTransactions> recentByWallet(@PathVariable String walletRef){
         return new ResponseEntity<>(transactionService.last5ByWallet(walletRef), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/admin/all/{dateFrom}/{dateTo}")
+    public ResponseEntity<AllTransactions> allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
+                                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd")Date dateTo){
+        return new ResponseEntity<>(transactionService.allTransactions(dateFrom, dateTo), HttpStatus.OK);
 
     }
 

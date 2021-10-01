@@ -3,6 +3,7 @@ package com.qualitychemicals.qciss.transaction.service;
 import com.qualitychemicals.qciss.saccoData.dto.DeductionScheduleDTO;
 import com.qualitychemicals.qciss.transaction.dto.*;
 
+import java.util.Date;
 import java.util.List;
 
 public interface TransactionService {
@@ -12,6 +13,7 @@ public interface TransactionService {
     AllTransactions last5ByWallet(String wallet);
 
     UserTransactionsDto userTransactions(String userName);
+    AllTransactions allTransactions(Date date1, Date date2);
 
 
 
