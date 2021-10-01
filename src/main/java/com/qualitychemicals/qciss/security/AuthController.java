@@ -53,6 +53,32 @@ public class AuthController {
 
     }
 
+    @PostMapping("get/authToken")
+    public ResponseEntity<?> createToken(@Valid @RequestBody AuthRequest authRequest){
+        boolean bool=userService.isUserClosed(authRequest.getUserName());
+        if(bool){
+            throw new InvalidValuesException("profile blocked");
+        }else {
+            try {
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+                );
+            } catch (InvalidValuesException e) {
+                throw new InvalidValuesException("Incorrect profile name or password");
+            }
+            UserDetails userDetails = myUserDetailsService.loadUserByUsername(authRequest.getUserName());
+            AuthResp authResponse=myUserDetailsService.getResponse(authRequest.getUserName());
+
+
+            final String jwt = jwtUtil.generateToken(userDetails);
+
+
+            return new ResponseEntity<>(new AuthResp(jwt,authResponse.getName(),authResponse.getRole()), HttpStatus.OK);
+        }
+
+    }
+
+
     @PutMapping("/requestPin/{contact}")//admin
     public ResponseEntity<?> requestPin(@PathVariable String contact){
         userService.requestPin(contact);
