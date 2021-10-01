@@ -49,8 +49,8 @@ public class TransactionController {
     }
 
     @GetMapping("/admin/all/{dateFrom}/{dateTo}")
-    public ResponseEntity<AllTransactions> allTransactions(@PathVariable @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT") Date dateFrom,
-                                                           @PathVariable @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", locale = "pt-BR", timezone = "EAT")Date dateTo){
+    public ResponseEntity<AllTransactions> allTransactions(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
+                                                           @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateTo){
         return new ResponseEntity<>(transactionService.allTransactions(dateFrom, dateTo), HttpStatus.OK);
 
     }
