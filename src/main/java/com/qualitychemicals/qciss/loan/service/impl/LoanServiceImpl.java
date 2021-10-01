@@ -586,7 +586,7 @@ public class LoanServiceImpl  implements LoanService {
     @Override
     public List<DueLoanDto> outstandingLoans() {
         logger.info("getting repayments due ...");
-        List<DueLoanDto> dueLoans=loanDao.outstandingLoans();
+        List<DueLoanDto> dueLoans=loanDao.outstandingLoans(LoanStatus.OPEN);
         return filterDueLoans(dueLoans);
     }
 

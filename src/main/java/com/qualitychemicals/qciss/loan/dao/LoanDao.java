@@ -45,8 +45,8 @@ public interface LoanDao extends JpaRepository<Loan, Integer> {
     @Query("SELECT new com.qualitychemicals.qciss.loan.dto.DueLoanDto(" +
             "l.id,l.loanNumber,l.product.name,l.borrower,l.principal,l.interest,l.penalty, l.totalDue,l.totalPaid," +
             "r.balance,r.balance,r.date,r.date,l.repaymentMode) " +
-            "FROM Loan l JOIN l.repayments r WHERE r.balance>0 ORDER BY r.date")
-    List<DueLoanDto> outstandingLoans();
+            "FROM Loan l JOIN l.repayments r WHERE r.balance>0 and l.status=?1 ORDER BY r.date")
+    List<DueLoanDto> outstandingLoans(LoanStatus status);
 
 
 }
