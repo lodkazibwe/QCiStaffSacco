@@ -127,6 +127,12 @@ public class LoanController {
         return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
 
     }
+    @GetMapping("/admin/getLoan/{loanId}")
+    public ResponseEntity<LoanDto> getLoan(@PathVariable int loanId){
+        Loan loan =loanService.getLoan(loanId);
+        return new ResponseEntity<>(loanConverter.entityToDto(loan), HttpStatus.OK);
+
+    }
 
     @GetMapping("/admin/checkedLoans")
     public ResponseEntity<List<LoanDto>> checkedLoans(){
