@@ -39,7 +39,9 @@ public interface UserService {
 
     void addRole(String userName,String Role);
 
+
     List<PersonDto> getAdmins();
+
 
     //Profile addRoot(PersonDto personDto);
 }

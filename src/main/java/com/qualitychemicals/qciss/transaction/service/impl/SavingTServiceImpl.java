@@ -68,7 +68,7 @@ public class SavingTServiceImpl implements SavingTService {
             savingTDto.setUserName(user);
             savingTDto.setAccountId(savingsAccount.getId());
             savingTDto.setCreationDateTime(new Date());
-            savingTDto.setNarrative("savings withdraw");
+            savingTDto.setNarrative("Wallet savings ");
             savingTDto.setClassification("saving");
             savingTDto.setAccount(savingsAccount.getAccountRef());
             savingTDto.setWallet(wallet.getAccountRef());

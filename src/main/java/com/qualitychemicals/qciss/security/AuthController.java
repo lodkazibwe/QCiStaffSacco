@@ -100,4 +100,11 @@ public class AuthController {
         throw new InvalidValuesException("password change failed");
 
     }
+
+    @PutMapping("/get/newPin")
+    public ResponseEntity<?> resetPass(@Valid @RequestBody ResetPassRequest resetPassRequest){
+        myUserDetailsService.resetPassword(resetPassRequest);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
 }
